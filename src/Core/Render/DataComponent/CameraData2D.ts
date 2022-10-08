@@ -6,7 +6,7 @@ enum BackgroundType {
   Texture = 1,
 }
 
-export class CameraData extends Component<CameraData> {
+export class CameraData2D extends Component<CameraData2D> {
   static schema: ComponentSchema = {
     backgroundType: {
       type: Types.Number,
