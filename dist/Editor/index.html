@@ -3,21 +3,107 @@
   <head>
     <title>White Dwarf Editor</title>
 
+    <link
+      href="https://unpkg.com/material-components-web@latest/dist/material-components-web.min.css"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/icon?family=Material+Icons"
+    />
+    <script src="https://unpkg.com/material-components-web@latest/dist/material-components-web.min.js"></script>
+
     <script src="index.js"></script>
 
     <style>
+      body {
+        display: flex;
+        flex-direction: column;
+        height: 100vh;
+        margin: 0;
+      }
+
+      .flexExpand {
+        flex-grow: 1;
+      }
+
       .toolBar {
         display: flex;
         flex-direction: row;
         align-items: center;
       }
+      .toolBarButton {
+        margin: 5px;
+      }
+
+      .editor {
+        display: flex;
+        flex-direction: row;
+
+        min-height: 0;
+        min-width: 0;
+        flex-grow: 1;
+        width: 100%;
+      }
+      .workspace {
+        display: flex;
+        flex-direction: column;
+        min-height: 0;
+        min-width: 200px;
+        width: 25%;
+        height: 100%;
+        overflow: auto;
+        border-style: inset;
+      }
+      .mainCanvas {
+        min-height: 0;
+        min-width: 0;
+        flex-grow: 1;
+        width: 100%;
+        height: 100%;
+      }
+
+      .footer {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        justify-content: center;
+      }
     </style>
   </head>
 
   <body>
+    <!-- Tool Bar -->
     <div class="toolBar">
-      <button id="aboutButton">File</button>
-      <button id="aboutButton">About</button>
+      <!-- Left Tool Bar -->
+      <button class="mdc-button mdc-button--raised toolBarButton">
+        <span class="mdc-button__label">File</span>
+      </button>
+      <button class="mdc-button mdc-button--raised toolBarButton">
+        <span class="mdc-button__label">About</span>
+      </button>
+
+      <div class="flexExpand"></div>
+
+      <!-- Right Tool Bar -->
+    </div>
+
+    <!-- Editor -->
+    <div class="editor">
+      <!-- Left Work Space -->
+      <div class="workspace"></div>
+
+      <canvas id="mainCanvas" class="mainCanvas"></canvas>
+
+      <!-- Right Work Space -->
+      <div class="workspace"></div>
+    </div>
+
+    <!-- Footer -->
+    <div class="footer">
+      <button class="mdc-button mdc-button--raised toolBarButton">
+        <span class="mdc-button__label">Play</span>
+      </button>
     </div>
   </body>
 </html>
