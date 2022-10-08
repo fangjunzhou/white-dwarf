@@ -1,10 +1,10 @@
 import { World } from "ecsy/World";
-import { IComponentRegister } from "../../Utils/IComponentRegister";
+import { IWorldRegister } from "../../Utils/IWorldRegister";
 import { CameraData2D } from "./DataComponent/CameraData2D";
 import { CameraTag } from "./TagComponent/CameraTag";
 import { MainCameraTag } from "./TagComponent/MainCameraTag";
 
-export const RenderComponentRegister: IComponentRegister = (world: World) => {
+export const RenderComponentRegister: IWorldRegister = (world: World) => {
   // Register Data Components
   world.registerComponent(CameraData2D);
 

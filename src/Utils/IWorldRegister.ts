@@ -1,6 +1,6 @@
 import { World } from "ecsy/World";
 
-export interface IComponentRegister {
+export interface IWorldRegister {
   /**
    * Register all components to the world.
    *
