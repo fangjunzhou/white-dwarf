@@ -28,12 +28,10 @@
       }
 
       .toolBar {
+        height: 64px;
         display: flex;
         flex-direction: row;
         align-items: center;
-      }
-      .toolBarButton {
-        margin: 5px;
       }
 
       .editor {
@@ -53,7 +51,6 @@
         width: 25%;
         height: 100%;
         overflow: auto;
-        border-style: inset;
       }
       .mainCanvas {
         min-height: 0;
@@ -61,9 +58,13 @@
         flex-grow: 1;
         width: 100%;
         height: 100%;
+        border-style: solid;
+        border-width: 1px;
+        border-color: lightgray;
       }
 
       .footer {
+        height: 64px;
         display: flex;
         flex-direction: row;
         align-items: center;
@@ -74,19 +75,27 @@
 
   <body>
     <!-- Tool Bar -->
-    <div class="toolBar">
-      <!-- Left Tool Bar -->
-      <button class="mdc-button mdc-button--raised toolBarButton">
-        <span class="mdc-button__label">File</span>
-      </button>
-      <button class="mdc-button mdc-button--raised toolBarButton">
-        <span class="mdc-button__label">About</span>
-      </button>
-
-      <div class="flexExpand"></div>
-
-      <!-- Right Tool Bar -->
-    </div>
+    <header class="mdc-top-app-bar">
+      <div class="mdc-top-app-bar__row">
+        <section
+          class="mdc-top-app-bar__section mdc-top-app-bar__section--align-start"
+        >
+          <span class="mdc-top-app-bar__title">White Dwarf Editor</span>
+        </section>
+        <section
+          class="mdc-top-app-bar__section mdc-top-app-bar__section--align-end"
+          role="toolbar"
+        >
+          <button
+            class="material-icons mdc-top-app-bar__action-item mdc-icon-button"
+            aria-label="Options"
+          >
+            more_vert
+          </button>
+        </section>
+      </div>
+    </header>
+    <div class="toolBar"></div>
 
     <!-- Editor -->
     <div class="editor">
