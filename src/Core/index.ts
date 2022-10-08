@@ -39,7 +39,7 @@ const physicsUpdate = async () => {
   }
 };
 
-const mainInit = () => {
+export const mainInit = () => {
   // Initialize time context.
   timeContext.startTime = Date.now() / 1000;
   timeContext.currentTime = timeContext.startTime;
@@ -51,6 +51,3 @@ const mainInit = () => {
   // Start async physics update.
   physicsUpdate();
 };
-
-// Call main init when the page is loaded.
-window.onload = mainInit;
