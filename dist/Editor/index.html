@@ -12,6 +12,10 @@
       href="https://fonts.googleapis.com/icon?family=Material+Icons"
     />
     <script src="https://unpkg.com/material-components-web@latest/dist/material-components-web.min.js"></script>
+    <link
+      href="https://fonts.googleapis.com/css?family=Roboto:300,400,500"
+      rel="stylesheet"
+    />
 
     <script src="index.js"></script>
 
@@ -28,7 +32,7 @@
       }
 
       .toolBar {
-        height: 64px;
+        min-height: 64px;
         display: flex;
         flex-direction: row;
         align-items: center;
@@ -52,6 +56,11 @@
         height: 100%;
         overflow: auto;
       }
+      .subWorkspace {
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+      }
       .mainCanvas {
         min-height: 0;
         min-width: 0;
@@ -63,8 +72,19 @@
         border-color: lightgray;
       }
 
+      .workspaceTitle {
+        display: flex;
+        flex-direction: column;
+        margin: 20px;
+      }
+      .entityList {
+        margin: 20px;
+        flex-grow: 1;
+        overflow: auto;
+      }
+
       .footer {
-        height: 64px;
+        min-height: 64px;
         display: flex;
         flex-direction: row;
         align-items: center;
@@ -73,7 +93,7 @@
     </style>
   </head>
 
-  <body>
+  <body class="mdc-typography">
     <!-- Tool Bar -->
     <header class="mdc-top-app-bar">
       <div class="mdc-top-app-bar__row">
@@ -100,7 +120,13 @@
     <!-- Editor -->
     <div class="editor">
       <!-- Left Work Space -->
-      <div class="workspace"></div>
+      <div class="workspace">
+        <!-- Entity List -->
+        <div class="subWorkspace">
+          <h2 class="workspaceTitle">Entities</h2>
+          <div class="entityList mdc-list"></div>
+        </div>
+      </div>
 
       <canvas id="mainCanvas" class="mainCanvas"></canvas>
 
