@@ -1,14 +1,14 @@
 import { Entity } from "ecsy/Entity";
-import { EditorUIContext } from "./EditorContext";
+import { editorUIContext } from "./EditorContext";
 
 export const updateEntityList = (entities: Array<Entity>) => {
-  if (!EditorUIContext.entityLists) {
+  if (!editorUIContext.entityLists) {
     return;
   }
 
   // Traverse all entityLists.
-  for (let i = 0; i < EditorUIContext.entityLists.length; i++) {
-    const entityList = EditorUIContext.entityLists[i];
+  for (let i = 0; i < editorUIContext.entityLists.length; i++) {
+    const entityList = editorUIContext.entityLists[i];
     // Remove all children.
     while (entityList.firstChild) {
       entityList.removeChild(entityList.firstChild);

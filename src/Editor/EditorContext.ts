@@ -9,11 +9,11 @@ export interface IEditorUIContext {
   entityLists: HTMLCollectionOf<HTMLDivElement> | null;
 }
 
-export const EditorRenderContext: IEditorRenderContext = {
+export const editorRenderContext: IEditorRenderContext = {
   mainCanvas: null,
   mainCamera: null,
 };
 
-export const EditorUIContext: IEditorUIContext = {
+export const editorUIContext: IEditorUIContext = {
   entityLists: null,
 };

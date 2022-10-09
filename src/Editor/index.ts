@@ -1,5 +1,5 @@
 import { mainInit, mainWorld } from "../Core";
-import { EditorRenderContext, EditorUIContext } from "./EditorContext";
+import { editorRenderContext, editorUIContext } from "./EditorContext";
 import { editorInitialization } from "./EditorInitialization";
 import { updateEntityList } from "./EditorUIHandler";
 
@@ -21,11 +21,11 @@ const main = () => {
 
 const onResize = () => {
   // Resize mainCanvas.
-  if (EditorRenderContext.mainCanvas) {
-    EditorRenderContext.mainCanvas.width =
-      EditorRenderContext.mainCanvas.clientWidth;
-    EditorRenderContext.mainCanvas.height =
-      EditorRenderContext.mainCanvas.clientHeight;
+  if (editorRenderContext.mainCanvas) {
+    editorRenderContext.mainCanvas.width =
+      editorRenderContext.mainCanvas.clientWidth;
+    editorRenderContext.mainCanvas.height =
+      editorRenderContext.mainCanvas.clientHeight;
   }
 };
 
