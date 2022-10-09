@@ -26,11 +26,11 @@ export class Canvas2DRenderer extends System {
   execute(delta: number, time: number): void {
     // Check if main camera exists.
     if (this.queries.mainCamera.results.length === 0) {
-      console.warn("Main camera not found.");
+      throw new Error("Main camera not found.");
     }
     // Check if there's more than one main camera.
     else if (this.queries.mainCamera.results.length > 1) {
-      console.warn("More than one main camera found.");
+      throw new Error("More than one main camera found.");
     }
   }
 }
