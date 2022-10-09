@@ -1,7 +1,7 @@
 import { Component, ComponentSchema } from "ecsy/Component";
 import { Types } from "ecsy/Types";
 
-enum BackgroundType {
+export enum BackgroundType {
   Color = 0,
   Texture = 1,
 }

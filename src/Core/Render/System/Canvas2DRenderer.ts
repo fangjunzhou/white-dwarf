@@ -3,6 +3,9 @@ import { TransformData2D } from "../../Locomotion/DataComponent/TransformData2D"
 import { CameraData2D } from "../DataComponent/CameraData2D";
 import { MainCameraTag } from "../TagComponent/MainCameraTag";
 
+/**
+ * Base class for canvas renderers.
+ */
 export class Canvas2DRenderer extends System {
   static queries: SystemQueries = {
     mainCamera: {
@@ -21,6 +24,13 @@ export class Canvas2DRenderer extends System {
   }
 
   execute(delta: number, time: number): void {
-    // TODO: Render 2D Canvas.
+    // Check if main camera exists.
+    if (this.queries.mainCamera.results.length === 0) {
+      console.warn("Main camera not found.");
+    }
+    // Check if there's more than one main camera.
+    else if (this.queries.mainCamera.results.length > 1) {
+      console.warn("More than one main camera found.");
+    }
   }
 }
