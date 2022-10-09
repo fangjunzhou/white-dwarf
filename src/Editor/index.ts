@@ -19,7 +19,18 @@ const updateEntityList = (entities: Array<Entity>) => {
     for (let j = 0; j < entities.length; j++) {
       const entity = entities[j];
       const entityDiv = document.createElement("div");
-      entityDiv.innerText = `Entity ${entity.id}`;
+
+      // Add entity name.
+      const entityName = document.createElement("span");
+      entityName.innerText = entity.name === "" ? "Entity" : entity.name;
+      entityDiv.appendChild(entityName);
+
+      // Add entity id.
+      const entityId = document.createElement("span");
+      entityId.innerText = entity.id.toString();
+      entityDiv.appendChild(entityId);
+
+      entityDiv.className = "entityListItem";
       entityList.appendChild(entityDiv);
       // TODO: Add select behavior.
     }
