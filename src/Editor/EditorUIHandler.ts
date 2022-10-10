@@ -1,5 +1,5 @@
 import { Entity } from "ecsy/Entity";
-import { editorUIContext } from "./EditorContext";
+import { editorEventContext, editorUIContext } from "./EditorContext";
 
 export const updateEntityList = (entities: Array<Entity>) => {
   if (!editorUIContext.entityLists) {
@@ -28,9 +28,24 @@ export const updateEntityList = (entities: Array<Entity>) => {
       entityId.innerText = entity.id.toString();
       entityDiv.appendChild(entityId);
 
+      // Set hover style.
+      entityDiv.style.cursor = "pointer";
+
+      // Add entity select button.
       entityDiv.className = "entityListItem";
       entityList.appendChild(entityDiv);
-      // TODO: Add select behavior.
+
+      // Add select behavior.
+      entityDiv.onclick = () => {
+        // Invoke all onEntitySelected callbacks.
+        editorEventContext.onEntitySelected.forEach((callback) => {
+          callback(entity);
+        });
+      };
     }
   }
+};
+
+export const updateEntityInspector = (entity: Entity) => {
+  console.log(`Entity selected: ${entity.name} (${entity.id})`);
 };

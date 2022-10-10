@@ -22,6 +22,9 @@ export const editorInitialization = () => {
   editorUIContext.entityLists = document.getElementsByClassName(
     "entityList"
   ) as HTMLCollectionOf<HTMLDivElement>;
+  editorUIContext.entityInspector = document.getElementsByClassName(
+    "entityInspector"
+  ) as HTMLCollectionOf<HTMLDivElement>;
 
   // Register Locomotion Components.
   locomotionComponentRegister(mainWorld);
