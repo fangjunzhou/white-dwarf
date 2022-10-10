@@ -83,7 +83,11 @@ export class Canvas2DImageRenderer extends Canvas2DRenderer {
         finalTransform[6],
         finalTransform[7]
       );
+
       this.canvasContext.drawImage(imageRenderData.img, 0, 0);
+
+      // Reset the transform.
+      this.canvasContext.setTransform(1, 0, 0, 1, 0, 0);
     });
   }
 }
