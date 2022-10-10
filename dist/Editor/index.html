@@ -77,13 +77,22 @@
         flex-direction: column;
         margin: 20px;
       }
-      .entityList {
+      .workspaceList {
         flex-grow: 1;
         overflow: auto;
       }
       .entityListItem {
         display: flex;
         flex-direction: row;
+        justify-content: space-between;
+        margin-left: 20px;
+        margin-right: 20px;
+        margin-top: 10px;
+        margin-bottom: 10px;
+      }
+      .componentListItem {
+        display: flex;
+        flex-direction: column;
         justify-content: space-between;
         margin-left: 20px;
         margin-right: 20px;
@@ -132,7 +141,7 @@
         <!-- Entity List -->
         <div class="subWorkspace">
           <h2 class="workspaceTitle">Entities</h2>
-          <div class="entityList mdc-list"></div>
+          <div class="entityList workspaceList mdc-list"></div>
         </div>
       </div>
 
@@ -143,7 +152,7 @@
         <!-- Entity Inspector -->
         <div class="subWorkspace">
           <h2 class="workspaceTitle">Inspector</h2>
-          <div class="entityInspector mdc-list"></div>
+          <div class="entityInspector workspaceList mdc-list"></div>
         </div>
       </div>
     </div>
