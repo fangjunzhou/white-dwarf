@@ -12,6 +12,8 @@ import { CameraTag } from "../Core/Render/TagComponent/CameraTag";
 import { MainCameraTag } from "../Core/Render/TagComponent/MainCameraTag";
 import { Vector2 } from "../Mathematics/Vector2";
 import { editorRenderContext, editorUIContext } from "./EditorContext";
+import { CamDragSystem } from "./System/CamDragSystem";
+import { EditorSceneCamTag } from "./TagComponent/EditorSceneCamTag";
 
 export const editorInitialization = () => {
   editorRenderContext.mainCanvas = document.getElementById(
@@ -29,6 +31,13 @@ export const editorInitialization = () => {
   // Register Render Systems.
   new RenderSystemRegister(editorRenderContext.mainCanvas).register(mainWorld);
 
+  // Register Editor Tag Components.
+  mainWorld.registerComponent(EditorSceneCamTag);
+  // Register Editor System.
+  mainWorld.registerSystem(CamDragSystem, {
+    mainCanvas: editorRenderContext.mainCanvas,
+  });
+
   // Setup scene camera.
   setupSceneCamera();
 };
@@ -37,6 +46,7 @@ const setupSceneCamera = () => {
   // Add a editor scene camera.
   editorRenderContext.mainCamera = mainWorld.createEntity("EditorSceneCamera");
   editorRenderContext.mainCamera
+    .addComponent(EditorSceneCamTag)
     .addComponent(CameraTag)
     .addComponent(MainCameraTag)
     .addComponent(CameraData2D, {
@@ -44,21 +54,28 @@ const setupSceneCamera = () => {
       backgroundColor: "#000000",
     })
     .addComponent(TransformData2D, {
-      position: new Vector2(200, 200),
+      position: new Vector2(0, 0),
       scale: new Vector2(1, 1),
     });
 
   // Add a image entity.
-  const imageEntity = mainWorld.createEntity("ImageEntity");
-  let imageTarget = new Image();
-  imageTarget.src = "https://picsum.photos/200";
-  imageEntity
-    .addComponent(TransformData2D, {
-      position: new Vector2(200, 200),
-      scale: new Vector2(1, 1),
-    })
-    .addComponent(ImageRenderData2D, {
-      img: imageTarget,
-      imageCenter: new Vector2(100, 100),
-    });
+  for (let i = 0; i < 5; i++) {
+    const imageEntity = mainWorld.createEntity();
+    let imageTarget = new Image();
+    imageTarget.src = "https://picsum.photos/200";
+    // Random position.
+    const position = new Vector2(
+      Math.random() * 1000 - 500,
+      Math.random() * 1000 - 500
+    );
+    imageEntity
+      .addComponent(TransformData2D, {
+        position: position,
+        scale: new Vector2(1, 1),
+      })
+      .addComponent(ImageRenderData2D, {
+        img: imageTarget,
+        imageCenter: new Vector2(100, 100),
+      });
+  }
 };

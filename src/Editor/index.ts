@@ -6,6 +6,9 @@ import { updateEntityList } from "./EditorUIHandler";
 const main = () => {
   console.log("Editor Started");
 
+  // Disable right click menu.
+  document.addEventListener("contextmenu", (event) => event.preventDefault());
+
   // Register main world entity change.
   mainWorld.onEntityChanged.push(updateEntityList);
 
