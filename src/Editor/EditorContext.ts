@@ -7,6 +7,11 @@ export interface IEditorRenderContext {
 
 export interface IEditorUIContext {
   entityLists: HTMLCollectionOf<HTMLDivElement> | null;
+  entityInspector: HTMLCollectionOf<HTMLDivElement> | null;
+}
+
+export interface IEditorEventContext {
+  onEntitySelected: Array<(entity: Entity) => void>;
 }
 
 export const editorRenderContext: IEditorRenderContext = {
@@ -16,4 +21,9 @@ export const editorRenderContext: IEditorRenderContext = {
 
 export const editorUIContext: IEditorUIContext = {
   entityLists: null,
+  entityInspector: null,
+};
+
+export const editorEventContext: IEditorEventContext = {
+  onEntitySelected: [],
 };
