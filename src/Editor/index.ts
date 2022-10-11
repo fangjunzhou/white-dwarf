@@ -1,8 +1,8 @@
 import { mainInit, mainWorld } from "../Core";
 import { editorEventContext, editorRenderContext } from "./EditorContext";
 import { editorInitialization } from "./EditorInitialization";
-import { updateEntityInspector } from "./EditorInspectorManager";
 import { updateEntityList } from "./EditorEntityListManager";
+import { EditorInspectorSystem } from "./System/EditorInspectorSystem";
 
 const main = () => {
   console.log("Editor Started");
@@ -13,7 +13,9 @@ const main = () => {
   // Register main world entity change.
   mainWorld.onEntityChanged.push(updateEntityList);
   // Register entity selected event.
-  editorEventContext.onEntitySelected.push(updateEntityInspector);
+  editorEventContext.onEntitySelected.push(
+    EditorInspectorSystem.updateEntityInspector
+  );
 
   // Call editor initialization.
   editorInitialization();

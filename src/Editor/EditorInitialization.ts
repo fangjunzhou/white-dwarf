@@ -13,6 +13,7 @@ import { MainCameraTag } from "../Core/Render/TagComponent/MainCameraTag";
 import { Vector2 } from "../Mathematics/Vector2";
 import { editorRenderContext, editorUIContext } from "./EditorContext";
 import { CamDragSystem } from "./System/CamDragSystem";
+import { EditorInspectorSystem } from "./System/EditorInspectorSystem";
 import { EditorSceneCamTag } from "./TagComponent/EditorSceneCamTag";
 
 export const editorInitialization = () => {
@@ -37,9 +38,11 @@ export const editorInitialization = () => {
   // Register Editor Tag Components.
   mainWorld.registerComponent(EditorSceneCamTag);
   // Register Editor System.
-  mainWorld.registerSystem(CamDragSystem, {
-    mainCanvas: editorRenderContext.mainCanvas,
-  });
+  mainWorld
+    .registerSystem(CamDragSystem, {
+      mainCanvas: editorRenderContext.mainCanvas,
+    })
+    .registerSystem(EditorInspectorSystem);
 
   // Setup scene camera.
   setupSceneCamera();
