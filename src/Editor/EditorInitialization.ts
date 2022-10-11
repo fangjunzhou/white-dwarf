@@ -1,4 +1,5 @@
-import { mainWorld } from "../Core";
+import { mainWorld, resetWorld } from "../Core";
+import { coreSetup } from "../Core/CoreSetup";
 import { TransformData2D } from "../Core/Locomotion/DataComponent/TransformData2D";
 import { locomotionComponentRegister } from "../Core/Locomotion/LocomotionComponentRegister";
 import {
@@ -11,8 +12,14 @@ import { RenderSystemRegister } from "../Core/Render/RenderSystemRegister";
 import { CameraTag } from "../Core/Render/TagComponent/CameraTag";
 import { MainCameraTag } from "../Core/Render/TagComponent/MainCameraTag";
 import { Vector2 } from "../Mathematics/Vector2";
-import { editorRenderContext, editorUIContext } from "./EditorContext";
-import { CamDragSystem } from "./System/CamDragSystem";
+import { editorComponentRegister } from "./EditorComponentRegister";
+import {
+  editorEventContext,
+  editorRenderContext,
+  editorUIContext,
+} from "./EditorContext";
+import { updateEntityList } from "./EditorEntityListManager";
+import { EditorSystemRegister } from "./EditorSystemRegister";
 import { EditorInspectorSystem } from "./System/EditorInspectorSystem";
 import { EditorSceneCamTag } from "./TagComponent/EditorSceneCamTag";
 
@@ -26,29 +33,30 @@ export const editorInitialization = () => {
   editorUIContext.entityInspector = document.getElementsByClassName(
     "entityInspector"
   ) as HTMLCollectionOf<HTMLDivElement>;
+  editorRenderContext.playButton = document.getElementById(
+    "playButton"
+  ) as HTMLButtonElement;
 
-  // Register Locomotion Components.
-  locomotionComponentRegister(mainWorld);
+  // Register main world entity change.
+  mainWorld.onEntityChanged.push(updateEntityList);
+  // Register entity selected event.
+  editorEventContext.onEntitySelected.push(
+    EditorInspectorSystem.updateEntityInspector
+  );
 
-  // Register Render Components.
-  renderComponentRegister(mainWorld);
-  // Register Render Systems.
-  new RenderSystemRegister(editorRenderContext.mainCanvas).register(mainWorld);
+  // Core setup.
+  coreSetup();
 
-  // Register Editor Tag Components.
-  mainWorld.registerComponent(EditorSceneCamTag);
+  // Register Editor Components.
+  editorComponentRegister(mainWorld);
   // Register Editor System.
-  mainWorld
-    .registerSystem(CamDragSystem, {
-      mainCanvas: editorRenderContext.mainCanvas,
-    })
-    .registerSystem(EditorInspectorSystem);
+  new EditorSystemRegister(editorRenderContext.mainCanvas).register(mainWorld);
 
-  // Setup scene camera.
-  setupSceneCamera();
+  // Setup play button.
+  setupPlayButton();
 };
 
-const setupSceneCamera = () => {
+export const setupEditorSceneCamera = () => {
   // Add a editor scene camera.
   editorRenderContext.mainCamera = mainWorld.createEntity("EditorSceneCamera");
   editorRenderContext.mainCamera
@@ -85,4 +93,23 @@ const setupSceneCamera = () => {
         imageCenter: new Vector2(100, 100),
       });
   }
+};
+
+const setupPlayButton = () => {
+  editorRenderContext.playButton?.addEventListener("click", () => {
+    // Create a new world.
+    resetWorld();
+
+    // Register main world entity change.
+    mainWorld.onEntityChanged.push(updateEntityList);
+    // Register entity selected event.
+    editorEventContext.onEntitySelected.push(
+      EditorInspectorSystem.updateEntityInspector
+    );
+    updateEntityList([]);
+    EditorInspectorSystem.updateEntityInspector(null);
+
+    // Setup core.
+    coreSetup();
+  });
 };

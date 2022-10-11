@@ -1,8 +1,9 @@
-import { mainInit, mainWorld } from "../Core";
-import { editorEventContext, editorRenderContext } from "./EditorContext";
-import { editorInitialization } from "./EditorInitialization";
-import { updateEntityList } from "./EditorEntityListManager";
-import { EditorInspectorSystem } from "./System/EditorInspectorSystem";
+import { mainInit } from "../Core";
+import { editorRenderContext } from "./EditorContext";
+import {
+  editorInitialization,
+  setupEditorSceneCamera,
+} from "./EditorInitialization";
 
 const main = () => {
   console.log("Editor Started");
@@ -10,15 +11,11 @@ const main = () => {
   // Disable right click menu.
   document.addEventListener("contextmenu", (event) => event.preventDefault());
 
-  // Register main world entity change.
-  mainWorld.onEntityChanged.push(updateEntityList);
-  // Register entity selected event.
-  editorEventContext.onEntitySelected.push(
-    EditorInspectorSystem.updateEntityInspector
-  );
-
   // Call editor initialization.
   editorInitialization();
+
+  // Setup scene camera.
+  setupEditorSceneCamera();
 
   // White Dwarf Engine initialization.
   mainInit();

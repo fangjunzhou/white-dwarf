@@ -3,6 +3,7 @@ import { Entity } from "ecsy/Entity";
 export interface IEditorRenderContext {
   mainCanvas: HTMLCanvasElement | null;
   mainCamera: Entity | null;
+  playButton: HTMLButtonElement | null;
 }
 
 export interface IEditorUIContext {
@@ -17,6 +18,7 @@ export interface IEditorEventContext {
 export const editorRenderContext: IEditorRenderContext = {
   mainCanvas: null,
   mainCamera: null,
+  playButton: null,
 };
 
 export const editorUIContext: IEditorUIContext = {

@@ -8,22 +8,29 @@ export class EditorInspectorSystem extends System {
 
   init(attributes?: Attributes | undefined): void {}
 
-  execute(delta: number, time: number): void {
-    // if (EditorInspectorSystem.inspectEntity) {
-    //   EditorInspectorSystem.updateEntityInspector(
-    //     EditorInspectorSystem.inspectEntity
-    //   );
-    // }
-  }
+  execute(delta: number, time: number): void {}
 
-  static updateEntityInspector = (entity: Entity) => {
+  static updateEntityInspector = (entity: Entity | null) => {
     EditorInspectorSystem.inspectEntity = entity;
 
     EditorInspectorSystem.displayEntityInspector(entity);
   };
 
-  static displayEntityInspector = (entity: Entity) => {
+  static displayEntityInspector = (entity: Entity | null) => {
     if (!editorUIContext.entityInspector) {
+      return;
+    }
+
+    if (entity === null) {
+      // Traverse all entityInspectors.
+      for (let i = 0; i < editorUIContext.entityInspector.length; i++) {
+        const entityInspector = editorUIContext.entityInspector[i];
+        // Remove all children.
+        while (entityInspector.firstChild) {
+          entityInspector.removeChild(entityInspector.firstChild);
+        }
+      }
+
       return;
     }
 
@@ -77,8 +84,11 @@ export class EditorInspectorSystem extends System {
 
         // When component data is changed.
         component.onComponentChanged = (component) => {
-          componentData.textContent =
-            EditorInspectorSystem.getComponentString(component);
+          // Check if the componentData box is focused.
+          if (document.activeElement !== componentData) {
+            componentData.textContent =
+              EditorInspectorSystem.getComponentString(component);
+          }
         };
 
         // Set css class.
