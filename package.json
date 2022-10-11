@@ -11,7 +11,8 @@
   "scripts": {
     "build-core": "node buildCore.js",
     "build-editor": "node buildEditor.js",
-    "start-editor": "esbuild --bundle --sourcemap src/Editor/index.ts --outfile=dist/Editor/index.js --servedir=dist/Editor"
+    "start-editor": "esbuild --bundle --sourcemap src/Editor/index.ts --outfile=dist/Editor/index.js --servedir=dist/Editor",
+    "watch-editor": "esbuild --bundle --sourcemap src/Editor/index.ts --outfile=dist/Editor/index.js --watch"
   },
   "repository": {
     "type": "git",
