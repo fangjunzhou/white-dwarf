@@ -61,6 +61,7 @@ const setupSceneCamera = () => {
       scale: new Vector2(1, 1),
     });
 
+  // TODO: Remove debug image here.
   // Add a image entity.
   for (let i = 0; i < 5; i++) {
     const imageEntity = mainWorld.createEntity();
