@@ -13,7 +13,12 @@ export class Canvas2DImageRenderer extends Canvas2DRenderer {
   };
 
   override execute(delta: number, time: number): void {
-    super.execute(delta, time);
+    try {
+      super.execute(delta, time);
+    } catch (error) {
+      console.warn(error);
+      return;
+    }
 
     // Get the camera transform.
     const cameraTransform = this.queries.mainCamera.results[0].getComponent(
