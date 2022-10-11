@@ -1,15 +1,27 @@
 import { Component, ComponentSchema } from "ecsy/Component";
 import { Entity } from "ecsy/Entity";
 import { Attributes, System } from "ecsy/System";
+import { Types } from "ecsy/Types";
 import { IComponent } from "../../Core/ComponentRegistry";
+import { TransformData2D } from "../../Core/Locomotion/DataComponent/TransformData2D";
 import { editorUIContext } from "../EditorContext";
 
 export class EditorInspectorSystem extends System {
   static inspectEntity: Entity | null = null;
 
-  init(attributes?: Attributes | undefined): void {}
+  mainCanvas: HTMLCanvasElement | null = null;
+  canvasContext: CanvasRenderingContext2D | null = null;
 
-  execute(delta: number, time: number): void {}
+  init(attributes?: Attributes | undefined): void {
+    this.mainCanvas = attributes?.mainCanvas as HTMLCanvasElement;
+    this.canvasContext = this.mainCanvas?.getContext("2d");
+  }
+
+  execute(delta: number, time: number): void {
+    // Check if the inspectEntity has Transform component.
+    if (EditorInspectorSystem.inspectEntity?.hasComponent(TransformData2D)) {
+    }
+  }
 
   static updateEntityInspector = (entity: Entity | null) => {
     EditorInspectorSystem.inspectEntity = entity;
@@ -112,9 +124,16 @@ export class EditorInspectorSystem extends System {
       const componentAddDiv = document.createElement("div");
       componentAddDiv.className = "componentListItem";
 
-      const componentNameInput = document.createElement("input");
-      componentNameInput.type = "text";
-      componentNameInput.placeholder = "Component Name";
+      const componentNameInput = document.createElement("select");
+      const componentList = IComponent.getImplementations();
+      const componentNames = componentList.map((component) => component.name);
+      for (let j = 0; j < componentNames.length; j++) {
+        const componentName = componentNames[j];
+        const option = document.createElement("option");
+        option.value = componentName;
+        option.innerText = componentName;
+        componentNameInput.appendChild(option);
+      }
       componentAddDiv.appendChild(componentNameInput);
 
       // Add "Add Component" button.
@@ -122,8 +141,8 @@ export class EditorInspectorSystem extends System {
       addComponentButton.style.width = "100%";
       addComponentButton.innerText = "Add Component";
       addComponentButton.onclick = () => {
-        // TODO: Add component.
-        let componentList = IComponent.getImplementations();
+        // Add component.
+        const componentList = IComponent.getImplementations();
         console.log(componentNameInput.value);
         // Get the component with the name.
         let component = componentList.find(
@@ -149,7 +168,10 @@ export class EditorInspectorSystem extends System {
 
     const componentDataContent: { [key: string]: any } = {};
     Object.keys(component).forEach((key) => {
-      if (Object.keys(componentSchema).includes(key)) {
+      if (
+        Object.keys(componentSchema).includes(key) &&
+        componentSchema[key].type !== Types.Ref
+      ) {
         componentDataContent[key] = component[key as keyof typeof component];
       }
     });
