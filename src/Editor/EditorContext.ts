@@ -3,12 +3,15 @@ import { Entity } from "ecsy/Entity";
 export interface IEditorRenderContext {
   mainCanvas: HTMLCanvasElement | null;
   mainCamera: Entity | null;
-  playButton: HTMLButtonElement | null;
 }
 
 export interface IEditorUIContext {
   entityLists: HTMLCollectionOf<HTMLDivElement> | null;
   entityInspector: HTMLCollectionOf<HTMLDivElement> | null;
+
+  playButton: HTMLButtonElement | null;
+
+  createEntityButton: HTMLButtonElement | null;
 }
 
 export interface IEditorEventContext {
@@ -18,12 +21,13 @@ export interface IEditorEventContext {
 export const editorRenderContext: IEditorRenderContext = {
   mainCanvas: null,
   mainCamera: null,
-  playButton: null,
 };
 
 export const editorUIContext: IEditorUIContext = {
   entityLists: null,
   entityInspector: null,
+  playButton: null,
+  createEntityButton: null,
 };
 
 export const editorEventContext: IEditorEventContext = {

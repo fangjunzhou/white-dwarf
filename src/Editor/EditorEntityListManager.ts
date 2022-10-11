@@ -1,5 +1,6 @@
 import { Component, ComponentSchema } from "ecsy/Component";
 import { Entity } from "ecsy/Entity";
+import { mainWorld } from "../Core";
 import { editorEventContext, editorUIContext } from "./EditorContext";
 
 export const updateEntityList = (entities: Array<Entity>) => {
@@ -45,4 +46,9 @@ export const updateEntityList = (entities: Array<Entity>) => {
       };
     }
   }
+};
+
+export const addNewEntity = (entityName?: string) => {
+  // Add new entity to entity list.
+  mainWorld.createEntity(entityName);
 };

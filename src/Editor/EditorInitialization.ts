@@ -14,7 +14,7 @@ import {
   editorRenderContext,
   editorUIContext,
 } from "./EditorContext";
-import { updateEntityList } from "./EditorEntityListManager";
+import { addNewEntity, updateEntityList } from "./EditorEntityListManager";
 import { EditorSystemRegister } from "./EditorSystemRegister";
 import { EditorInspectorSystem } from "./System/EditorInspectorSystem";
 import { EditorSceneCamTag } from "./TagComponent/EditorSceneCamTag";
@@ -29,8 +29,12 @@ export const editorInitialization = () => {
   editorUIContext.entityInspector = document.getElementsByClassName(
     "entityInspector"
   ) as HTMLCollectionOf<HTMLDivElement>;
-  editorRenderContext.playButton = document.getElementById(
+  editorUIContext.playButton = document.getElementById(
     "playButton"
+  ) as HTMLButtonElement;
+
+  editorUIContext.createEntityButton = document.getElementById(
+    "createEntityButton"
   ) as HTMLButtonElement;
 
   // Disable right click for main canvas.
@@ -51,6 +55,9 @@ export const editorInitialization = () => {
 
   // Setup play button.
   setupPlayButton();
+
+  // Setup create entity button.
+  setupCreateEntityButton();
 };
 
 export const setupEditorSceneCamera = () => {
@@ -93,7 +100,7 @@ export const setupEditorSceneCamera = () => {
 };
 
 const setupPlayButton = () => {
-  editorRenderContext.playButton?.addEventListener("click", () => {
+  editorUIContext.playButton?.addEventListener("click", () => {
     // Create a new world.
     resetWorld();
 
@@ -108,5 +115,11 @@ const setupPlayButton = () => {
 
     // Setup core.
     coreSetup();
+  });
+};
+
+const setupCreateEntityButton = () => {
+  editorUIContext.createEntityButton?.addEventListener("click", () => {
+    addNewEntity();
   });
 };
