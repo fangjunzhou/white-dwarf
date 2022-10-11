@@ -8,9 +8,6 @@ import {
 const main = () => {
   console.log("Editor Started");
 
-  // Disable right click menu.
-  document.addEventListener("contextmenu", (event) => event.preventDefault());
-
   // Call editor initialization.
   editorInitialization();
 

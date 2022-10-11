@@ -33,6 +33,9 @@ export const editorInitialization = () => {
     "playButton"
   ) as HTMLButtonElement;
 
+  // Disable right click for main canvas.
+  editorRenderContext.mainCanvas.oncontextmenu = () => false;
+
   // Register main world entity change.
   mainWorld.onEntityChanged.push(updateEntityList);
   // Register entity selected event.
