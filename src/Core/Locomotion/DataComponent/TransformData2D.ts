@@ -1,7 +1,9 @@
 import { Component, ComponentSchema } from "ecsy/Component";
 import { Types } from "ecsy/Types";
 import { Vector2, Vector2Type } from "../../../Mathematics/Vector2";
+import { IComponent } from "../../ComponentRegistry";
 
+@IComponent.register
 export class TransformData2D extends Component<TransformData2D> {
   static schema: ComponentSchema = {
     position: {

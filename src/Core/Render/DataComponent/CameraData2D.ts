@@ -1,11 +1,13 @@
 import { Component, ComponentSchema } from "ecsy/Component";
 import { Types } from "ecsy/Types";
+import { IComponent } from "../../ComponentRegistry";
 
 export enum BackgroundType {
   Color = 0,
   Texture = 1,
 }
 
+@IComponent.register
 export class CameraData2D extends Component<CameraData2D> {
   static schema: ComponentSchema = {
     backgroundType: {

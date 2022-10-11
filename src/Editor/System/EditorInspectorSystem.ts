@@ -60,7 +60,6 @@ export class EditorInspectorSystem extends System {
         // Add component data.
         const componentData = document.createElement("span");
         componentData.className = "textarea";
-        componentData.role = "textbox";
         componentData.contentEditable = "true";
         componentData.textContent =
           EditorInspectorSystem.getComponentString(component);

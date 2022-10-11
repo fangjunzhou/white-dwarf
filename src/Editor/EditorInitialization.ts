@@ -1,18 +1,14 @@
 import { mainWorld, resetWorld } from "../Core";
 import { coreSetup } from "../Core/CoreSetup";
 import { TransformData2D } from "../Core/Locomotion/DataComponent/TransformData2D";
-import { locomotionComponentRegister } from "../Core/Locomotion/LocomotionComponentRegister";
 import {
   BackgroundType,
   CameraData2D,
 } from "../Core/Render/DataComponent/CameraData2D";
 import { ImageRenderData2D } from "../Core/Render/DataComponent/ImageRenderData2D";
-import { renderComponentRegister } from "../Core/Render/RenderComponentRegister";
-import { RenderSystemRegister } from "../Core/Render/RenderSystemRegister";
 import { CameraTag } from "../Core/Render/TagComponent/CameraTag";
 import { MainCameraTag } from "../Core/Render/TagComponent/MainCameraTag";
 import { Vector2 } from "../Mathematics/Vector2";
-import { editorComponentRegister } from "./EditorComponentRegister";
 import {
   editorEventContext,
   editorRenderContext,
@@ -47,8 +43,6 @@ export const editorInitialization = () => {
   // Core setup.
   coreSetup();
 
-  // Register Editor Components.
-  editorComponentRegister(mainWorld);
   // Register Editor System.
   new EditorSystemRegister(editorRenderContext.mainCanvas).register(mainWorld);
 
