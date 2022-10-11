@@ -1,7 +1,8 @@
 import { mainInit, mainWorld } from "../Core";
 import { editorEventContext, editorRenderContext } from "./EditorContext";
 import { editorInitialization } from "./EditorInitialization";
-import { updateEntityInspector, updateEntityList } from "./EditorUIHandler";
+import { updateEntityInspector } from "./EditorInspectorManager";
+import { updateEntityList } from "./EditorEntityListManager";
 
 const main = () => {
   console.log("Editor Started");
