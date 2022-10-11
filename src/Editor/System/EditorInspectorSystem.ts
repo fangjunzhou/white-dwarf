@@ -1,4 +1,4 @@
-import { ComponentSchema } from "ecsy/Component";
+import { Component, ComponentSchema } from "ecsy/Component";
 import { Entity } from "ecsy/Entity";
 import { Attributes, System } from "ecsy/System";
 import { editorUIContext } from "../EditorContext";
@@ -44,17 +44,6 @@ export class EditorInspectorSystem extends System {
         const componentIndex = componentIndices[j];
         const component = components[componentIndex];
 
-        const componentSchema = Object.getPrototypeOf(component).constructor
-          .schema as ComponentSchema;
-
-        const componentDataContent: { [key: string]: any } = {};
-        Object.keys(component).forEach((key) => {
-          if (Object.keys(componentSchema).includes(key)) {
-            componentDataContent[key] =
-              component[key as keyof typeof component];
-          }
-        });
-
         // Add component name.
         const componentDiv = document.createElement("div");
         const componentTitle = document.createElement("span");
@@ -66,11 +55,8 @@ export class EditorInspectorSystem extends System {
         componentData.className = "textarea";
         componentData.role = "textbox";
         componentData.contentEditable = "true";
-        componentData.textContent = JSON.stringify(
-          componentDataContent,
-          null,
-          " "
-        );
+        componentData.textContent =
+          EditorInspectorSystem.getComponentString(component);
         componentData.style.whiteSpace = "pre-wrap";
         componentData.style.resize = "none";
         componentDiv.appendChild(componentData);
@@ -89,6 +75,12 @@ export class EditorInspectorSystem extends System {
           }
         });
 
+        // When component data is changed.
+        component.onComponentChanged = (component) => {
+          componentData.textContent =
+            EditorInspectorSystem.getComponentString(component);
+        };
+
         // Set css class.
         componentDiv.className = "componentListItem";
 
@@ -96,5 +88,19 @@ export class EditorInspectorSystem extends System {
         entityInspector.appendChild(componentDiv);
       }
     }
+  };
+
+  private static getComponentString = (component: Component<any>) => {
+    const componentSchema = Object.getPrototypeOf(component).constructor
+      .schema as ComponentSchema;
+
+    const componentDataContent: { [key: string]: any } = {};
+    Object.keys(component).forEach((key) => {
+      if (Object.keys(componentSchema).includes(key)) {
+        componentDataContent[key] = component[key as keyof typeof component];
+      }
+    });
+
+    return JSON.stringify(componentDataContent, null, " ");
   };
 }
