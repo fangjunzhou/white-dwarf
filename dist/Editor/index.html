@@ -115,32 +115,21 @@
         align-items: center;
         justify-content: center;
       }
+
+      .center {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+      }
     </style>
   </head>
 
   <body class="mdc-typography">
     <!-- Tool Bar -->
-    <header class="mdc-top-app-bar">
-      <div class="mdc-top-app-bar__row">
-        <section
-          class="mdc-top-app-bar__section mdc-top-app-bar__section--align-start"
-        >
-          <span class="mdc-top-app-bar__title">White Dwarf Editor</span>
-        </section>
-        <section
-          class="mdc-top-app-bar__section mdc-top-app-bar__section--align-end"
-          role="toolbar"
-        >
-          <button
-            class="material-icons mdc-top-app-bar__action-item mdc-icon-button"
-            aria-label="Options"
-          >
-            more_vert
-          </button>
-        </section>
-      </div>
-    </header>
-    <div class="toolBar"></div>
+    <div class="toolBar">
+      <span class="mdc-top-app-bar__title">White Dwarf Editor</span>
+    </div>
 
     <!-- Editor -->
     <div class="editor">
@@ -167,8 +156,8 @@
 
     <!-- Footer -->
     <div class="footer">
-      <button class="mdc-button mdc-button--raised toolBarButton">
-        <span class="mdc-button__label" id="playButton">Play</span>
+      <button class="toolBarButton" id="playButton">
+        Play (Not Implemented)
       </button>
     </div>
   </body>

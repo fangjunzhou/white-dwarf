@@ -1,6 +1,7 @@
 import { Component, ComponentSchema } from "ecsy/Component";
 import { Entity } from "ecsy/Entity";
 import { Attributes, System } from "ecsy/System";
+import { IComponent } from "../../Core/ComponentRegistry";
 import { editorUIContext } from "../EditorContext";
 
 export class EditorInspectorSystem extends System {
@@ -67,6 +68,17 @@ export class EditorInspectorSystem extends System {
         componentData.style.resize = "none";
         componentDiv.appendChild(componentData);
 
+        // Add a remove button.
+        const removeButton = document.createElement("button");
+        removeButton.innerText = "Remove";
+        removeButton.onclick = () => {
+          // Remove component.
+          entity.removeComponent(Object.getPrototypeOf(component).constructor);
+          // Update entity inspector.
+          EditorInspectorSystem.updateEntityInspector(entity);
+        };
+        componentDiv.appendChild(removeButton);
+
         // When component data is changed.
         componentData.addEventListener("input", (event) => {
           const target = event.target as HTMLTextAreaElement;
@@ -96,6 +108,38 @@ export class EditorInspectorSystem extends System {
         // Add component to entityInspector.
         entityInspector.appendChild(componentDiv);
       }
+
+      const componentAddDiv = document.createElement("div");
+      componentAddDiv.className = "componentListItem";
+
+      const componentNameInput = document.createElement("input");
+      componentNameInput.type = "text";
+      componentNameInput.placeholder = "Component Name";
+      componentAddDiv.appendChild(componentNameInput);
+
+      // Add "Add Component" button.
+      const addComponentButton = document.createElement("button");
+      addComponentButton.style.width = "100%";
+      addComponentButton.innerText = "Add Component";
+      addComponentButton.onclick = () => {
+        // TODO: Add component.
+        let componentList = IComponent.getImplementations();
+        console.log(componentNameInput.value);
+        // Get the component with the name.
+        let component = componentList.find(
+          (component) => component.name === componentNameInput.value
+        );
+        if (component) {
+          // Add component to entity.
+          entity.addComponent(component);
+          EditorInspectorSystem.updateEntityInspector(entity);
+        } else {
+          console.error("Component not found.");
+        }
+      };
+      componentAddDiv.appendChild(addComponentButton);
+
+      entityInspector.appendChild(componentAddDiv);
     }
   };
 

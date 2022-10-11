@@ -2347,6 +2347,13 @@
         componentData.style.whiteSpace = "pre-wrap";
         componentData.style.resize = "none";
         componentDiv.appendChild(componentData);
+        const removeButton = document.createElement("button");
+        removeButton.innerText = "Remove";
+        removeButton.onclick = () => {
+          entity.removeComponent(Object.getPrototypeOf(component).constructor);
+          _EditorInspectorSystem.updateEntityInspector(entity);
+        };
+        componentDiv.appendChild(removeButton);
         componentData.addEventListener("input", (event) => {
           const target = event.target;
           try {
@@ -2367,6 +2374,30 @@
         componentDiv.className = "componentListItem";
         entityInspector.appendChild(componentDiv);
       }
+      const componentAddDiv = document.createElement("div");
+      componentAddDiv.className = "componentListItem";
+      const componentNameInput = document.createElement("input");
+      componentNameInput.type = "text";
+      componentNameInput.placeholder = "Component Name";
+      componentAddDiv.appendChild(componentNameInput);
+      const addComponentButton = document.createElement("button");
+      addComponentButton.style.width = "100%";
+      addComponentButton.innerText = "Add Component";
+      addComponentButton.onclick = () => {
+        let componentList = IComponent.getImplementations();
+        console.log(componentNameInput.value);
+        let component = componentList.find(
+          (component2) => component2.name === componentNameInput.value
+        );
+        if (component) {
+          entity.addComponent(component);
+          _EditorInspectorSystem.updateEntityInspector(entity);
+        } else {
+          console.error("Component not found.");
+        }
+      };
+      componentAddDiv.appendChild(addComponentButton);
+      entityInspector.appendChild(componentAddDiv);
     }
   };
   EditorInspectorSystem.getComponentString = (component) => {
@@ -2414,6 +2445,7 @@
     editorRenderContext.playButton = document.getElementById(
       "playButton"
     );
+    editorRenderContext.mainCanvas.oncontextmenu = () => false;
     mainWorld.onEntityChanged.push(updateEntityList);
     editorEventContext.onEntitySelected.push(
       EditorInspectorSystem.updateEntityInspector
@@ -2465,7 +2497,6 @@
   // src/Editor/index.ts
   var main = () => {
     console.log("Editor Started");
-    document.addEventListener("contextmenu", (event) => event.preventDefault());
     editorInitialization();
     setupEditorSceneCamera();
     mainInit();
