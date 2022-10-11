@@ -11,6 +11,7 @@ export interface IEditorUIContext {
 
   playButton: HTMLButtonElement | null;
 
+  entityNameInput: HTMLInputElement | null;
   createEntityButton: HTMLButtonElement | null;
 }
 
@@ -27,6 +28,7 @@ export const editorUIContext: IEditorUIContext = {
   entityLists: null,
   entityInspector: null,
   playButton: null,
+  entityNameInput: null,
   createEntityButton: null,
 };
 

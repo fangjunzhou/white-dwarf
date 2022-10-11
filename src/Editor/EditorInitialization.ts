@@ -33,6 +33,9 @@ export const editorInitialization = () => {
     "playButton"
   ) as HTMLButtonElement;
 
+  editorUIContext.entityNameInput = document.getElementById(
+    "entityName"
+  ) as HTMLInputElement;
   editorUIContext.createEntityButton = document.getElementById(
     "createEntityButton"
   ) as HTMLButtonElement;
@@ -120,6 +123,11 @@ const setupPlayButton = () => {
 
 const setupCreateEntityButton = () => {
   editorUIContext.createEntityButton?.addEventListener("click", () => {
-    addNewEntity();
+    if (editorUIContext.entityNameInput) {
+      addNewEntity(editorUIContext.entityNameInput.value);
+      editorUIContext.entityNameInput.value = "";
+    } else {
+      addNewEntity();
+    }
   });
 };

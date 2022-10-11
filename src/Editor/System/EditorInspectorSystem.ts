@@ -18,6 +18,7 @@ export class EditorInspectorSystem extends System {
   }
 
   execute(delta: number, time: number): void {
+    // TODO: Draw transform and enable selection here.
     // Check if the inspectEntity has Transform component.
     if (EditorInspectorSystem.inspectEntity?.hasComponent(TransformData2D)) {
     }
@@ -58,6 +59,23 @@ export class EditorInspectorSystem extends System {
       while (entityInspector.firstChild) {
         entityInspector.removeChild(entityInspector.firstChild);
       }
+
+      // Add remove entity button.
+      const entityOperationDiv = document.createElement("div");
+      entityOperationDiv.className = "componentListItem";
+
+      const removeEntityButton = document.createElement("button");
+      removeEntityButton.innerText = "Remove Entity";
+      removeEntityButton.style.width = "100%";
+      removeEntityButton.onclick = () => {
+        // Remove entity.
+        entity.remove();
+        // Update entity inspector.
+        EditorInspectorSystem.updateEntityInspector(null);
+      };
+
+      entityOperationDiv.appendChild(removeEntityButton);
+      entityInspector.appendChild(entityOperationDiv);
 
       // Add components data.
       for (let j = 0; j < componentIndices.length; j++) {
