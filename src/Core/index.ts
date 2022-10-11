@@ -2,9 +2,9 @@ import { World } from "ecsy/World";
 import { ITimeContext } from "./Context/TimeContext";
 
 // Main world to hold all game entities.
-export const mainWorld = new World();
+export let mainWorld = new World();
 // Physics world to hold all physics entities.
-export const physicsWorld = new World();
+export let physicsWorld = new World();
 
 // Time context.
 export const timeContext: ITimeContext = {
@@ -50,4 +50,9 @@ export const mainInit = () => {
 
   // Start async physics update.
   physicsUpdate();
+};
+
+export const resetWorld = () => {
+  mainWorld = new World();
+  physicsWorld = new World();
 };
