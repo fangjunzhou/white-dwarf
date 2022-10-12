@@ -1,4 +1,5 @@
 import { mainWorld, resetWorld } from "../Core";
+import { coreRenderContext } from "../Core/Context/RenderContext";
 import { coreSetup } from "../Core/CoreSetup";
 import { TransformData2D } from "../Core/Locomotion/DataComponent/TransformData2D";
 import {
@@ -9,18 +10,14 @@ import { ImageRenderData2D } from "../Core/Render/DataComponent/ImageRenderData2
 import { CameraTag } from "../Core/Render/TagComponent/CameraTag";
 import { MainCameraTag } from "../Core/Render/TagComponent/MainCameraTag";
 import { Vector2 } from "../Mathematics/Vector2";
-import {
-  editorEventContext,
-  editorRenderContext,
-  editorUIContext,
-} from "./EditorContext";
+import { editorEventContext, editorUIContext } from "./EditorContext";
 import { addNewEntity, updateEntityList } from "./EditorEntityListManager";
 import { EditorSystemRegister } from "./EditorSystemRegister";
 import { EditorInspectorSystem } from "./System/EditorInspectorSystem";
 import { EditorSceneCamTag } from "./TagComponent/EditorSceneCamTag";
 
 export const editorInitialization = () => {
-  editorRenderContext.mainCanvas = document.getElementById(
+  coreRenderContext.mainCanvas = document.getElementById(
     "mainCanvas"
   ) as HTMLCanvasElement;
   editorUIContext.entityLists = document.getElementsByClassName(
@@ -41,7 +38,7 @@ export const editorInitialization = () => {
   ) as HTMLButtonElement;
 
   // Disable right click for main canvas.
-  editorRenderContext.mainCanvas.oncontextmenu = () => false;
+  coreRenderContext.mainCanvas.oncontextmenu = () => false;
 
   // Register main world entity change.
   mainWorld.onEntityChanged.push(updateEntityList);
@@ -54,7 +51,7 @@ export const editorInitialization = () => {
   coreSetup();
 
   // Register Editor System.
-  new EditorSystemRegister(editorRenderContext.mainCanvas).register(mainWorld);
+  new EditorSystemRegister(coreRenderContext.mainCanvas).register(mainWorld);
 
   // Setup editor scene camera.
   setupEditorSceneCamera();
@@ -68,8 +65,8 @@ export const editorInitialization = () => {
 
 export const setupEditorSceneCamera = () => {
   // Add a editor scene camera.
-  editorRenderContext.mainCamera = mainWorld.createEntity("EditorSceneCamera");
-  editorRenderContext.mainCamera
+  coreRenderContext.mainCamera = mainWorld.createEntity("EditorSceneCamera");
+  coreRenderContext.mainCamera
     .addComponent(EditorSceneCamTag)
     .addComponent(CameraTag)
     .addComponent(MainCameraTag)
@@ -81,28 +78,6 @@ export const setupEditorSceneCamera = () => {
       position: new Vector2(0, 0),
       scale: new Vector2(1, 1),
     });
-
-  // TODO: Remove debug image here.
-  // Add a image entity.
-  for (let i = 0; i < 5; i++) {
-    const imageEntity = mainWorld.createEntity();
-    let imageTarget = new Image();
-    imageTarget.src = "https://picsum.photos/200";
-    // Random position.
-    const position = new Vector2(
-      Math.random() * 1000 - 500,
-      Math.random() * 1000 - 500
-    );
-    imageEntity
-      .addComponent(TransformData2D, {
-        position: position,
-        scale: new Vector2(1, 1),
-      })
-      .addComponent(ImageRenderData2D, {
-        img: imageTarget,
-        imageCenter: new Vector2(100, 100),
-      });
-  }
 };
 
 const setupPlayButton = () => {

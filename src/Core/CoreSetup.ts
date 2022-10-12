@@ -1,10 +1,12 @@
 import { mainWorld } from ".";
-import { editorRenderContext } from "../Editor/EditorContext";
+
 import { IComponent } from "./ComponentRegistry";
+import { coreRenderContext } from "./Context/RenderContext";
+import { ISystemContext } from "./Context/SystemContext";
 import { RenderSystemRegister } from "./Render/RenderSystemRegister";
 
 export const coreSetup = () => {
-  if (!editorRenderContext.mainCanvas) {
+  if (!coreRenderContext.mainCanvas) {
     throw new Error("Main canvas is not ready.");
   }
 
@@ -15,5 +17,14 @@ export const coreSetup = () => {
   }
 
   // Register Render Systems.
-  new RenderSystemRegister(editorRenderContext.mainCanvas).register(mainWorld);
+  new RenderSystemRegister(coreRenderContext.mainCanvas).register(mainWorld);
+
+  // TODO: Register more systems here.
+
+  // Register all user defined systems.
+  systemContext.userSetup();
+};
+
+export const systemContext: ISystemContext = {
+  userSetup: () => {},
 };

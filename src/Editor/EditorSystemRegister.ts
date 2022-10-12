@@ -1,6 +1,5 @@
 import { World } from "ecsy/World";
 import { IWorldRegister } from "../Utils/IWorldRegister";
-import { editorRenderContext } from "./EditorContext";
 import { CamDragSystem } from "../Utils/System/CamDragSystem";
 import { EditorInspectorSystem } from "./System/EditorInspectorSystem";
 

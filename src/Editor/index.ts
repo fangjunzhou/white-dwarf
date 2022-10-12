@@ -1,8 +1,8 @@
 import { mainInit } from "../Core";
-import { editorRenderContext } from "./EditorContext";
+import { coreRenderContext } from "../Core/Context/RenderContext";
 import { editorInitialization } from "./EditorInitialization";
 
-const main = () => {
+export const editorInit = () => {
   console.log("Editor Started");
 
   // Call editor initialization.
@@ -17,13 +17,13 @@ const main = () => {
 
 const onResize = () => {
   // Resize mainCanvas.
-  if (editorRenderContext.mainCanvas) {
-    editorRenderContext.mainCanvas.width =
-      editorRenderContext.mainCanvas.clientWidth;
-    editorRenderContext.mainCanvas.height =
-      editorRenderContext.mainCanvas.clientHeight;
+  if (coreRenderContext.mainCanvas) {
+    coreRenderContext.mainCanvas.width =
+      coreRenderContext.mainCanvas.clientWidth;
+    coreRenderContext.mainCanvas.height =
+      coreRenderContext.mainCanvas.clientHeight;
   }
 };
 
-window.onload = main;
+window.onload = editorInit;
 window.onresize = onResize;
