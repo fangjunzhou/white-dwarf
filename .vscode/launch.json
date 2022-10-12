@@ -5,6 +5,13 @@
   "version": "0.2.0",
   "configurations": [
     {
+      "name": "Chrome Debug File",
+      "request": "launch",
+      "type": "chrome",
+      "file": "dist/Editor/index.html",
+      "webRoot": "${workspaceFolder}"
+    },
+    {
       "type": "chrome",
       "request": "launch",
       "name": "Chrome Debug",
