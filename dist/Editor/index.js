@@ -1008,6 +1008,263 @@
     IComponent2.register = register;
   })(IComponent || (IComponent = {}));
 
+  // submodules/ecsy/src/System.js
+  var System = class {
+    canExecute() {
+      if (this._mandatoryQueries.length === 0)
+        return true;
+      for (let i = 0; i < this._mandatoryQueries.length; i++) {
+        var query = this._mandatoryQueries[i];
+        if (query.entities.length === 0) {
+          return false;
+        }
+      }
+      return true;
+    }
+    getName() {
+      return this.constructor.getName();
+    }
+    constructor(world, attributes) {
+      this.world = world;
+      this.enabled = true;
+      this._queries = {};
+      this.queries = {};
+      this.priority = 0;
+      this.executeTime = 0;
+      if (attributes && attributes.priority) {
+        this.priority = attributes.priority;
+      }
+      this._mandatoryQueries = [];
+      this.initialized = true;
+      if (this.constructor.queries) {
+        for (var queryName in this.constructor.queries) {
+          var queryConfig = this.constructor.queries[queryName];
+          var Components = queryConfig.components;
+          if (!Components || Components.length === 0) {
+            throw new Error("'components' attribute can't be empty in a query");
+          }
+          let unregisteredComponents = Components.filter(
+            (Component2) => !componentRegistered(Component2)
+          );
+          if (unregisteredComponents.length > 0) {
+            throw new Error(
+              `Tried to create a query '${this.constructor.name}.${queryName}' with unregistered components: [${unregisteredComponents.map((c) => c.getName()).join(", ")}]`
+            );
+          }
+          var query = this.world.entityManager.queryComponents(Components);
+          this._queries[queryName] = query;
+          if (queryConfig.mandatory === true) {
+            this._mandatoryQueries.push(query);
+          }
+          this.queries[queryName] = {
+            results: query.entities
+          };
+          var validEvents = ["added", "removed", "changed"];
+          const eventMapping = {
+            added: Query.prototype.ENTITY_ADDED,
+            removed: Query.prototype.ENTITY_REMOVED,
+            changed: Query.prototype.COMPONENT_CHANGED
+          };
+          if (queryConfig.listen) {
+            validEvents.forEach((eventName) => {
+              if (!this.execute) {
+                console.warn(
+                  `System '${this.getName()}' has defined listen events (${validEvents.join(
+                    ", "
+                  )}) for query '${queryName}' but it does not implement the 'execute' method.`
+                );
+              }
+              if (queryConfig.listen[eventName]) {
+                let event = queryConfig.listen[eventName];
+                if (eventName === "changed") {
+                  query.reactive = true;
+                  if (event === true) {
+                    let eventList = this.queries[queryName][eventName] = [];
+                    query.eventDispatcher.addEventListener(
+                      Query.prototype.COMPONENT_CHANGED,
+                      (entity) => {
+                        if (eventList.indexOf(entity) === -1) {
+                          eventList.push(entity);
+                        }
+                      }
+                    );
+                  } else if (Array.isArray(event)) {
+                    let eventList = this.queries[queryName][eventName] = [];
+                    query.eventDispatcher.addEventListener(
+                      Query.prototype.COMPONENT_CHANGED,
+                      (entity, changedComponent) => {
+                        if (event.indexOf(changedComponent.constructor) !== -1 && eventList.indexOf(entity) === -1) {
+                          eventList.push(entity);
+                        }
+                      }
+                    );
+                  } else {
+                  }
+                } else {
+                  let eventList = this.queries[queryName][eventName] = [];
+                  query.eventDispatcher.addEventListener(
+                    eventMapping[eventName],
+                    (entity) => {
+                      if (eventList.indexOf(entity) === -1)
+                        eventList.push(entity);
+                    }
+                  );
+                }
+              }
+            });
+          }
+        }
+      }
+    }
+    stop() {
+      this.executeTime = 0;
+      this.enabled = false;
+    }
+    play() {
+      this.enabled = true;
+    }
+    clearEvents() {
+      for (let queryName in this.queries) {
+        var query = this.queries[queryName];
+        if (query.added) {
+          query.added.length = 0;
+        }
+        if (query.removed) {
+          query.removed.length = 0;
+        }
+        if (query.changed) {
+          if (Array.isArray(query.changed)) {
+            query.changed.length = 0;
+          } else {
+            for (let name in query.changed) {
+              query.changed[name].length = 0;
+            }
+          }
+        }
+      }
+    }
+    toJSON() {
+      var json = {
+        name: this.getName(),
+        enabled: this.enabled,
+        executeTime: this.executeTime,
+        priority: this.priority,
+        queries: {}
+      };
+      if (this.constructor.queries) {
+        var queries = this.constructor.queries;
+        for (let queryName in queries) {
+          let query = this.queries[queryName];
+          let queryDefinition = queries[queryName];
+          let jsonQuery = json.queries[queryName] = {
+            key: this._queries[queryName].key
+          };
+          jsonQuery.mandatory = queryDefinition.mandatory === true;
+          jsonQuery.reactive = queryDefinition.listen && (queryDefinition.listen.added === true || queryDefinition.listen.removed === true || queryDefinition.listen.changed === true || Array.isArray(queryDefinition.listen.changed));
+          if (jsonQuery.reactive) {
+            jsonQuery.listen = {};
+            const methods = ["added", "removed", "changed"];
+            methods.forEach((method) => {
+              if (query[method]) {
+                jsonQuery.listen[method] = {
+                  entities: query[method].length
+                };
+              }
+            });
+          }
+        }
+      }
+      return json;
+    }
+  };
+  System.isSystem = true;
+  System.getName = function() {
+    return this.displayName || this.name;
+  };
+
+  // submodules/ecsy/src/Types.js
+  var copyValue = (src) => src;
+  var cloneValue = (src) => src;
+  var copyArray = (src, dest) => {
+    if (!src) {
+      return src;
+    }
+    if (!dest) {
+      return src.slice();
+    }
+    dest.length = 0;
+    for (let i = 0; i < src.length; i++) {
+      dest.push(src[i]);
+    }
+    return dest;
+  };
+  var cloneArray = (src) => src && src.slice();
+  var copyJSON = (src) => JSON.parse(JSON.stringify(src));
+  var cloneJSON = (src) => JSON.parse(JSON.stringify(src));
+  var copyCopyable = (src, dest) => {
+    if (!src) {
+      return src;
+    }
+    if (!dest) {
+      return src.clone();
+    }
+    return dest.copy(src);
+  };
+  var cloneClonable = (src) => src && src.clone();
+  function createType(typeDefinition) {
+    var mandatoryProperties = ["name", "default", "copy", "clone"];
+    var undefinedProperties = mandatoryProperties.filter((p) => {
+      return !typeDefinition.hasOwnProperty(p);
+    });
+    if (undefinedProperties.length > 0) {
+      throw new Error(
+        `createType expects a type definition with the following properties: ${undefinedProperties.join(
+          ", "
+        )}`
+      );
+    }
+    typeDefinition.isType = true;
+    return typeDefinition;
+  }
+  var Types = {
+    Number: createType({
+      name: "Number",
+      default: 0,
+      copy: copyValue,
+      clone: cloneValue
+    }),
+    Boolean: createType({
+      name: "Boolean",
+      default: false,
+      copy: copyValue,
+      clone: cloneValue
+    }),
+    String: createType({
+      name: "String",
+      default: "",
+      copy: copyValue,
+      clone: cloneValue
+    }),
+    Array: createType({
+      name: "Array",
+      default: [],
+      copy: copyArray,
+      clone: cloneArray
+    }),
+    Ref: createType({
+      name: "Ref",
+      default: void 0,
+      copy: copyValue,
+      clone: cloneValue
+    }),
+    JSON: createType({
+      name: "JSON",
+      default: null,
+      copy: copyJSON,
+      clone: cloneJSON
+    })
+  };
+
   // node_modules/gl-matrix/esm/common.js
   var EPSILON = 1e-6;
   var ARRAY_TYPE = typeof Float32Array !== "undefined" ? Float32Array : Array;
@@ -1730,89 +1987,6 @@
     };
   }();
 
-  // submodules/ecsy/src/Types.js
-  var copyValue = (src) => src;
-  var cloneValue = (src) => src;
-  var copyArray = (src, dest) => {
-    if (!src) {
-      return src;
-    }
-    if (!dest) {
-      return src.slice();
-    }
-    dest.length = 0;
-    for (let i = 0; i < src.length; i++) {
-      dest.push(src[i]);
-    }
-    return dest;
-  };
-  var cloneArray = (src) => src && src.slice();
-  var copyJSON = (src) => JSON.parse(JSON.stringify(src));
-  var cloneJSON = (src) => JSON.parse(JSON.stringify(src));
-  var copyCopyable = (src, dest) => {
-    if (!src) {
-      return src;
-    }
-    if (!dest) {
-      return src.clone();
-    }
-    return dest.copy(src);
-  };
-  var cloneClonable = (src) => src && src.clone();
-  function createType(typeDefinition) {
-    var mandatoryProperties = ["name", "default", "copy", "clone"];
-    var undefinedProperties = mandatoryProperties.filter((p) => {
-      return !typeDefinition.hasOwnProperty(p);
-    });
-    if (undefinedProperties.length > 0) {
-      throw new Error(
-        `createType expects a type definition with the following properties: ${undefinedProperties.join(
-          ", "
-        )}`
-      );
-    }
-    typeDefinition.isType = true;
-    return typeDefinition;
-  }
-  var Types = {
-    Number: createType({
-      name: "Number",
-      default: 0,
-      copy: copyValue,
-      clone: cloneValue
-    }),
-    Boolean: createType({
-      name: "Boolean",
-      default: false,
-      copy: copyValue,
-      clone: cloneValue
-    }),
-    String: createType({
-      name: "String",
-      default: "",
-      copy: copyValue,
-      clone: cloneValue
-    }),
-    Array: createType({
-      name: "Array",
-      default: [],
-      copy: copyArray,
-      clone: cloneArray
-    }),
-    Ref: createType({
-      name: "Ref",
-      default: void 0,
-      copy: copyValue,
-      clone: cloneValue
-    }),
-    JSON: createType({
-      name: "JSON",
-      default: null,
-      copy: copyJSON,
-      clone: cloneJSON
-    })
-  };
-
   // src/Mathematics/Vector2.ts
   var Vector2 = class {
     constructor(x, y) {
@@ -1836,6 +2010,57 @@
     clone: cloneClonable
   });
 
+  // src/Core/Render/DataComponent/ImageRenderData2D.ts
+  var ImageRenderData2D = class extends Component {
+    constructor() {
+      super(...arguments);
+      this.src = "";
+      this.img = null;
+    }
+  };
+  ImageRenderData2D.schema = {
+    src: {
+      type: Types.String,
+      default: ""
+    },
+    img: {
+      type: Types.Ref,
+      default: null
+    },
+    imageCenter: {
+      type: Vector2Type,
+      default: new Vector2(0, 0)
+    }
+  };
+  ImageRenderData2D = __decorateClass([
+    IComponent.register
+  ], ImageRenderData2D);
+
+  // src/Core/Render/System/BuildInRenderers/Canvas2DImageLoader.ts
+  var Canvas2DImageLoader = class extends System {
+    execute(delta, time) {
+      this.queries.imageEntities.results.forEach((imageEntity) => {
+        const imageRenderData = imageEntity.getMutableComponent(
+          ImageRenderData2D
+        );
+        const img = new Image();
+        img.src = imageRenderData.src;
+        img.onload = () => {
+          imageRenderData.img = img;
+        };
+      });
+    }
+  };
+  Canvas2DImageLoader.queries = {
+    imageEntities: {
+      components: [ImageRenderData2D],
+      listen: {
+        added: true,
+        changed: true
+      }
+    }
+  };
+
   // src/Core/Locomotion/DataComponent/TransformData2D.ts
   var TransformData2D = class extends Component {
   };
@@ -1856,201 +2081,6 @@
   TransformData2D = __decorateClass([
     IComponent.register
   ], TransformData2D);
-
-  // src/Core/Render/DataComponent/ImageRenderData2D.ts
-  var ImageRenderData2D = class extends Component {
-    constructor() {
-      super(...arguments);
-      this.img = null;
-    }
-  };
-  ImageRenderData2D.schema = {
-    img: {
-      type: Types.Ref,
-      default: null
-    },
-    imageCenter: {
-      type: Vector2Type,
-      default: new Vector2(0, 0)
-    }
-  };
-  ImageRenderData2D = __decorateClass([
-    IComponent.register
-  ], ImageRenderData2D);
-
-  // submodules/ecsy/src/System.js
-  var System = class {
-    canExecute() {
-      if (this._mandatoryQueries.length === 0)
-        return true;
-      for (let i = 0; i < this._mandatoryQueries.length; i++) {
-        var query = this._mandatoryQueries[i];
-        if (query.entities.length === 0) {
-          return false;
-        }
-      }
-      return true;
-    }
-    getName() {
-      return this.constructor.getName();
-    }
-    constructor(world, attributes) {
-      this.world = world;
-      this.enabled = true;
-      this._queries = {};
-      this.queries = {};
-      this.priority = 0;
-      this.executeTime = 0;
-      if (attributes && attributes.priority) {
-        this.priority = attributes.priority;
-      }
-      this._mandatoryQueries = [];
-      this.initialized = true;
-      if (this.constructor.queries) {
-        for (var queryName in this.constructor.queries) {
-          var queryConfig = this.constructor.queries[queryName];
-          var Components = queryConfig.components;
-          if (!Components || Components.length === 0) {
-            throw new Error("'components' attribute can't be empty in a query");
-          }
-          let unregisteredComponents = Components.filter(
-            (Component2) => !componentRegistered(Component2)
-          );
-          if (unregisteredComponents.length > 0) {
-            throw new Error(
-              `Tried to create a query '${this.constructor.name}.${queryName}' with unregistered components: [${unregisteredComponents.map((c) => c.getName()).join(", ")}]`
-            );
-          }
-          var query = this.world.entityManager.queryComponents(Components);
-          this._queries[queryName] = query;
-          if (queryConfig.mandatory === true) {
-            this._mandatoryQueries.push(query);
-          }
-          this.queries[queryName] = {
-            results: query.entities
-          };
-          var validEvents = ["added", "removed", "changed"];
-          const eventMapping = {
-            added: Query.prototype.ENTITY_ADDED,
-            removed: Query.prototype.ENTITY_REMOVED,
-            changed: Query.prototype.COMPONENT_CHANGED
-          };
-          if (queryConfig.listen) {
-            validEvents.forEach((eventName) => {
-              if (!this.execute) {
-                console.warn(
-                  `System '${this.getName()}' has defined listen events (${validEvents.join(
-                    ", "
-                  )}) for query '${queryName}' but it does not implement the 'execute' method.`
-                );
-              }
-              if (queryConfig.listen[eventName]) {
-                let event = queryConfig.listen[eventName];
-                if (eventName === "changed") {
-                  query.reactive = true;
-                  if (event === true) {
-                    let eventList = this.queries[queryName][eventName] = [];
-                    query.eventDispatcher.addEventListener(
-                      Query.prototype.COMPONENT_CHANGED,
-                      (entity) => {
-                        if (eventList.indexOf(entity) === -1) {
-                          eventList.push(entity);
-                        }
-                      }
-                    );
-                  } else if (Array.isArray(event)) {
-                    let eventList = this.queries[queryName][eventName] = [];
-                    query.eventDispatcher.addEventListener(
-                      Query.prototype.COMPONENT_CHANGED,
-                      (entity, changedComponent) => {
-                        if (event.indexOf(changedComponent.constructor) !== -1 && eventList.indexOf(entity) === -1) {
-                          eventList.push(entity);
-                        }
-                      }
-                    );
-                  } else {
-                  }
-                } else {
-                  let eventList = this.queries[queryName][eventName] = [];
-                  query.eventDispatcher.addEventListener(
-                    eventMapping[eventName],
-                    (entity) => {
-                      if (eventList.indexOf(entity) === -1)
-                        eventList.push(entity);
-                    }
-                  );
-                }
-              }
-            });
-          }
-        }
-      }
-    }
-    stop() {
-      this.executeTime = 0;
-      this.enabled = false;
-    }
-    play() {
-      this.enabled = true;
-    }
-    clearEvents() {
-      for (let queryName in this.queries) {
-        var query = this.queries[queryName];
-        if (query.added) {
-          query.added.length = 0;
-        }
-        if (query.removed) {
-          query.removed.length = 0;
-        }
-        if (query.changed) {
-          if (Array.isArray(query.changed)) {
-            query.changed.length = 0;
-          } else {
-            for (let name in query.changed) {
-              query.changed[name].length = 0;
-            }
-          }
-        }
-      }
-    }
-    toJSON() {
-      var json = {
-        name: this.getName(),
-        enabled: this.enabled,
-        executeTime: this.executeTime,
-        priority: this.priority,
-        queries: {}
-      };
-      if (this.constructor.queries) {
-        var queries = this.constructor.queries;
-        for (let queryName in queries) {
-          let query = this.queries[queryName];
-          let queryDefinition = queries[queryName];
-          let jsonQuery = json.queries[queryName] = {
-            key: this._queries[queryName].key
-          };
-          jsonQuery.mandatory = queryDefinition.mandatory === true;
-          jsonQuery.reactive = queryDefinition.listen && (queryDefinition.listen.added === true || queryDefinition.listen.removed === true || queryDefinition.listen.changed === true || Array.isArray(queryDefinition.listen.changed));
-          if (jsonQuery.reactive) {
-            jsonQuery.listen = {};
-            const methods = ["added", "removed", "changed"];
-            methods.forEach((method) => {
-              if (query[method]) {
-                jsonQuery.listen[method] = {
-                  entities: query[method].length
-                };
-              }
-            });
-          }
-        }
-      }
-      return json;
-    }
-  };
-  System.isSystem = true;
-  System.getName = function() {
-    return this.displayName || this.name;
-  };
 
   // src/Core/Render/DataComponent/CameraData2D.ts
   var CameraData2D = class extends Component {
@@ -2213,7 +2243,7 @@
           mainCanvas: this.mainCanvas,
           priority: -100
         });
-        world.registerSystem(Canvas2DImageRenderer, {
+        world.registerSystem(Canvas2DImageLoader).registerSystem(Canvas2DImageRenderer, {
           mainCanvas: this.mainCanvas
         });
       };
@@ -2331,7 +2361,7 @@
         const mouseWorldPos = this.screenToWorld(mousePos);
         if (event.buttons === 1) {
           if (_EditorInspectorSystem.inspectEntity) {
-            const transform = _EditorInspectorSystem.inspectEntity.getComponent(
+            const transform = _EditorInspectorSystem.inspectEntity.getMutableComponent(
               TransformData2D
             );
             transform.position.copy(
@@ -2566,9 +2596,10 @@
           const target = event.target;
           try {
             const newComponentData = JSON.parse(target.textContent || "{}");
-            Object.keys(newComponentData).forEach((key) => {
-              component[key] = newComponentData[key];
-            });
+            component.copy(newComponentData);
+            entity.getMutableComponent(
+              Object.getPrototypeOf(component).constructor
+            );
           } catch (error) {
             console.error(error);
             return;
@@ -2675,6 +2706,7 @@
     );
     coreSetup();
     new EditorSystemRegister(editorRenderContext.mainCanvas).register(mainWorld);
+    setupEditorSceneCamera();
     setupPlayButton();
     setupCreateEntityButton();
   };
@@ -2733,7 +2765,6 @@
   var main = () => {
     console.log("Editor Started");
     editorInitialization();
-    setupEditorSceneCamera();
     mainInit();
     onResize();
   };
