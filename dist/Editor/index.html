@@ -89,6 +89,12 @@
         flex-grow: 1;
         overflow: auto;
       }
+      .workspaceItem {
+        margin-left: 20px;
+        margin-right: 20px;
+        margin-top: 10px;
+        margin-bottom: 10px;
+      }
       .entityListItem {
         display: flex;
         flex-direction: row;
@@ -139,6 +145,10 @@
         <div class="subWorkspace">
           <h2 class="workspaceTitle">Entities</h2>
           <div class="entityList workspaceList mdc-list"></div>
+          <input class="workspaceItem" id="entityName" type="text" />
+          <button class="workspaceItem" id="createEntityButton">
+            Create Entity
+          </button>
         </div>
       </div>
 

@@ -980,12 +980,14 @@
   // src/Editor/EditorContext.ts
   var editorRenderContext = {
     mainCanvas: null,
-    mainCamera: null,
-    playButton: null
+    mainCamera: null
   };
   var editorUIContext = {
     entityLists: null,
-    entityInspector: null
+    entityInspector: null,
+    playButton: null,
+    entityNameInput: null,
+    createEntityButton: null
   };
   var editorEventContext = {
     onEntitySelected: []
@@ -2101,6 +2103,28 @@
         throw new Error("More than one main camera found.");
       }
     }
+    worldToCamera(camTransform, canvasSize) {
+      const worldToCamera = mat3_exports.create();
+      mat3_exports.fromTranslation(
+        worldToCamera,
+        vec2_exports.fromValues(canvasSize[0] / 2, canvasSize[1] / 2)
+      );
+      mat3_exports.translate(
+        worldToCamera,
+        worldToCamera,
+        vec2_exports.negate(vec2_exports.create(), camTransform.position.value)
+      );
+      mat3_exports.rotate(worldToCamera, worldToCamera, camTransform.rotation);
+      mat3_exports.scale(worldToCamera, worldToCamera, camTransform.scale.value);
+      return worldToCamera;
+    }
+    objectToWorld(objTransform) {
+      const objectToWorld = mat3_exports.create();
+      mat3_exports.fromTranslation(objectToWorld, objTransform.position.value);
+      mat3_exports.rotate(objectToWorld, objectToWorld, objTransform.rotation);
+      mat3_exports.scale(objectToWorld, objectToWorld, objTransform.scale.value);
+      return objectToWorld;
+    }
   };
   Canvas2DRenderer.queries = {
     mainCamera: {
@@ -2124,18 +2148,7 @@
         this.mainCanvas.width,
         this.mainCanvas.height
       );
-      const worldToCamera = mat3_exports.create();
-      mat3_exports.fromTranslation(
-        worldToCamera,
-        vec2_exports.fromValues(canvasSize[0] / 2, canvasSize[1] / 2)
-      );
-      mat3_exports.translate(
-        worldToCamera,
-        worldToCamera,
-        vec2_exports.negate(vec2_exports.create(), cameraTransform.position.value)
-      );
-      mat3_exports.rotate(worldToCamera, worldToCamera, cameraTransform.rotation);
-      mat3_exports.scale(worldToCamera, worldToCamera, cameraTransform.scale.value);
+      const worldToCamera = this.worldToCamera(cameraTransform, canvasSize);
       this.queries.imageEntities.results.forEach((imageEntity) => {
         const imageTransform = imageEntity.getComponent(
           TransformData2D
@@ -2145,18 +2158,15 @@
         );
         if (!imageRenderData.img)
           return;
-        const entityToWorld = mat3_exports.create();
-        mat3_exports.fromTranslation(entityToWorld, imageTransform.position.value);
-        mat3_exports.rotate(entityToWorld, entityToWorld, imageTransform.rotation);
-        mat3_exports.scale(entityToWorld, entityToWorld, imageTransform.scale.value);
-        const imageToEntity = mat3_exports.create();
+        const objectToWorld = this.objectToWorld(imageTransform);
+        const imageToObject = mat3_exports.create();
         mat3_exports.fromTranslation(
-          imageToEntity,
+          imageToObject,
           vec2_exports.negate(vec2_exports.create(), imageRenderData.imageCenter.value)
         );
         const finalTransform = mat3_exports.create();
-        mat3_exports.multiply(finalTransform, worldToCamera, entityToWorld);
-        mat3_exports.multiply(finalTransform, finalTransform, imageToEntity);
+        mat3_exports.multiply(finalTransform, worldToCamera, objectToWorld);
+        mat3_exports.multiply(finalTransform, finalTransform, imageToObject);
         this.canvasContext.setTransform(
           finalTransform[0],
           finalTransform[1],
@@ -2260,6 +2270,9 @@
       }
     }
   };
+  var addNewEntity = (entityName) => {
+    mainWorld.createEntity(entityName);
+  };
 
   // src/Utils/System/CamDragSystem.ts
   var CamDragSystem = class extends System {
@@ -2283,7 +2296,11 @@
       });
     }
     execute(delta, time) {
-      const mainCamera = this.queries.mainCamera.results[0].getMutableComponent(
+      const mainCameraRes = this.queries.mainCamera.results;
+      if (mainCameraRes.length !== 1) {
+        return;
+      }
+      const mainCamera = mainCameraRes[0].getMutableComponent(
         TransformData2D
       );
       vec2_exports.add(
@@ -2301,16 +2318,196 @@
   };
 
   // src/Editor/System/EditorInspectorSystem.ts
-  var _EditorInspectorSystem = class extends System {
+  var highlightThreshold = 25;
+  var _EditorInspectorSystem = class extends Canvas2DRenderer {
+    constructor() {
+      super(...arguments);
+      this.highlightEntity = null;
+    }
     init(attributes) {
+      super.init(attributes);
+      this.mainCanvas.addEventListener("mousemove", (event) => {
+        const mousePos = this.getMousePos(event);
+        const mouseWorldPos = this.screenToWorld(mousePos);
+        if (event.buttons === 1) {
+          if (_EditorInspectorSystem.inspectEntity) {
+            const transform = _EditorInspectorSystem.inspectEntity.getComponent(
+              TransformData2D
+            );
+            transform.position.copy(
+              new Vector2(mouseWorldPos[0], mouseWorldPos[1])
+            );
+          }
+        } else {
+          let closestEntity = null;
+          let closestDistance = Number.MAX_VALUE;
+          this.queries.highlightEntity.results.forEach((entity) => {
+            const transform = entity.getComponent(
+              TransformData2D
+            );
+            const distance2 = vec2_exports.distance(
+              mouseWorldPos,
+              transform.position.value
+            );
+            if (distance2 < highlightThreshold && distance2 < closestDistance) {
+              closestEntity = entity;
+              closestDistance = distance2;
+            }
+          });
+          this.highlightEntity = closestEntity;
+        }
+      });
+      this.mainCanvas.addEventListener("mousedown", (event) => {
+        if (event.button === 0) {
+          if (this.highlightEntity) {
+            _EditorInspectorSystem.updateEntityInspector(this.highlightEntity);
+          } else {
+            _EditorInspectorSystem.updateEntityInspector(null);
+          }
+        }
+      });
     }
     execute(delta, time) {
+      try {
+        super.execute(delta, time);
+      } catch (error) {
+        console.warn(error);
+        return;
+      }
+      const cameraTransform = this.queries.mainCamera.results[0].getComponent(
+        TransformData2D
+      );
+      const canvasSize = vec2_exports.fromValues(
+        this.mainCanvas.width,
+        this.mainCanvas.height
+      );
+      const worldToCamera = mat3_exports.create();
+      mat3_exports.multiply(
+        worldToCamera,
+        worldToCamera,
+        this.worldToCamera(cameraTransform, canvasSize)
+      );
+      if (_EditorInspectorSystem.inspectTransform) {
+        const inspectObjToCamera = mat3_exports.create();
+        mat3_exports.multiply(
+          inspectObjToCamera,
+          worldToCamera,
+          this.objectToWorld(_EditorInspectorSystem.inspectTransform)
+        );
+        this.canvasContext.setTransform(
+          inspectObjToCamera[0],
+          inspectObjToCamera[1],
+          inspectObjToCamera[3],
+          inspectObjToCamera[4],
+          inspectObjToCamera[6],
+          inspectObjToCamera[7]
+        );
+        this.drawAxis();
+      }
+      if (this.highlightEntity) {
+        const transform = this.highlightEntity.getComponent(
+          TransformData2D
+        );
+        const highlightObjToCamera = mat3_exports.create();
+        mat3_exports.multiply(
+          highlightObjToCamera,
+          worldToCamera,
+          this.objectToWorld(transform)
+        );
+        this.canvasContext.setTransform(
+          highlightObjToCamera[0],
+          highlightObjToCamera[1],
+          highlightObjToCamera[3],
+          highlightObjToCamera[4],
+          highlightObjToCamera[6],
+          highlightObjToCamera[7]
+        );
+        this.drawHighlight();
+      }
+      this.canvasContext.setTransform(1, 0, 0, 1, 0, 0);
+    }
+    getMousePos(event) {
+      const rect = this.mainCanvas.getBoundingClientRect();
+      return vec2_exports.fromValues(event.clientX - rect.left, event.clientY - rect.top);
+    }
+    screenToWorld(screenPos) {
+      const cameraTransform = this.queries.mainCamera.results[0].getComponent(
+        TransformData2D
+      );
+      const canvasSize = vec2_exports.fromValues(
+        this.mainCanvas.width,
+        this.mainCanvas.height
+      );
+      const worldPos = vec2_exports.create();
+      vec2_exports.transformMat3(
+        worldPos,
+        screenPos,
+        mat3_exports.invert(
+          mat3_exports.create(),
+          this.worldToCamera(cameraTransform, canvasSize)
+        )
+      );
+      return worldPos;
+    }
+    drawAxis() {
+      this.canvasContext.beginPath();
+      this.canvasContext.strokeStyle = "red";
+      this.canvasContext.lineWidth = 2;
+      this.canvasContext.moveTo(0, 0);
+      this.canvasContext.lineTo(100, 0);
+      this.canvasContext.stroke();
+      this.canvasContext.beginPath();
+      this.canvasContext.moveTo(100, 0);
+      this.canvasContext.lineTo(100, 5);
+      this.canvasContext.lineTo(110, 0);
+      this.canvasContext.lineTo(100, -5);
+      this.canvasContext.lineTo(100, 0);
+      this.canvasContext.fillStyle = "red";
+      this.canvasContext.fill();
+      this.canvasContext.beginPath();
+      this.canvasContext.strokeStyle = "blue";
+      this.canvasContext.lineWidth = 2;
+      this.canvasContext.moveTo(0, 0);
+      this.canvasContext.lineTo(0, 100);
+      this.canvasContext.stroke();
+      this.canvasContext.beginPath();
+      this.canvasContext.moveTo(0, 100);
+      this.canvasContext.lineTo(5, 100);
+      this.canvasContext.lineTo(0, 110);
+      this.canvasContext.lineTo(-5, 100);
+      this.canvasContext.lineTo(0, 100);
+      this.canvasContext.fillStyle = "blue";
+      this.canvasContext.fill();
+      this.canvasContext.beginPath();
+      this.canvasContext.fillStyle = "green";
+      this.canvasContext.arc(0, 0, 5, 0, 2 * Math.PI);
+      this.canvasContext.fill();
+    }
+    drawHighlight() {
+      this.canvasContext.beginPath();
+      this.canvasContext.strokeStyle = "blue";
+      this.canvasContext.lineWidth = 2;
+      this.canvasContext.arc(0, 0, highlightThreshold, 0, 2 * Math.PI);
+      this.canvasContext.stroke();
     }
   };
   var EditorInspectorSystem = _EditorInspectorSystem;
   EditorInspectorSystem.inspectEntity = null;
+  EditorInspectorSystem.inspectTransform = null;
+  EditorInspectorSystem.queries = __spreadProps(__spreadValues({}, _EditorInspectorSystem.queries), {
+    highlightEntity: {
+      components: [TransformData2D]
+    }
+  });
   EditorInspectorSystem.updateEntityInspector = (entity) => {
     _EditorInspectorSystem.inspectEntity = entity;
+    if (entity == null ? void 0 : entity.hasComponent(TransformData2D)) {
+      _EditorInspectorSystem.inspectTransform = entity.getComponent(
+        TransformData2D
+      );
+    } else {
+      _EditorInspectorSystem.inspectTransform = null;
+    }
     _EditorInspectorSystem.displayEntityInspector(entity);
   };
   EditorInspectorSystem.displayEntityInspector = (entity) => {
@@ -2333,6 +2530,17 @@
       while (entityInspector.firstChild) {
         entityInspector.removeChild(entityInspector.firstChild);
       }
+      const entityOperationDiv = document.createElement("div");
+      entityOperationDiv.className = "componentListItem";
+      const removeEntityButton = document.createElement("button");
+      removeEntityButton.innerText = "Remove Entity";
+      removeEntityButton.style.width = "100%";
+      removeEntityButton.onclick = () => {
+        entity.remove();
+        _EditorInspectorSystem.updateEntityInspector(null);
+      };
+      entityOperationDiv.appendChild(removeEntityButton);
+      entityInspector.appendChild(entityOperationDiv);
       for (let j = 0; j < componentIndices.length; j++) {
         const componentIndex = componentIndices[j];
         const component = components[componentIndex];
@@ -2376,17 +2584,24 @@
       }
       const componentAddDiv = document.createElement("div");
       componentAddDiv.className = "componentListItem";
-      const componentNameInput = document.createElement("input");
-      componentNameInput.type = "text";
-      componentNameInput.placeholder = "Component Name";
+      const componentNameInput = document.createElement("select");
+      const componentList = IComponent.getImplementations();
+      const componentNames = componentList.map((component) => component.name);
+      for (let j = 0; j < componentNames.length; j++) {
+        const componentName = componentNames[j];
+        const option = document.createElement("option");
+        option.value = componentName;
+        option.innerText = componentName;
+        componentNameInput.appendChild(option);
+      }
       componentAddDiv.appendChild(componentNameInput);
       const addComponentButton = document.createElement("button");
       addComponentButton.style.width = "100%";
       addComponentButton.innerText = "Add Component";
       addComponentButton.onclick = () => {
-        let componentList = IComponent.getImplementations();
+        const componentList2 = IComponent.getImplementations();
         console.log(componentNameInput.value);
-        let component = componentList.find(
+        let component = componentList2.find(
           (component2) => component2.name === componentNameInput.value
         );
         if (component) {
@@ -2404,7 +2619,7 @@
     const componentSchema = Object.getPrototypeOf(component).constructor.schema;
     const componentDataContent = {};
     Object.keys(component).forEach((key) => {
-      if (Object.keys(componentSchema).includes(key)) {
+      if (Object.keys(componentSchema).includes(key) && componentSchema[key].type !== Types.Ref) {
         componentDataContent[key] = component[key];
       }
     });
@@ -2418,7 +2633,9 @@
         world.registerSystem(CamDragSystem, {
           mainCanvas: this.mainCanvas
         });
-        world.registerSystem(EditorInspectorSystem);
+        world.registerSystem(EditorInspectorSystem, {
+          mainCanvas: this.mainCanvas
+        });
       };
       this.mainCanvas = mainCanvas;
     }
@@ -2442,8 +2659,14 @@
     editorUIContext.entityInspector = document.getElementsByClassName(
       "entityInspector"
     );
-    editorRenderContext.playButton = document.getElementById(
+    editorUIContext.playButton = document.getElementById(
       "playButton"
+    );
+    editorUIContext.entityNameInput = document.getElementById(
+      "entityName"
+    );
+    editorUIContext.createEntityButton = document.getElementById(
+      "createEntityButton"
     );
     editorRenderContext.mainCanvas.oncontextmenu = () => false;
     mainWorld.onEntityChanged.push(updateEntityList);
@@ -2453,6 +2676,7 @@
     coreSetup();
     new EditorSystemRegister(editorRenderContext.mainCanvas).register(mainWorld);
     setupPlayButton();
+    setupCreateEntityButton();
   };
   var setupEditorSceneCamera = () => {
     editorRenderContext.mainCamera = mainWorld.createEntity("EditorSceneCamera");
@@ -2482,7 +2706,7 @@
   };
   var setupPlayButton = () => {
     var _a;
-    (_a = editorRenderContext.playButton) == null ? void 0 : _a.addEventListener("click", () => {
+    (_a = editorUIContext.playButton) == null ? void 0 : _a.addEventListener("click", () => {
       resetWorld();
       mainWorld.onEntityChanged.push(updateEntityList);
       editorEventContext.onEntitySelected.push(
@@ -2491,6 +2715,17 @@
       updateEntityList([]);
       EditorInspectorSystem.updateEntityInspector(null);
       coreSetup();
+    });
+  };
+  var setupCreateEntityButton = () => {
+    var _a;
+    (_a = editorUIContext.createEntityButton) == null ? void 0 : _a.addEventListener("click", () => {
+      if (editorUIContext.entityNameInput) {
+        addNewEntity(editorUIContext.entityNameInput.value);
+        editorUIContext.entityNameInput.value = "";
+      } else {
+        addNewEntity();
+      }
     });
   };
 
