@@ -6,6 +6,7 @@ import { mat3, vec2 } from "gl-matrix";
 import { IComponent } from "../../Core/ComponentRegistry";
 import { TransformData2D } from "../../Core/Locomotion/DataComponent/TransformData2D";
 import { Canvas2DRenderer } from "../../Core/Render/System/Canvas2DRenderer";
+import { Vector2 } from "../../Mathematics/Vector2";
 import { editorUIContext } from "../EditorContext";
 
 const highlightThreshold = 25;
@@ -31,25 +32,54 @@ export class EditorInspectorSystem extends Canvas2DRenderer {
       const mousePos = this.getMousePos(event);
       const mouseWorldPos = this.screenToWorld(mousePos);
 
-      // Pick the closest entity and highlight it.
-      let closestEntity: Entity | null = null;
-      let closestDistance = Number.MAX_VALUE;
+      // If left mouse button is pressed, move the entity.
+      if (event.buttons === 1) {
+        if (EditorInspectorSystem.inspectEntity) {
+          const transform = EditorInspectorSystem.inspectEntity.getComponent(
+            TransformData2D
+          ) as TransformData2D;
 
-      // Find the closest entity.
-      this.queries.highlightEntity.results.forEach((entity) => {
-        const transform = entity.getComponent(
-          TransformData2D
-        ) as TransformData2D;
-        const distance = vec2.distance(mouseWorldPos, transform.position.value);
-
-        if (distance < highlightThreshold && distance < closestDistance) {
-          closestEntity = entity;
-          closestDistance = distance;
+          transform.position.copy(
+            new Vector2(mouseWorldPos[0], mouseWorldPos[1])
+          );
         }
-      });
+      } else {
+        // Pick the closest entity and highlight it.
+        let closestEntity: Entity | null = null;
+        let closestDistance = Number.MAX_VALUE;
 
-      // Set the highlight entity.
-      this.highlightEntity = closestEntity;
+        // Find the closest entity.
+        this.queries.highlightEntity.results.forEach((entity) => {
+          const transform = entity.getComponent(
+            TransformData2D
+          ) as TransformData2D;
+          const distance = vec2.distance(
+            mouseWorldPos,
+            transform.position.value
+          );
+
+          if (distance < highlightThreshold && distance < closestDistance) {
+            closestEntity = entity;
+            closestDistance = distance;
+          }
+        });
+
+        // Set the highlight entity.
+        this.highlightEntity = closestEntity;
+      }
+    });
+
+    // Register left mouse down.
+    this.mainCanvas.addEventListener("mousedown", (event) => {
+      if (event.button === 0) {
+        if (this.highlightEntity) {
+          // Select the entity.
+          EditorInspectorSystem.updateEntityInspector(this.highlightEntity);
+        } else {
+          // Clear the entity inspector.
+          EditorInspectorSystem.updateEntityInspector(null);
+        }
+      }
     });
   }
 
@@ -217,7 +247,7 @@ export class EditorInspectorSystem extends Canvas2DRenderer {
 
   drawHighlight(): void {
     this.canvasContext.beginPath();
-    this.canvasContext.strokeStyle = "yellow";
+    this.canvasContext.strokeStyle = "blue";
     this.canvasContext.lineWidth = 2;
     this.canvasContext.arc(0, 0, highlightThreshold, 0, 2 * Math.PI);
     this.canvasContext.stroke();
@@ -230,6 +260,8 @@ export class EditorInspectorSystem extends Canvas2DRenderer {
       this.inspectTransform = entity.getComponent(
         TransformData2D
       ) as Readonly<TransformData2D>;
+    } else {
+      this.inspectTransform = null;
     }
 
     EditorInspectorSystem.displayEntityInspector(entity);
