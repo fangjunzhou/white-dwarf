@@ -57,8 +57,8 @@ export class EditorInspectorSystem extends Canvas2DRenderer {
             TransformData2D
           ) as TransformData2D;
           const distance = vec2.distance(
-            mouseWorldPos,
-            transform.position.value
+            mousePos,
+            this.worldToScreen(transform.position.value)
           );
 
           if (
@@ -185,6 +185,31 @@ export class EditorInspectorSystem extends Canvas2DRenderer {
     );
 
     return worldPos;
+  }
+
+  /**
+   * Convert world space to screen space.
+   *
+   * @param worldPos world position.
+   * @returns screen position.
+   */
+  worldToScreen(worldPos: vec2): vec2 {
+    const cameraTransform = this.queries.mainCamera.results[0].getComponent(
+      TransformData2D
+    ) as TransformData2D;
+    const canvasSize = vec2.fromValues(
+      this.mainCanvas.width,
+      this.mainCanvas.height
+    );
+
+    const screenPos = vec2.create();
+    vec2.transformMat3(
+      screenPos,
+      worldPos,
+      this.worldToCamera(cameraTransform, canvasSize)
+    );
+
+    return screenPos;
   }
 
   drawAxis(inspectObjToCamera: mat3): void {
