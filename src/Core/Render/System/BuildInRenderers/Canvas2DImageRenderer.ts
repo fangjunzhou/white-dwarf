@@ -30,20 +30,7 @@ export class Canvas2DImageRenderer extends Canvas2DRenderer {
       this.mainCanvas.height
     );
 
-    // Construct world to camera matrix.
-    const worldToCamera = mat3.create();
-    // Center the camera.
-    mat3.fromTranslation(
-      worldToCamera,
-      vec2.fromValues(canvasSize[0] / 2, canvasSize[1] / 2)
-    );
-    mat3.translate(
-      worldToCamera,
-      worldToCamera,
-      vec2.negate(vec2.create(), cameraTransform.position.value)
-    );
-    mat3.rotate(worldToCamera, worldToCamera, cameraTransform.rotation);
-    mat3.scale(worldToCamera, worldToCamera, cameraTransform.scale.value);
+    const worldToCamera = this.worldToCamera(cameraTransform, canvasSize);
 
     // Draw all image entities.
     this.queries.imageEntities.results.forEach((imageEntity) => {
@@ -59,25 +46,20 @@ export class Canvas2DImageRenderer extends Canvas2DRenderer {
       // If the image is not loaded, skip.
       if (!imageRenderData.img) return;
 
-      // TODO: Convert local transform to world transform.
+      const objectToWorld = this.objectToWorld(imageTransform);
 
-      // Construct entity to world matrix.
-      const entityToWorld = mat3.create();
-      mat3.fromTranslation(entityToWorld, imageTransform.position.value);
-      mat3.rotate(entityToWorld, entityToWorld, imageTransform.rotation);
-      mat3.scale(entityToWorld, entityToWorld, imageTransform.scale.value);
-
-      // Construct image to entity matrix.
-      const imageToEntity = mat3.create();
+      // Construct image to object matrix.
+      const imageToObject = mat3.create();
       mat3.fromTranslation(
-        imageToEntity,
+        imageToObject,
         vec2.negate(vec2.create(), imageRenderData.imageCenter.value)
       );
 
       // Calculate the final transform matrix.
+      // worldToCamera * objectToWorld * imageToObject
       const finalTransform = mat3.create();
-      mat3.multiply(finalTransform, worldToCamera, entityToWorld);
-      mat3.multiply(finalTransform, finalTransform, imageToEntity);
+      mat3.multiply(finalTransform, worldToCamera, objectToWorld);
+      mat3.multiply(finalTransform, finalTransform, imageToObject);
 
       // Draw the image.
       this.canvasContext.setTransform(
