@@ -8,8 +8,10 @@ import { TransformData2D } from "../../Core/Locomotion/DataComponent/TransformDa
 import { Canvas2DRenderer } from "../../Core/Render/System/Canvas2DRenderer";
 import { Vector2 } from "../../Mathematics/Vector2";
 import { editorUIContext } from "../EditorContext";
+import { EditorSceneCamTag } from "../TagComponent/EditorSceneCamTag";
 
 const highlightThreshold = 25;
+const axisLength = 50;
 
 export class EditorInspectorSystem extends Canvas2DRenderer {
   static inspectEntity: Entity | null = null;
@@ -59,7 +61,11 @@ export class EditorInspectorSystem extends Canvas2DRenderer {
             transform.position.value
           );
 
-          if (distance < highlightThreshold && distance < closestDistance) {
+          if (
+            distance < highlightThreshold &&
+            distance < closestDistance &&
+            !entity.hasComponent(EditorSceneCamTag)
+          ) {
             closestEntity = entity;
             closestDistance = distance;
           }
@@ -122,17 +128,7 @@ export class EditorInspectorSystem extends Canvas2DRenderer {
         this.objectToWorld(EditorInspectorSystem.inspectTransform)
       );
 
-      // Draw axis.
-      this.canvasContext.setTransform(
-        inspectObjToCamera[0],
-        inspectObjToCamera[1],
-        inspectObjToCamera[3],
-        inspectObjToCamera[4],
-        inspectObjToCamera[6],
-        inspectObjToCamera[7]
-      );
-
-      this.drawAxis();
+      this.drawAxis(inspectObjToCamera);
     }
 
     // Draw highlight.
@@ -148,20 +144,8 @@ export class EditorInspectorSystem extends Canvas2DRenderer {
         this.objectToWorld(transform)
       );
 
-      this.canvasContext.setTransform(
-        highlightObjToCamera[0],
-        highlightObjToCamera[1],
-        highlightObjToCamera[3],
-        highlightObjToCamera[4],
-        highlightObjToCamera[6],
-        highlightObjToCamera[7]
-      );
-
-      this.drawHighlight();
+      this.drawHighlight(highlightObjToCamera);
     }
-
-    // Reset the transform.
-    this.canvasContext.setTransform(1, 0, 0, 1, 0, 0);
   }
 
   /**
@@ -203,54 +187,77 @@ export class EditorInspectorSystem extends Canvas2DRenderer {
     return worldPos;
   }
 
-  drawAxis(): void {
-    // Draw x axis.
-    this.canvasContext.beginPath();
+  drawAxis(inspectObjToCamera: mat3): void {
+    // Get the starting position.
+    const startPos = vec2.fromValues(0, 0);
+    vec2.transformMat3(startPos, startPos, inspectObjToCamera);
+    // Get the x axis position.
+    const xAxisPos = vec2.fromValues(1, 0);
+    vec2.transformMat3(xAxisPos, xAxisPos, inspectObjToCamera);
+    // Get the y axis position.
+    const yAxisPos = vec2.fromValues(0, 1);
+    vec2.transformMat3(yAxisPos, yAxisPos, inspectObjToCamera);
+
+    // Normalize the axis: xEnd = xStart + normalize(xAxis - xStart)
+    vec2.add(
+      xAxisPos,
+      startPos,
+      vec2.scale(
+        vec2.create(),
+        vec2.normalize(
+          vec2.create(),
+          vec2.sub(vec2.create(), xAxisPos, startPos)
+        ),
+        axisLength
+      )
+    );
+
+    // Normalize the axis: yEnd = yStart + normalize(yAxis - yStart)
+    vec2.add(
+      yAxisPos,
+      startPos,
+      vec2.scale(
+        vec2.create(),
+        vec2.normalize(
+          vec2.create(),
+          vec2.sub(vec2.create(), yAxisPos, startPos)
+        ),
+        axisLength
+      )
+    );
+
+    // Draw the x axis.
     this.canvasContext.strokeStyle = "red";
+    this.canvasContext.beginPath();
     this.canvasContext.lineWidth = 2;
-    this.canvasContext.moveTo(0, 0);
-    this.canvasContext.lineTo(100, 0);
+    this.canvasContext.moveTo(startPos[0], startPos[1]);
+    this.canvasContext.lineTo(xAxisPos[0], xAxisPos[1]);
     this.canvasContext.stroke();
-    // Draw x arrow tip.
-    this.canvasContext.beginPath();
-    this.canvasContext.moveTo(100, 0);
-    this.canvasContext.lineTo(100, 5);
-    this.canvasContext.lineTo(110, 0);
-    this.canvasContext.lineTo(100, -5);
-    this.canvasContext.lineTo(100, 0);
-    this.canvasContext.fillStyle = "red";
-    this.canvasContext.fill();
 
-    // Draw y axis.
-    this.canvasContext.beginPath();
+    // Draw the y axis.
     this.canvasContext.strokeStyle = "blue";
+    this.canvasContext.beginPath();
     this.canvasContext.lineWidth = 2;
-    this.canvasContext.moveTo(0, 0);
-    this.canvasContext.lineTo(0, 100);
+    this.canvasContext.moveTo(startPos[0], startPos[1]);
+    this.canvasContext.lineTo(yAxisPos[0], yAxisPos[1]);
     this.canvasContext.stroke();
-
-    // Draw y arrow tip.
-    this.canvasContext.beginPath();
-    this.canvasContext.moveTo(0, 100);
-    this.canvasContext.lineTo(5, 100);
-    this.canvasContext.lineTo(0, 110);
-    this.canvasContext.lineTo(-5, 100);
-    this.canvasContext.lineTo(0, 100);
-    this.canvasContext.fillStyle = "blue";
-    this.canvasContext.fill();
-
-    // Draw center point.
-    this.canvasContext.beginPath();
-    this.canvasContext.fillStyle = "green";
-    this.canvasContext.arc(0, 0, 5, 0, 2 * Math.PI);
-    this.canvasContext.fill();
   }
 
-  drawHighlight(): void {
+  drawHighlight(highlightObjToCamera: mat3): void {
+    // Get the highlight position.
+    const startPos = vec2.fromValues(0, 0);
+    vec2.transformMat3(startPos, startPos, highlightObjToCamera);
+
     this.canvasContext.beginPath();
     this.canvasContext.strokeStyle = "blue";
     this.canvasContext.lineWidth = 2;
-    this.canvasContext.arc(0, 0, highlightThreshold, 0, 2 * Math.PI);
+    this.canvasContext.arc(
+      startPos[0],
+      startPos[1],
+      highlightThreshold,
+      0,
+      2 * Math.PI
+    );
     this.canvasContext.stroke();
   }
 
