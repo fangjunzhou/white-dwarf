@@ -1,3 +1,4 @@
+import { SystemQueries } from "ecsy/System";
 import { mainWorld, resetWorld } from "../Core";
 import { coreRenderContext } from "../Core/Context/RenderContext";
 import { coreSetup } from "../Core/CoreSetup";
@@ -13,6 +14,7 @@ import { Vector2 } from "../Mathematics/Vector2";
 import { editorEventContext, editorUIContext } from "./EditorContext";
 import { addNewEntity, updateEntityList } from "./EditorEntityListManager";
 import { EditorSystemRegister } from "./EditorSystemRegister";
+import { EditorCamTagAppendSystem } from "./System/EditorCamTagAppendSystem";
 import { EditorInspectorSystem } from "./System/EditorInspectorSystem";
 import { EditorSceneCamTag } from "./TagComponent/EditorSceneCamTag";
 
@@ -54,30 +56,13 @@ export const editorInitialization = () => {
   new EditorSystemRegister(coreRenderContext.mainCanvas).register(mainWorld);
 
   // Setup editor scene camera.
-  setupEditorSceneCamera();
+  mainWorld.registerSystem(EditorCamTagAppendSystem);
 
   // Setup play button.
   setupPlayButton();
 
   // Setup create entity button.
   setupCreateEntityButton();
-};
-
-export const setupEditorSceneCamera = () => {
-  // Add a editor scene camera.
-  coreRenderContext.mainCamera = mainWorld.createEntity("EditorSceneCamera");
-  coreRenderContext.mainCamera
-    .addComponent(EditorSceneCamTag)
-    .addComponent(CameraTag)
-    .addComponent(MainCameraTag)
-    .addComponent(CameraData2D, {
-      backgroundType: BackgroundType.Color,
-      backgroundColor: "#000000",
-    })
-    .addComponent(TransformData2D, {
-      position: new Vector2(0, 0),
-      scale: new Vector2(1, 1),
-    });
 };
 
 const setupPlayButton = () => {
