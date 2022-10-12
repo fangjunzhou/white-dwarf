@@ -56,6 +56,9 @@ export const editorInitialization = () => {
   // Register Editor System.
   new EditorSystemRegister(editorRenderContext.mainCanvas).register(mainWorld);
 
+  // Setup editor scene camera.
+  setupEditorSceneCamera();
+
   // Setup play button.
   setupPlayButton();
 

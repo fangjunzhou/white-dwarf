@@ -1,18 +1,12 @@
 import { mainInit } from "../Core";
 import { editorRenderContext } from "./EditorContext";
-import {
-  editorInitialization,
-  setupEditorSceneCamera,
-} from "./EditorInitialization";
+import { editorInitialization } from "./EditorInitialization";
 
 const main = () => {
   console.log("Editor Started");
 
   // Call editor initialization.
   editorInitialization();
-
-  // Setup scene camera.
-  setupEditorSceneCamera();
 
   // White Dwarf Engine initialization.
   mainInit();

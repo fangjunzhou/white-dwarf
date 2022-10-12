@@ -35,9 +35,10 @@ export class EditorInspectorSystem extends Canvas2DRenderer {
       // If left mouse button is pressed, move the entity.
       if (event.buttons === 1) {
         if (EditorInspectorSystem.inspectEntity) {
-          const transform = EditorInspectorSystem.inspectEntity.getComponent(
-            TransformData2D
-          ) as TransformData2D;
+          const transform =
+            EditorInspectorSystem.inspectEntity.getMutableComponent(
+              TransformData2D
+            ) as TransformData2D;
 
           transform.position.copy(
             new Vector2(mouseWorldPos[0], mouseWorldPos[1])
@@ -351,9 +352,11 @@ export class EditorInspectorSystem extends Canvas2DRenderer {
           const target = event.target as HTMLTextAreaElement;
           try {
             const newComponentData = JSON.parse(target.textContent || "{}");
-            Object.keys(newComponentData).forEach((key) => {
-              component[key as keyof typeof component] = newComponentData[key];
-            });
+            component.copy(newComponentData);
+            // Call change event.
+            entity.getMutableComponent(
+              Object.getPrototypeOf(component).constructor
+            );
           } catch (error) {
             console.error(error);
             return;
