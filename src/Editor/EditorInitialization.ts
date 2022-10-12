@@ -66,22 +66,7 @@ export const editorInitialization = () => {
 };
 
 const setupPlayButton = () => {
-  editorUIContext.playButton?.addEventListener("click", () => {
-    // Create a new world.
-    resetWorld();
-
-    // Register main world entity change.
-    mainWorld.onEntityChanged.push(updateEntityList);
-    // Register entity selected event.
-    editorEventContext.onEntitySelected.push(
-      EditorInspectorSystem.updateEntityInspector
-    );
-    updateEntityList([]);
-    EditorInspectorSystem.updateEntityInspector(null);
-
-    // Setup core.
-    coreSetup();
-  });
+  // TODO: Deserialize scene and setup world here.
 };
 
 const setupCreateEntityButton = () => {
