@@ -16,6 +16,8 @@ export class EditorSystemRegister {
       mainCanvas: this.mainCanvas,
     });
 
-    world.registerSystem(EditorInspectorSystem);
+    world.registerSystem(EditorInspectorSystem, {
+      mainCanvas: this.mainCanvas,
+    });
   };
 }

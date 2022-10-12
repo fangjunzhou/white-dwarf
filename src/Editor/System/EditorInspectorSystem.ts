@@ -1,31 +1,236 @@
 import { Component, ComponentSchema } from "ecsy/Component";
 import { Entity } from "ecsy/Entity";
-import { Attributes, System } from "ecsy/System";
+import { Attributes, System, SystemQueries } from "ecsy/System";
 import { Types } from "ecsy/Types";
+import { mat3, vec2 } from "gl-matrix";
 import { IComponent } from "../../Core/ComponentRegistry";
 import { TransformData2D } from "../../Core/Locomotion/DataComponent/TransformData2D";
+import { Canvas2DRenderer } from "../../Core/Render/System/Canvas2DRenderer";
 import { editorUIContext } from "../EditorContext";
 
-export class EditorInspectorSystem extends System {
-  static inspectEntity: Entity | null = null;
+const highlightThreshold = 25;
 
-  mainCanvas: HTMLCanvasElement | null = null;
-  canvasContext: CanvasRenderingContext2D | null = null;
+export class EditorInspectorSystem extends Canvas2DRenderer {
+  static inspectEntity: Entity | null = null;
+  static inspectTransform: Readonly<TransformData2D> | null = null;
+
+  static queries: SystemQueries = {
+    ...this.queries,
+    highlightEntity: {
+      components: [TransformData2D],
+    },
+  };
+
+  highlightEntity: Entity | null = null;
 
   init(attributes?: Attributes | undefined): void {
-    this.mainCanvas = attributes?.mainCanvas as HTMLCanvasElement;
-    this.canvasContext = this.mainCanvas?.getContext("2d");
+    super.init(attributes);
+
+    // Register mouse move event for main canvas.
+    this.mainCanvas.addEventListener("mousemove", (event) => {
+      const mousePos = this.getMousePos(event);
+      const mouseWorldPos = this.screenToWorld(mousePos);
+
+      // Pick the closest entity and highlight it.
+      let closestEntity: Entity | null = null;
+      let closestDistance = Number.MAX_VALUE;
+
+      // Find the closest entity.
+      this.queries.highlightEntity.results.forEach((entity) => {
+        const transform = entity.getComponent(
+          TransformData2D
+        ) as TransformData2D;
+        const distance = vec2.distance(mouseWorldPos, transform.position.value);
+
+        if (distance < highlightThreshold && distance < closestDistance) {
+          closestEntity = entity;
+          closestDistance = distance;
+        }
+      });
+
+      // Set the highlight entity.
+      this.highlightEntity = closestEntity;
+    });
   }
 
   execute(delta: number, time: number): void {
-    // TODO: Draw transform and enable selection here.
-    // Check if the inspectEntity has Transform component.
-    if (EditorInspectorSystem.inspectEntity?.hasComponent(TransformData2D)) {
+    try {
+      super.execute(delta, time);
+    } catch (error) {
+      console.warn(error);
+      return;
     }
+
+    // Draw transform and enable selection here.
+
+    // Get the camera transform.
+    const cameraTransform = this.queries.mainCamera.results[0].getComponent(
+      TransformData2D
+    ) as TransformData2D;
+    // Get the canvas size.
+    const canvasSize = vec2.fromValues(
+      this.mainCanvas.width,
+      this.mainCanvas.height
+    );
+
+    // Construct world to camera matrix.
+    const worldToCamera = mat3.create();
+    mat3.multiply(
+      worldToCamera,
+      worldToCamera,
+      this.worldToCamera(cameraTransform, canvasSize)
+    );
+
+    // Draw selected entity.
+    if (EditorInspectorSystem.inspectTransform) {
+      // Construct object to camera matrix.
+      const inspectObjToCamera = mat3.create();
+      mat3.multiply(
+        inspectObjToCamera,
+        worldToCamera,
+        this.objectToWorld(EditorInspectorSystem.inspectTransform)
+      );
+
+      // Draw axis.
+      this.canvasContext.setTransform(
+        inspectObjToCamera[0],
+        inspectObjToCamera[1],
+        inspectObjToCamera[3],
+        inspectObjToCamera[4],
+        inspectObjToCamera[6],
+        inspectObjToCamera[7]
+      );
+
+      this.drawAxis();
+    }
+
+    // Draw highlight.
+    if (this.highlightEntity) {
+      const transform = this.highlightEntity.getComponent(
+        TransformData2D
+      ) as TransformData2D;
+
+      const highlightObjToCamera = mat3.create();
+      mat3.multiply(
+        highlightObjToCamera,
+        worldToCamera,
+        this.objectToWorld(transform)
+      );
+
+      this.canvasContext.setTransform(
+        highlightObjToCamera[0],
+        highlightObjToCamera[1],
+        highlightObjToCamera[3],
+        highlightObjToCamera[4],
+        highlightObjToCamera[6],
+        highlightObjToCamera[7]
+      );
+
+      this.drawHighlight();
+    }
+
+    // Reset the transform.
+    this.canvasContext.setTransform(1, 0, 0, 1, 0, 0);
+  }
+
+  /**
+   * Get the mouse position in screen space.
+   *
+   * @param event canvas mouse event.
+   * @returns mouse position in screen space.
+   */
+  getMousePos(event: MouseEvent): vec2 {
+    const rect = this.mainCanvas.getBoundingClientRect();
+    return vec2.fromValues(event.clientX - rect.left, event.clientY - rect.top);
+  }
+
+  /**
+   * Convert screen space to world space.
+   *
+   * @param screenPos screen position.
+   * @returns world position.
+   */
+  screenToWorld(screenPos: vec2): vec2 {
+    const cameraTransform = this.queries.mainCamera.results[0].getComponent(
+      TransformData2D
+    ) as TransformData2D;
+    const canvasSize = vec2.fromValues(
+      this.mainCanvas.width,
+      this.mainCanvas.height
+    );
+
+    const worldPos = vec2.create();
+    vec2.transformMat3(
+      worldPos,
+      screenPos,
+      mat3.invert(
+        mat3.create(),
+        this.worldToCamera(cameraTransform, canvasSize)
+      )
+    );
+
+    return worldPos;
+  }
+
+  drawAxis(): void {
+    // Draw x axis.
+    this.canvasContext.beginPath();
+    this.canvasContext.strokeStyle = "red";
+    this.canvasContext.lineWidth = 2;
+    this.canvasContext.moveTo(0, 0);
+    this.canvasContext.lineTo(100, 0);
+    this.canvasContext.stroke();
+    // Draw x arrow tip.
+    this.canvasContext.beginPath();
+    this.canvasContext.moveTo(100, 0);
+    this.canvasContext.lineTo(100, 5);
+    this.canvasContext.lineTo(110, 0);
+    this.canvasContext.lineTo(100, -5);
+    this.canvasContext.lineTo(100, 0);
+    this.canvasContext.fillStyle = "red";
+    this.canvasContext.fill();
+
+    // Draw y axis.
+    this.canvasContext.beginPath();
+    this.canvasContext.strokeStyle = "blue";
+    this.canvasContext.lineWidth = 2;
+    this.canvasContext.moveTo(0, 0);
+    this.canvasContext.lineTo(0, 100);
+    this.canvasContext.stroke();
+
+    // Draw y arrow tip.
+    this.canvasContext.beginPath();
+    this.canvasContext.moveTo(0, 100);
+    this.canvasContext.lineTo(5, 100);
+    this.canvasContext.lineTo(0, 110);
+    this.canvasContext.lineTo(-5, 100);
+    this.canvasContext.lineTo(0, 100);
+    this.canvasContext.fillStyle = "blue";
+    this.canvasContext.fill();
+
+    // Draw center point.
+    this.canvasContext.beginPath();
+    this.canvasContext.fillStyle = "green";
+    this.canvasContext.arc(0, 0, 5, 0, 2 * Math.PI);
+    this.canvasContext.fill();
+  }
+
+  drawHighlight(): void {
+    this.canvasContext.beginPath();
+    this.canvasContext.strokeStyle = "yellow";
+    this.canvasContext.lineWidth = 2;
+    this.canvasContext.arc(0, 0, highlightThreshold, 0, 2 * Math.PI);
+    this.canvasContext.stroke();
   }
 
   static updateEntityInspector = (entity: Entity | null) => {
     EditorInspectorSystem.inspectEntity = entity;
+    // Check if the inspectEntity has Transform component.
+    if (entity?.hasComponent(TransformData2D)) {
+      this.inspectTransform = entity.getComponent(
+        TransformData2D
+      ) as Readonly<TransformData2D>;
+    }
 
     EditorInspectorSystem.displayEntityInspector(entity);
   };
