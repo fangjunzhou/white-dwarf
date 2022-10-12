@@ -20,6 +20,7 @@ export class CamDragSystem extends System {
 
   // The required movement of the camera.
   deltaPos: Vector2 = new Vector2(0, 0);
+  zoom: number = 0;
 
   init(attributes?: Attributes | undefined): void {
     this.mainCanvas = attributes?.mainCanvas;
@@ -37,6 +38,16 @@ export class CamDragSystem extends System {
           this.deltaPos.value,
           vec2.fromValues(-event.movementX, -event.movementY)
         );
+      }
+    });
+
+    // Listen to mouse wheel event.
+    this.mainCanvas.addEventListener("wheel", (event) => {
+      if (event.deltaY > 0) {
+        this.zoom -= 0.1;
+      }
+      if (event.deltaY < 0) {
+        this.zoom += 0.1;
       }
     });
   }
@@ -61,7 +72,26 @@ export class CamDragSystem extends System {
       this.deltaPos.value
     );
 
+    // Set the scale of the camera.
+    let scaleX = mainCamera.scale.value[0];
+    let scaleY = mainCamera.scale.value[1];
+
+    scaleX += this.zoom;
+    scaleY += this.zoom;
+
+    if (scaleX < 0.1) {
+      scaleX = 0.1;
+    }
+    if (scaleY < 0.1) {
+      scaleY = 0.1;
+    }
+
+    mainCamera.scale.set(scaleX, scaleY);
+
     // Reset the delta position.
     vec2.set(this.deltaPos.value, 0, 0);
+
+    // Reset the zoom.
+    this.zoom = 0;
   }
 }
