@@ -43,7 +43,14 @@ export class CamDragSystem extends System {
 
   execute(delta: number, time: number): void {
     // Get the main camera transform.
-    const mainCamera = this.queries.mainCamera.results[0].getMutableComponent(
+    const mainCameraRes = this.queries.mainCamera.results;
+
+    // Check if there's only one main camera.
+    if (mainCameraRes.length !== 1) {
+      return;
+    }
+
+    const mainCamera = mainCameraRes[0].getMutableComponent(
       TransformData2D
     ) as TransformData2D;
 
