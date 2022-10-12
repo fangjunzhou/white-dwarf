@@ -6,6 +6,10 @@ import { IComponent } from "../../ComponentRegistry";
 @IComponent.register
 export class ImageRenderData2D extends Component<ImageRenderData2D> {
   static schema: ComponentSchema = {
+    src: {
+      type: Types.String,
+      default: "",
+    },
     img: {
       type: Types.Ref,
       default: null,
@@ -16,6 +20,7 @@ export class ImageRenderData2D extends Component<ImageRenderData2D> {
     },
   };
 
+  src: string = "";
   img: CanvasImageSource | null = null;
   imageCenter!: Vector2;
 }
