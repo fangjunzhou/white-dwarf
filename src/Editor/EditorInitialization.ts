@@ -1,7 +1,7 @@
 import { SystemQueries } from "ecsy/System";
 import { mainWorld, resetWorld } from "../Core";
 import { coreRenderContext } from "../Core/Context/RenderContext";
-import { coreSetup } from "../Core/CoreSetup";
+import { coreSetup, systemContext } from "../Core/CoreSetup";
 import { TransformData2D } from "../Core/Locomotion/DataComponent/TransformData2D";
 import {
   BackgroundType,
@@ -66,6 +66,9 @@ export const editorInitialization = () => {
 };
 
 const setupPlayButton = () => {
+  editorUIContext.playButton?.addEventListener("click", () => {
+    systemContext.playerStart();
+  });
   // TODO: Deserialize scene and setup world here.
 };
 
