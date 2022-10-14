@@ -1,5 +1,6 @@
 import { World } from "ecsy/World";
 import { ITimeContext } from "./Context/TimeContext";
+import { coreSetup, systemContext } from "./CoreSetup";
 
 // Main world to hold all game entities.
 export let mainWorld = new World();
@@ -37,6 +38,16 @@ const physicsUpdate = async () => {
       setTimeout(resolve, timeContext.fixedTimeStep * 1000)
     );
   }
+};
+
+export const whiteDwarfMain = () => {
+  // Setup core.
+  coreSetup();
+
+  systemContext.coreStart();
+
+  // Start white dwarf.
+  mainInit();
 };
 
 export const mainInit = () => {

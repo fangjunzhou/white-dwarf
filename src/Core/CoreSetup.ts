@@ -16,15 +16,11 @@ export const coreSetup = () => {
     mainWorld.registerComponent(componentConstructors[i]);
   }
 
-  // Register Render Systems.
-  new RenderSystemRegister(coreRenderContext.mainCanvas).register(mainWorld);
-
-  // TODO: Register more systems here.
-
   // Register all user defined systems.
-  systemContext.userSetup();
+  systemContext.coreSetup();
 };
 
 export const systemContext: ISystemContext = {
-  userSetup: () => {},
+  coreSetup: () => {},
+  coreStart: () => {},
 };

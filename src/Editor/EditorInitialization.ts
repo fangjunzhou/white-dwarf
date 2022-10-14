@@ -1,22 +1,11 @@
-import { SystemQueries } from "ecsy/System";
-import { mainWorld, resetWorld } from "../Core";
+import { mainWorld } from "../Core";
 import { coreRenderContext } from "../Core/Context/RenderContext";
 import { coreSetup, systemContext } from "../Core/CoreSetup";
-import { TransformData2D } from "../Core/Locomotion/DataComponent/TransformData2D";
-import {
-  BackgroundType,
-  CameraData2D,
-} from "../Core/Render/DataComponent/CameraData2D";
-import { ImageRenderData2D } from "../Core/Render/DataComponent/ImageRenderData2D";
-import { CameraTag } from "../Core/Render/TagComponent/CameraTag";
-import { MainCameraTag } from "../Core/Render/TagComponent/MainCameraTag";
-import { Vector2 } from "../Mathematics/Vector2";
 import { editorEventContext, editorUIContext } from "./EditorContext";
 import { addNewEntity, updateEntityList } from "./EditorEntityListManager";
 import { EditorSystemRegister } from "./EditorSystemRegister";
 import { EditorCamTagAppendSystem } from "./System/EditorCamTagAppendSystem";
 import { EditorInspectorSystem } from "./System/EditorInspectorSystem";
-import { EditorSceneCamTag } from "./TagComponent/EditorSceneCamTag";
 
 export const editorInitialization = () => {
   coreRenderContext.mainCanvas = document.getElementById(
@@ -67,7 +56,7 @@ export const editorInitialization = () => {
 
 const setupPlayButton = () => {
   editorUIContext.playButton?.addEventListener("click", () => {
-    systemContext.playerStart();
+    systemContext.coreStart();
   });
   // TODO: Deserialize scene and setup world here.
 };
