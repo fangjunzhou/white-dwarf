@@ -11,9 +11,9 @@
   "typings": "dist/index.d.ts",
   "scripts": {
     "build-core": "esbuild --bundle --sourcemap src/Core/index.ts --outfile=dist/Core/index.js",
-    "build-editor": "esbuild --bundle --sourcemap src/Editor/index.ts --outfile=dist/Editor/index.js",
-    "start-editor": "esbuild --bundle --sourcemap src/Editor/index.ts --outfile=dist/Editor/index.js --servedir=dist/Editor",
-    "watch-editor": "esbuild --bundle --sourcemap src/Editor/index.ts --outfile=dist/Editor/index.js --watch"
+    "build-editor": "esbuild --bundle --sourcemap src/Editor/index.ts --outfile=dist/Editor/editor.js",
+    "start-editor": "esbuild --bundle --sourcemap src/Editor/index.ts --outfile=dist/Editor/editor.js --servedir=dist/Editor",
+    "watch-editor": "esbuild --bundle --sourcemap src/Editor/index.ts --outfile=dist/Editor/editor.js --watch"
   },
   "repository": {
     "type": "git",
