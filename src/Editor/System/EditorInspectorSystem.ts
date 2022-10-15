@@ -1,11 +1,12 @@
 import { Component, ComponentSchema } from "ecsy/Component";
 import { Entity } from "ecsy/Entity";
 import { Attributes, System, SystemQueries } from "ecsy/System";
-import { Types } from "ecsy/Types";
 import { mat3, vec2 } from "gl-matrix";
+import fileDownload from "js-file-download";
 import { IComponent } from "../../Core/ComponentRegistry";
 import { TransformData2D } from "../../Core/Locomotion/DataComponent/TransformData2D";
 import { Canvas2DRenderer } from "../../Core/Render/System/Canvas2DRenderer";
+import { EntitySerializer } from "../../Core/Serialization/EntitySerializer";
 import { Vector2 } from "../../Mathematics/Vector2";
 import { editorUIContext } from "../EditorContext";
 import { EditorSceneCamTag } from "../TagComponent/EditorSceneCamTag";
@@ -348,21 +349,18 @@ export class EditorInspectorSystem extends Canvas2DRenderer {
         entityInspector.removeChild(entityInspector.firstChild);
       }
 
-      // Add remove entity button.
+      // Entity operations
       const entityOperationDiv = document.createElement("div");
       entityOperationDiv.className = "componentListItem";
 
-      const removeEntityButton = document.createElement("button");
-      removeEntityButton.innerText = "Remove Entity";
-      removeEntityButton.style.width = "100%";
-      removeEntityButton.onclick = () => {
-        // Remove entity.
-        entity.remove();
-        // Update entity inspector.
-        EditorInspectorSystem.updateEntityInspector(null);
-      };
+      // Add remove entity button.
+      EditorInspectorSystem.addRemoveEntityButton(entity, entityOperationDiv);
+      // Add serialize entity button.
+      EditorInspectorSystem.addSerializeEntityButton(
+        entity,
+        entityOperationDiv
+      );
 
-      entityOperationDiv.appendChild(removeEntityButton);
       entityInspector.appendChild(entityOperationDiv);
 
       // Add components data.
@@ -370,18 +368,23 @@ export class EditorInspectorSystem extends Canvas2DRenderer {
         const componentIndex = componentIndices[j];
         const component = components[componentIndex];
 
+        const componentObject = EntitySerializer.serializeComponent(component);
+
         // Add component name.
         const componentDiv = document.createElement("div");
         const componentTitle = document.createElement("span");
-        componentTitle.innerText = component.constructor.name;
+        componentTitle.innerText = componentObject.type;
         componentDiv.appendChild(componentTitle);
 
         // Add component data.
         const componentData = document.createElement("span");
         componentData.className = "textarea";
         componentData.contentEditable = "true";
-        componentData.textContent =
-          EditorInspectorSystem.getComponentString(component);
+        componentData.textContent = JSON.stringify(
+          componentObject.data,
+          null,
+          2
+        );
         componentData.style.whiteSpace = "pre-wrap";
         componentData.style.resize = "none";
         componentDiv.appendChild(componentData);
@@ -415,10 +418,15 @@ export class EditorInspectorSystem extends Canvas2DRenderer {
 
         // When component data is changed.
         component.onComponentChanged = (component) => {
+          const componentObject =
+            EntitySerializer.serializeComponent(component);
           // Check if the componentData box is focused.
           if (document.activeElement !== componentData) {
-            componentData.textContent =
-              EditorInspectorSystem.getComponentString(component);
+            componentData.textContent = JSON.stringify(
+              componentObject.data,
+              null,
+              2
+            );
           }
         };
 
@@ -429,61 +437,94 @@ export class EditorInspectorSystem extends Canvas2DRenderer {
         entityInspector.appendChild(componentDiv);
       }
 
-      const componentAddDiv = document.createElement("div");
-      componentAddDiv.className = "componentListItem";
-
-      const componentNameInput = document.createElement("select");
-      const componentList = IComponent.getImplementations();
-      const componentNames = componentList.map((component) => component.name);
-      for (let j = 0; j < componentNames.length; j++) {
-        const componentName = componentNames[j];
-        const option = document.createElement("option");
-        option.value = componentName;
-        option.innerText = componentName;
-        componentNameInput.appendChild(option);
-      }
-      componentAddDiv.appendChild(componentNameInput);
-
-      // Add "Add Component" button.
-      const addComponentButton = document.createElement("button");
-      addComponentButton.style.width = "100%";
-      addComponentButton.innerText = "Add Component";
-      addComponentButton.onclick = () => {
-        // Add component.
-        const componentList = IComponent.getImplementations();
-        console.log(componentNameInput.value);
-        // Get the component with the name.
-        let component = componentList.find(
-          (component) => component.name === componentNameInput.value
-        );
-        if (component) {
-          // Add component to entity.
-          entity.addComponent(component);
-          EditorInspectorSystem.updateEntityInspector(entity);
-        } else {
-          console.error("Component not found.");
-        }
-      };
-      componentAddDiv.appendChild(addComponentButton);
-
-      entityInspector.appendChild(componentAddDiv);
+      // Add component feature.
+      EditorInspectorSystem.addComponentButton(entity, entityInspector);
     }
   };
 
-  private static getComponentString = (component: Component<any>) => {
-    const componentSchema = Object.getPrototypeOf(component).constructor
-      .schema as ComponentSchema;
+  private static addSerializeEntityButton(
+    entity: Entity,
+    entityOperationDiv: HTMLDivElement
+  ) {
+    const serializeEntityButton = document.createElement("button");
+    serializeEntityButton.innerText = "Serialize Entity";
+    serializeEntityButton.style.width = "100%";
+    serializeEntityButton.onclick = () => {
+      const serializedEntity = EntitySerializer.serializeEntity(entity);
+      fileDownload(JSON.stringify(serializedEntity, null, 2), "entity.json");
+    };
+    entityOperationDiv.appendChild(serializeEntityButton);
+  }
 
-    const componentDataContent: { [key: string]: any } = {};
-    Object.keys(component).forEach((key) => {
-      if (
-        Object.keys(componentSchema).includes(key) &&
-        componentSchema[key].type !== Types.Ref
-      ) {
-        componentDataContent[key] = component[key as keyof typeof component];
+  /**
+   * Add a new component to entity.
+   *
+   * @param entity the entity to add component to.
+   * @param entityInspector the entity inspector to add component button to.
+   */
+  private static addComponentButton(
+    entity: Entity,
+    entityInspector: HTMLDivElement
+  ) {
+    const componentAddDiv = document.createElement("div");
+    componentAddDiv.className = "componentListItem";
+
+    const componentNameInput = document.createElement("select");
+    const componentList = IComponent.getImplementations();
+    const componentNames = componentList.map((component) => component.name);
+    for (let j = 0; j < componentNames.length; j++) {
+      const componentName = componentNames[j];
+      const option = document.createElement("option");
+      option.value = componentName;
+      option.innerText = componentName;
+      componentNameInput.appendChild(option);
+    }
+    componentAddDiv.appendChild(componentNameInput);
+
+    // Add "Add Component" button.
+    const addComponentButton = document.createElement("button");
+    addComponentButton.style.width = "100%";
+    addComponentButton.innerText = "Add Component";
+    addComponentButton.onclick = () => {
+      // Add component.
+      const componentList = IComponent.getImplementations();
+      // Get the component with the name.
+      let component = componentList.find(
+        (component) => component.name === componentNameInput.value
+      );
+      if (component) {
+        // Add component to entity.
+        entity.addComponent(component);
+        EditorInspectorSystem.updateEntityInspector(entity);
+      } else {
+        console.error("Component not found.");
       }
-    });
+    };
+    componentAddDiv.appendChild(addComponentButton);
 
-    return JSON.stringify(componentDataContent, null, " ");
-  };
+    entityInspector.appendChild(componentAddDiv);
+  }
+
+  /**
+   * Remove the entity.
+   *
+   * @param entity the entity to remove.
+   * @param entityOperationDiv the entity operation div to add remove button to.
+   */
+  private static addRemoveEntityButton(
+    entity: Entity,
+    entityOperationDiv: HTMLDivElement
+  ) {
+    const removeEntityButton = document.createElement("button");
+    removeEntityButton.innerText = "Remove Entity";
+    removeEntityButton.style.width = "100%";
+    removeEntityButton.onclick = () => {
+      // Remove entity.
+      entity.remove();
+      // Update entity inspector.
+      EditorInspectorSystem.updateEntityInspector(null);
+    };
+
+    entityOperationDiv.appendChild(removeEntityButton);
+  }
 }

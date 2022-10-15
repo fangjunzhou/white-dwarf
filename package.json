@@ -27,7 +27,8 @@
   "homepage": "https://github.com/Fangjun-Zhou/White-Dwarf#readme",
   "dependencies": {
     "esbuild": "^0.15.10",
-    "gl-matrix": "^3.4.3"
+    "gl-matrix": "^3.4.3",
+    "js-file-download": "^0.4.12"
   },
   "peerDependencies": {},
   "devDependencies": {
