@@ -166,6 +166,15 @@ export class EditorInspectorSystem extends Canvas2DRenderer {
    * @returns world position.
    */
   screenToWorld(screenPos: vec2): vec2 {
+    // Check if main camera exists.
+    if (this.queries.mainCamera.results.length === 0) {
+      throw new Error("Main camera not found.");
+    }
+    // Check if there's more than one main camera.
+    else if (this.queries.mainCamera.results.length > 1) {
+      throw new Error("More than one main camera found.");
+    }
+
     const cameraTransform = this.queries.mainCamera.results[0].getComponent(
       TransformData2D
     ) as TransformData2D;
@@ -194,6 +203,15 @@ export class EditorInspectorSystem extends Canvas2DRenderer {
    * @returns screen position.
    */
   worldToScreen(worldPos: vec2): vec2 {
+    // Check if main camera exists.
+    if (this.queries.mainCamera.results.length === 0) {
+      throw new Error("Main camera not found.");
+    }
+    // Check if there's more than one main camera.
+    else if (this.queries.mainCamera.results.length > 1) {
+      throw new Error("More than one main camera found.");
+    }
+
     const cameraTransform = this.queries.mainCamera.results[0].getComponent(
       TransformData2D
     ) as TransformData2D;
