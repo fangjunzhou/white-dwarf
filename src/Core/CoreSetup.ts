@@ -16,7 +16,7 @@ export const coreSetup = () => {
     mainWorld.registerComponent(componentConstructors[i]);
   }
 
-  // Register all user defined systems.
+  // Call core setup callback.
   systemContext.coreSetup();
 };
 

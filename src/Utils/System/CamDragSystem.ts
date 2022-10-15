@@ -69,7 +69,10 @@ export class CamDragSystem extends System {
     vec2.add(
       mainCamera.position.value,
       mainCamera.position.value,
-      this.deltaPos.value
+      vec2.fromValues(
+        this.deltaPos.value[0] / mainCamera.scale.value[0],
+        this.deltaPos.value[1] / mainCamera.scale.value[1]
+      )
     );
 
     // Set the scale of the camera.

@@ -49,13 +49,13 @@ export class Canvas2DRenderer extends System {
       worldToCamera,
       vec2.fromValues(canvasSize[0] / 2, canvasSize[1] / 2)
     );
+    mat3.scale(worldToCamera, worldToCamera, camTransform.scale.value);
     mat3.translate(
       worldToCamera,
       worldToCamera,
       vec2.negate(vec2.create(), camTransform.position.value)
     );
     mat3.rotate(worldToCamera, worldToCamera, camTransform.rotation);
-    mat3.scale(worldToCamera, worldToCamera, camTransform.scale.value);
 
     return worldToCamera;
   }
