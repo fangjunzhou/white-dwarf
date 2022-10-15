@@ -1,4 +1,4 @@
-import { mainInit, mainWorld } from "../Core";
+import { mainInit, mainWorld, releaseInit, resetWorld } from "../Core";
 import { coreRenderContext } from "../Core/Context/RenderContext";
 import { coreSetup, systemContext } from "../Core/CoreSetup";
 import { editorUIContext, editorEventContext } from "./EditorContext";
@@ -6,6 +6,8 @@ import { updateEntityList, addNewEntity } from "./EditorEntityListManager";
 import { EditorSystemRegister } from "./EditorSystemRegister";
 import { EditorCamTagAppendSystem } from "./System/EditorCamTagAppendSystem";
 import { EditorInspectorSystem } from "./System/EditorInspectorSystem";
+
+let platState = false;
 
 export const editorInit = () => {
   console.log("Editor Started");
@@ -82,9 +84,24 @@ const onResize = () => {
 
 const setupPlayButton = () => {
   editorUIContext.playButton?.addEventListener("click", () => {
-    systemContext.coreStart();
+    if (!platState) {
+      if (editorUIContext.playButton) {
+        editorUIContext.playButton.innerHTML = "Stop";
+      }
+
+      editorPlay();
+
+      platState = true;
+    } else {
+      if (editorUIContext.playButton) {
+        editorUIContext.playButton.innerHTML = "Play";
+      }
+
+      editorStop();
+
+      platState = false;
+    }
   });
-  // TODO: Deserialize scene and setup world here.
 };
 
 const setupCreateEntityButton = () => {
@@ -96,6 +113,45 @@ const setupCreateEntityButton = () => {
       addNewEntity();
     }
   });
+};
+
+const editorPlay = () => {
+  // Reset the main world.
+  resetWorld();
+
+  // Register main world entity change.
+  mainWorld.onEntityChanged.push(updateEntityList);
+
+  // Call release init.
+  releaseInit();
+};
+
+const editorStop = () => {
+  // Reset the main world.
+  resetWorld();
+
+  // Register main world entity change.
+  mainWorld.onEntityChanged.push(updateEntityList);
+
+  // Call editor init.// Core setup.
+  coreSetup();
+
+  // Editor start.
+  systemContext.editorStart();
+
+  // Register Editor System.
+  if (coreRenderContext.mainCanvas) {
+    new EditorSystemRegister(coreRenderContext.mainCanvas).register(mainWorld);
+  }
+  // Setup editor scene camera.
+  try {
+    mainWorld.registerSystem(EditorCamTagAppendSystem);
+  } catch (error) {
+    console.error(error);
+  }
+
+  // White Dwarf Engine initialization.
+  mainInit();
 };
 
 window.onload = editorInit;
