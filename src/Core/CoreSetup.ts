@@ -23,4 +23,5 @@ export const coreSetup = () => {
 export const systemContext: ISystemContext = {
   coreSetup: () => {},
   coreStart: () => {},
+  editorStart: () => {},
 };

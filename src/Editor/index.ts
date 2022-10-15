@@ -45,6 +45,9 @@ export const editorInit = () => {
   // Core setup.
   coreSetup();
 
+  // Editor start.
+  systemContext.editorStart();
+
   // Register Editor System.
   new EditorSystemRegister(coreRenderContext.mainCanvas).register(mainWorld);
 

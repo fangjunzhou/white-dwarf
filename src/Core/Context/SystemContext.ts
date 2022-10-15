@@ -9,6 +9,13 @@ export interface ISystemContext {
   /**
    * Callback game begin function.
    * Called only in release mode and editor play mode.
+   * Register game play systems here.
    */
   coreStart: () => void;
+
+  /**
+   * Callback when editor is initialized.
+   * Register editor related systems here.
+   */
+  editorStart: () => void;
 }
