@@ -1,3 +1,4 @@
+import fileDownload from "js-file-download";
 import { mainInit, mainWorld, releaseInit, resetWorld } from "../Core";
 import { coreRenderContext } from "../Core/Context/RenderContext";
 import { coreSetup, systemContext } from "../Core/CoreSetup";
@@ -5,18 +6,17 @@ import {
   EntitySerializer,
   IEntityObject,
 } from "../Core/Serialization/EntitySerializer";
-import { editorUIContext, editorEventContext } from "./EditorContext";
 import {
-  updateEntityList,
-  addNewEntity,
-  deserializeEntity,
-} from "./EditorEntityListManager";
+  IWorldObject,
+  WorldSerializer,
+} from "../Core/Serialization/WorldSerializer";
+import { editorUIContext, editorEventContext } from "./EditorContext";
+import { updateEntityList, addNewEntity } from "./EditorEntityListManager";
 import { EditorSystemRegister } from "./EditorSystemRegister";
 import { EditorCamTagAppendSystem } from "./System/EditorCamTagAppendSystem";
 import { EditorInspectorSystem } from "./System/EditorInspectorSystem";
 
 let platState = false;
-const entitySerializer = new EntitySerializer();
 
 export const editorInit = () => {
   console.log("Editor Started");
@@ -42,9 +42,16 @@ export const editorInit = () => {
   editorUIContext.createEntityButton = document.getElementById(
     "createEntityButton"
   ) as HTMLButtonElement;
-  editorUIContext.deserializeEntityInput = document.getElementById(
+  editorUIContext.deserializeEntityButton = document.getElementById(
     "fileInput"
   ) as HTMLInputElement;
+
+  editorUIContext.saveWorldButton = document.getElementById(
+    "saveWorldButton"
+  ) as HTMLButtonElement;
+  editorUIContext.loadWorldButton = document.getElementById(
+    "loadWorldButton"
+  ) as HTMLButtonElement;
 
   // Disable right click for main canvas.
   coreRenderContext.mainCanvas.oncontextmenu = () => false;
@@ -80,6 +87,9 @@ export const editorInit = () => {
 
   // Setup deserialize entity input.
   setupDeserializeEntityInput();
+
+  // Setup save and load world button.
+  setupSaveLoadWorldButton();
 
   // White Dwarf Engine initialization.
   mainInit();
@@ -122,39 +132,67 @@ const setupPlayButton = () => {
 const setupCreateEntityButton = () => {
   editorUIContext.createEntityButton?.addEventListener("click", () => {
     // Check if there's a target deserialize entity input.
-    if (!entitySerializer.entityData) {
-      if (editorUIContext.entityNameInput) {
-        addNewEntity(editorUIContext.entityNameInput.value);
-        editorUIContext.entityNameInput.value = "";
-      } else {
-        addNewEntity();
-      }
+    if (editorUIContext.entityNameInput) {
+      addNewEntity(editorUIContext.entityNameInput.value);
+      editorUIContext.entityNameInput.value = "";
     } else {
-      deserializeEntity(entitySerializer.entityData);
+      addNewEntity();
     }
   });
 };
 
 const setupDeserializeEntityInput = () => {
-  editorUIContext.deserializeEntityInput?.addEventListener("change", (e) => {
-    // Read the entity data.
-    const file = (e.target as HTMLInputElement).files?.[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        const data = e.target?.result;
-        if (data) {
-          const entityData = JSON.parse(data as string) as IEntityObject;
-          entitySerializer.entityData = entityData;
-
-          // Set the entity name.
-          if (editorUIContext.entityNameInput) {
-            editorUIContext.entityNameInput.value = entityData.name;
+  editorUIContext.deserializeEntityButton?.addEventListener("click", () => {
+    let input = document.createElement("input");
+    input.type = "file";
+    input.onchange = (e) => {
+      // Read the entity data.
+      const file = (e.target as HTMLInputElement).files?.[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          const data = e.target?.result;
+          if (data) {
+            const entityData = JSON.parse(data as string) as IEntityObject;
+            EntitySerializer.deserializeEntity(mainWorld, entityData);
           }
-        }
-      };
-      reader.readAsText(file);
-    }
+        };
+        reader.readAsText(file);
+      }
+    };
+    input.click();
+  });
+};
+
+const setupSaveLoadWorldButton = () => {
+  editorUIContext.saveWorldButton?.addEventListener("click", () => {
+    const worldObject = WorldSerializer.serializeWorld(mainWorld);
+    fileDownload(JSON.stringify(worldObject, null, 2), "world.json");
+  });
+
+  editorUIContext.loadWorldButton?.addEventListener("click", () => {
+    let input = document.createElement("input");
+    input.type = "file";
+    input.onchange = (e) => {
+      // Read the entity data.
+      const file = (e.target as HTMLInputElement).files?.[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          const data = e.target?.result;
+          if (data) {
+            const entityData = JSON.parse(data as string) as IWorldObject;
+
+            // Clear the world.
+            editorStop();
+
+            WorldSerializer.deserializeWorld(mainWorld, entityData);
+          }
+        };
+        reader.readAsText(file);
+      }
+    };
+    input.click();
   });
 };
 

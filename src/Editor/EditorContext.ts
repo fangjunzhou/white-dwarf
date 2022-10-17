@@ -8,7 +8,10 @@ export interface IEditorUIContext {
 
   entityNameInput: HTMLInputElement | null;
   createEntityButton: HTMLButtonElement | null;
-  deserializeEntityInput: HTMLInputElement | null;
+  deserializeEntityButton: HTMLInputElement | null;
+
+  saveWorldButton: HTMLButtonElement | null;
+  loadWorldButton: HTMLButtonElement | null;
 }
 
 export interface IEditorEventContext {
@@ -21,7 +24,9 @@ export const editorUIContext: IEditorUIContext = {
   playButton: null,
   entityNameInput: null,
   createEntityButton: null,
-  deserializeEntityInput: null,
+  deserializeEntityButton: null,
+  saveWorldButton: null,
+  loadWorldButton: null,
 };
 
 export const editorEventContext: IEditorEventContext = {
