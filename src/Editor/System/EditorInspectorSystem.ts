@@ -1,4 +1,4 @@
-import { Component, ComponentSchema } from "ecsy/Component";
+import { COMPONENT_CHANGE_EVENT } from "ecsy/Component";
 import { Entity } from "ecsy/Entity";
 import { Attributes, System, SystemQueries } from "ecsy/System";
 import { mat3, vec2 } from "gl-matrix";
@@ -428,7 +428,7 @@ export class EditorInspectorSystem extends Canvas2DRenderer {
           });
 
           // When component data is changed.
-          component.onComponentChanged = (component) => {
+          component.eventEmitter.on(COMPONENT_CHANGE_EVENT, (component) => {
             const componentObject =
               EntitySerializer.serializeComponent(component);
             // Check if the componentData box is focused.
@@ -439,7 +439,7 @@ export class EditorInspectorSystem extends Canvas2DRenderer {
                 2
               );
             }
-          };
+          });
         }
 
         // Add a remove button.

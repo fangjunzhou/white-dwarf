@@ -1,4 +1,8 @@
-import { Component, ComponentSchema } from "ecsy/Component";
+import {
+  Component,
+  ComponentSchema,
+  COMPONENT_CHANGE_EVENT,
+} from "ecsy/Component";
 import { Types } from "ecsy/Types";
 import {
   HermiteCurve2DSegment,
@@ -30,6 +34,9 @@ export class HermiteCurveData2D extends Component<HermiteCurveData2D> {
     curveSegmentsDiv.style.flexDirection = "column";
 
     this.populateSegmentEditor(curveSegmentsDiv);
+    this.eventEmitter.on(COMPONENT_CHANGE_EVENT, (component) => {
+      this.RepopulateCurveUI(curveSegmentsDiv);
+    });
 
     componentDiv.appendChild(curveSegmentsDiv);
 
@@ -45,8 +52,7 @@ export class HermiteCurveData2D extends Component<HermiteCurveData2D> {
         )
       );
 
-      this.onComponentChanged(this);
-      this.RepopulateCurveUI(curveSegmentsDiv);
+      this.eventEmitter.emit(COMPONENT_CHANGE_EVENT, this);
     };
     componentDiv.appendChild(addCurveSegmentButton);
   };
@@ -74,8 +80,7 @@ export class HermiteCurveData2D extends Component<HermiteCurveData2D> {
         segment,
         (value) => {
           this.segments[index] = value;
-          this.onComponentChanged(this);
-          this.RepopulateCurveUI(curveSegmentsDiv);
+          this.eventEmitter.emit(COMPONENT_CHANGE_EVENT, this);
         }
       );
       segmentDiv.appendChild(segmentEditor);
@@ -85,8 +90,7 @@ export class HermiteCurveData2D extends Component<HermiteCurveData2D> {
       removeSegmentButton.appendChild(document.createTextNode("Remove"));
       removeSegmentButton.onclick = () => {
         this.segments.splice(index, 1);
-        this.onComponentChanged(this);
-        this.RepopulateCurveUI(curveSegmentsDiv);
+        this.eventEmitter.emit(COMPONENT_CHANGE_EVENT, this);
       };
       segmentDiv.appendChild(removeSegmentButton);
 
