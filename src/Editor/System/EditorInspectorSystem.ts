@@ -10,10 +10,12 @@ import { EntitySerializer } from "../../Core/Serialization/EntitySerializer";
 import { Vector2 } from "../../Mathematics/Vector2";
 import { editorUIContext } from "../EditorContext";
 import { EditorSceneCamTag } from "../TagComponent/EditorSceneCamTag";
+import { EditorSelectedTag } from "../TagComponent/EditorSelectedTag";
 
 const highlightThreshold = 25;
 const axisLength = 50;
 
+// TODO: Split all inspector operations into ECS based systems.
 export class EditorInspectorSystem extends Canvas2DRenderer {
   static inspectEntity: Entity | null = null;
   static inspectTransform: Readonly<TransformData2D> | null = null;
@@ -306,7 +308,18 @@ export class EditorInspectorSystem extends Canvas2DRenderer {
   }
 
   static updateEntityInspector = (entity: Entity | null) => {
+    // Removed the EditorSelectedTag from the previous entity.
+    if (EditorInspectorSystem.inspectEntity) {
+      EditorInspectorSystem.inspectEntity.removeComponent(EditorSelectedTag);
+    }
+
     EditorInspectorSystem.inspectEntity = entity;
+
+    // Add the EditorSelectedTag to the new entity.
+    if (EditorInspectorSystem.inspectEntity) {
+      EditorInspectorSystem.inspectEntity.addComponent(EditorSelectedTag);
+    }
+
     // Check if the inspectEntity has Transform component.
     if (entity?.hasComponent(TransformData2D)) {
       this.inspectTransform = entity.getComponent(

@@ -2,6 +2,7 @@ import { Component, ComponentSchema } from "ecsy/Component";
 import { Entity } from "ecsy/Entity";
 import { Types } from "ecsy/Types";
 import { World } from "ecsy/World";
+import { EditorSelectedTag } from "../../Editor/TagComponent/EditorSelectedTag";
 import { IComponent } from "../ComponentRegistry";
 
 export interface IEntityObject {
@@ -75,6 +76,11 @@ export class EntitySerializer {
     for (let j = 0; j < componentIndices.length; j++) {
       const componentIndex = componentIndices[j];
       const component = components[componentIndex];
+
+      // Skip EditorSelectedTag.
+      if (component.constructor.name === EditorSelectedTag.name) {
+        continue;
+      }
 
       const componentObject = EntitySerializer.serializeComponent(component);
 
