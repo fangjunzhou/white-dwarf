@@ -385,22 +385,62 @@ export class EditorInspectorSystem extends Canvas2DRenderer {
 
         // Add component name.
         const componentDiv = document.createElement("div");
+        // Set css class.
+        componentDiv.className = "componentListItem";
+
         const componentTitle = document.createElement("span");
         componentTitle.innerText = componentObject.type;
         componentDiv.appendChild(componentTitle);
 
-        // Add component data.
-        const componentData = document.createElement("span");
-        componentData.className = "textarea";
-        componentData.contentEditable = "true";
-        componentData.textContent = JSON.stringify(
-          componentObject.data,
-          null,
-          2
-        );
-        componentData.style.whiteSpace = "pre-wrap";
-        componentData.style.resize = "none";
-        componentDiv.appendChild(componentData);
+        // Custom inspector here.
+        if (component.onInspector) {
+          component.onInspector(componentDiv);
+        }
+
+        // Default inspector here.
+        if (!component.onInspector || component.useDefaultInspector) {
+          const componentData = document.createElement("span");
+          componentData.className = "textarea";
+          componentData.contentEditable = "true";
+          componentData.textContent = JSON.stringify(
+            componentObject.data,
+            null,
+            2
+          );
+          componentData.style.whiteSpace = "pre-wrap";
+          componentData.style.resize = "none";
+          componentDiv.appendChild(componentData);
+
+          // When component data is changed.
+          componentData.addEventListener("input", (event) => {
+            const target = event.target as HTMLTextAreaElement;
+            try {
+              const newComponentData = JSON.parse(target.textContent || "{}");
+              component.copy(newComponentData);
+              // Call change event.
+              entity.getMutableComponent(
+                Object.getPrototypeOf(component).constructor
+              );
+            } catch (error) {
+              console.error(error);
+              return;
+            }
+          });
+
+          // When component data is changed.
+          component.onComponentChanged = (component) => {
+            const componentObject =
+              EntitySerializer.serializeComponent(component);
+            // Check if the componentData box is focused.
+            if (document.activeElement !== componentData) {
+              componentData.textContent = JSON.stringify(
+                componentObject.data,
+                null,
+                2
+              );
+            }
+          };
+        }
 
         // Add a remove button.
         const removeButton = document.createElement("button");
@@ -412,39 +452,6 @@ export class EditorInspectorSystem extends Canvas2DRenderer {
           EditorInspectorSystem.updateEntityInspector(entity);
         };
         componentDiv.appendChild(removeButton);
-
-        // When component data is changed.
-        componentData.addEventListener("input", (event) => {
-          const target = event.target as HTMLTextAreaElement;
-          try {
-            const newComponentData = JSON.parse(target.textContent || "{}");
-            component.copy(newComponentData);
-            // Call change event.
-            entity.getMutableComponent(
-              Object.getPrototypeOf(component).constructor
-            );
-          } catch (error) {
-            console.error(error);
-            return;
-          }
-        });
-
-        // When component data is changed.
-        component.onComponentChanged = (component) => {
-          const componentObject =
-            EntitySerializer.serializeComponent(component);
-          // Check if the componentData box is focused.
-          if (document.activeElement !== componentData) {
-            componentData.textContent = JSON.stringify(
-              componentObject.data,
-              null,
-              2
-            );
-          }
-        };
-
-        // Set css class.
-        componentDiv.className = "componentListItem";
 
         // Add component to entityInspector.
         entityInspector.appendChild(componentDiv);

@@ -1,5 +1,5 @@
 import { cloneClonable, copyCopyable, createType } from "ecsy/Types";
-import { Vector2 } from "./Vector2";
+import { Vector2, Vector2CustomEditor } from "./Vector2";
 
 /**
  * Get the u*B value of a hermite curve.
@@ -84,3 +84,64 @@ export const HermiteCurveSegmentType = createType({
   copy: copyCopyable<HermiteCurve2DSegment>,
   clone: cloneClonable<HermiteCurve2DSegment>,
 });
+
+export const HermiteCurve2DSegmentCustomEditor = (
+  value: HermiteCurve2DSegment,
+  onChange: (value: HermiteCurve2DSegment) => void
+): HTMLDivElement => {
+  const container = document.createElement("div");
+
+  const p0Div = document.createElement("div");
+  p0Div.style.display = "flex";
+  p0Div.style.flexDirection = "row";
+  p0Div.appendChild(document.createTextNode("p0:"));
+  const p0 = Vector2CustomEditor(value.p0, (v) => {
+    value.p0 = v;
+    onChange(value);
+  });
+  p0.style.minWidth = "0px";
+  p0.style.flexGrow = "1";
+  p0Div.appendChild(p0);
+  container.appendChild(p0Div);
+
+  const d0Div = document.createElement("div");
+  d0Div.style.display = "flex";
+  d0Div.style.flexDirection = "row";
+  d0Div.appendChild(document.createTextNode("d0:"));
+  const d0 = Vector2CustomEditor(value.d0, (v) => {
+    value.d0 = v;
+    onChange(value);
+  });
+  d0.style.minWidth = "0px";
+  d0.style.flexGrow = "1";
+  d0Div.appendChild(d0);
+  container.appendChild(d0Div);
+
+  const p1Div = document.createElement("div");
+  p1Div.style.display = "flex";
+  p1Div.style.flexDirection = "row";
+  p1Div.appendChild(document.createTextNode("p1:"));
+  const p1 = Vector2CustomEditor(value.p1, (v) => {
+    value.p1 = v;
+    onChange(value);
+  });
+  p1.style.minWidth = "0px";
+  p1.style.flexGrow = "1";
+  p1Div.appendChild(p1);
+  container.appendChild(p1Div);
+
+  const d1Div = document.createElement("div");
+  d1Div.style.display = "flex";
+  d1Div.style.flexDirection = "row";
+  d1Div.appendChild(document.createTextNode("d1:"));
+  const d1 = Vector2CustomEditor(value.d1, (v) => {
+    value.d1 = v;
+    onChange(value);
+  });
+  d1.style.minWidth = "0px";
+  d1.style.flexGrow = "1";
+  d1Div.appendChild(d1);
+  container.appendChild(d1Div);
+
+  return container;
+};

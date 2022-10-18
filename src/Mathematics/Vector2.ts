@@ -40,3 +40,41 @@ export const Vector2Type = createType({
   copy: copyCopyable<Vector2>,
   clone: cloneClonable<Vector2>,
 });
+
+export const Vector2CustomEditor = (
+  value: Vector2,
+  onChange: (value: Vector2) => void
+): HTMLDivElement => {
+  const vector2Div = document.createElement("div");
+  vector2Div.style.display = "flex";
+  vector2Div.style.flexDirection = "row";
+
+  const xLabel = document.createElement("label");
+  xLabel.innerText = "X";
+  vector2Div.appendChild(xLabel);
+  const xInput = document.createElement("input");
+  xInput.type = "number";
+  xInput.style.minWidth = "0px";
+  xInput.style.flexGrow = "1";
+  xInput.value = value.value[0].toString();
+  vector2Div.appendChild(xInput);
+
+  const yLabel = document.createElement("label");
+  yLabel.innerText = "Y";
+  vector2Div.appendChild(yLabel);
+  const yInput = document.createElement("input");
+  yInput.type = "number";
+  yInput.style.minWidth = "0px";
+  yInput.style.flexGrow = "1";
+  yInput.value = value.value[1].toString();
+  vector2Div.appendChild(yInput);
+
+  const update = () => {
+    onChange(new Vector2(parseFloat(xInput.value), parseFloat(yInput.value)));
+  };
+
+  xInput.onchange = update;
+  yInput.onchange = update;
+
+  return vector2Div;
+};

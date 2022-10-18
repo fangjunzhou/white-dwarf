@@ -78,6 +78,14 @@ export class EditorHermiteCurveInspector extends Canvas2DRenderer {
           this.canvasContext.lineTo(curvePosCamera[0], curvePosCamera[1]);
         }
 
+        // Draw line to end point.
+        const endPos = vec2.transformMat3(
+          vec2.create(),
+          segment.p1.value,
+          worldToCamera
+        );
+        this.canvasContext.lineTo(endPos[0], endPos[1]);
+
         // Draw curve.
         this.canvasContext.stroke();
       });
