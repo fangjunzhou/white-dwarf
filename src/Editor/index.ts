@@ -17,6 +17,7 @@ import { EditorCamTagAppendSystem } from "./System/EditorCamTagAppendSystem";
 import { EditorInspectorSystem } from "./System/EditorInspectorSystem";
 
 let platState = false;
+let worldData: IWorldObject | null = null;
 
 export const editorInit = () => {
   console.log("Editor Started");
@@ -108,13 +109,13 @@ const onResize = () => {
 };
 
 const setupPlayButton = () => {
-  editorUIContext.playButton?.addEventListener("click", () => {
+  editorUIContext.playButton?.addEventListener("click", async () => {
     if (!platState) {
       if (editorUIContext.playButton) {
         editorUIContext.playButton.innerHTML = "Stop";
       }
 
-      editorPlay();
+      await editorPlay();
 
       platState = true;
     } else {
@@ -181,12 +182,10 @@ const setupSaveLoadWorldButton = () => {
         reader.onload = (e) => {
           const data = e.target?.result;
           if (data) {
-            const entityData = JSON.parse(data as string) as IWorldObject;
+            worldData = JSON.parse(data as string) as IWorldObject;
 
             // Clear the world.
             editorStop();
-
-            WorldSerializer.deserializeWorld(mainWorld, entityData);
           }
         };
         reader.readAsText(file);
@@ -196,7 +195,10 @@ const setupSaveLoadWorldButton = () => {
   });
 };
 
-const editorPlay = () => {
+const editorPlay = async () => {
+  // Serialize the world.
+  const worldObject = WorldSerializer.serializeWorld(mainWorld);
+
   // Reset the main world.
   resetWorld();
 
@@ -204,7 +206,15 @@ const editorPlay = () => {
   mainWorld.onEntityChanged.push(updateEntityList);
 
   // Call release init.
-  releaseInit();
+  // Setup core.
+  coreSetup();
+
+  await systemContext.coreStart({
+    worldObject: worldObject,
+  });
+
+  // Start white dwarf.
+  mainInit();
 };
 
 const editorStop = () => {
@@ -229,6 +239,11 @@ const editorStop = () => {
     mainWorld.registerSystem(EditorCamTagAppendSystem);
   } catch (error) {
     console.error(error);
+  }
+
+  // If there's world data, deserialize it.
+  if (worldData) {
+    WorldSerializer.deserializeWorld(mainWorld, worldData);
   }
 
   // White Dwarf Engine initialization.

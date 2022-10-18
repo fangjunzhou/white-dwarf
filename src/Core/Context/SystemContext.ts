@@ -1,3 +1,9 @@
+import { IWorldObject } from "../Serialization/WorldSerializer";
+
+export interface CoreStartProps {
+  worldObject?: IWorldObject;
+}
+
 export interface ISystemContext {
   /**
    * Callback function when engine core setup is called.
@@ -11,7 +17,7 @@ export interface ISystemContext {
    * Called only in release mode and editor play mode.
    * Register game play systems here.
    */
-  coreStart: () => void;
+  coreStart: (props: CoreStartProps) => Promise<void>;
 
   /**
    * Callback when editor is initialized.

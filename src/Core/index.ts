@@ -40,11 +40,11 @@ const physicsUpdate = async () => {
   }
 };
 
-export const releaseInit = () => {
+export const releaseInit = async () => {
   // Setup core.
   coreSetup();
 
-  systemContext.coreStart();
+  await systemContext.coreStart({});
 
   // Start white dwarf.
   mainInit();
