@@ -35,18 +35,22 @@ export class EditorInspectorSystem extends Canvas2DRenderer {
     // Register mouse move event for main canvas.
     this.mainCanvas.addEventListener("mousemove", (event) => {
       const mousePos = this.getMousePos(event);
-      const mouseWorldPos = this.screenToWorld(mousePos);
 
       // If left mouse button is pressed, move the entity.
       if (event.buttons === 1) {
+        const mouseWorldPos = this.screenToWorld(mousePos);
+
         if (EditorInspectorSystem.inspectEntity) {
           const transform =
             EditorInspectorSystem.inspectEntity.getMutableComponent(
               TransformData2D
             ) as TransformData2D;
 
-          transform.position.copy(
-            new Vector2(mouseWorldPos[0], mouseWorldPos[1])
+          transform.position = new Vector2(mouseWorldPos[0], mouseWorldPos[1]);
+
+          // Update the transform component.
+          EditorInspectorSystem.inspectEntity.getMutableComponent(
+            TransformData2D
           );
         }
       } else {
