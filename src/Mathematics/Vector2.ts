@@ -44,7 +44,7 @@ export const Vector2Type = createType({
 export const Vector2CustomEditor = (
   value: Vector2,
   onChange: (value: Vector2) => void
-): HTMLDivElement => {
+): [HTMLDivElement, (v: Vector2) => void] => {
   const vector2Div = document.createElement("div");
   vector2Div.style.display = "flex";
   vector2Div.style.flexDirection = "row";
@@ -73,8 +73,21 @@ export const Vector2CustomEditor = (
     onChange(new Vector2(parseFloat(xInput.value), parseFloat(yInput.value)));
   };
 
+  const setVector2 = (v: Vector2) => {
+    // If the value is focused, don't update it.
+    if (
+      document.activeElement === xInput ||
+      document.activeElement === yInput
+    ) {
+      return;
+    }
+
+    xInput.value = v.value[0].toString();
+    yInput.value = v.value[1].toString();
+  };
+
   xInput.onchange = update;
   yInput.onchange = update;
 
-  return vector2Div;
+  return [vector2Div, setVector2];
 };

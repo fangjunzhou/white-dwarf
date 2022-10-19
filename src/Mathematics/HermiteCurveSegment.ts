@@ -95,7 +95,7 @@ export const HermiteCurve2DSegmentCustomEditor = (
   p0Div.style.display = "flex";
   p0Div.style.flexDirection = "row";
   p0Div.appendChild(document.createTextNode("p0:"));
-  const p0 = Vector2CustomEditor(value.p0, (v) => {
+  const [p0] = Vector2CustomEditor(value.p0, (v) => {
     value.p0 = v;
     onChange(value);
   });
@@ -108,7 +108,7 @@ export const HermiteCurve2DSegmentCustomEditor = (
   d0Div.style.display = "flex";
   d0Div.style.flexDirection = "row";
   d0Div.appendChild(document.createTextNode("d0:"));
-  const d0 = Vector2CustomEditor(value.d0, (v) => {
+  const [d0] = Vector2CustomEditor(value.d0, (v) => {
     value.d0 = v;
     onChange(value);
   });
@@ -121,7 +121,7 @@ export const HermiteCurve2DSegmentCustomEditor = (
   p1Div.style.display = "flex";
   p1Div.style.flexDirection = "row";
   p1Div.appendChild(document.createTextNode("p1:"));
-  const p1 = Vector2CustomEditor(value.p1, (v) => {
+  const [p1] = Vector2CustomEditor(value.p1, (v) => {
     value.p1 = v;
     onChange(value);
   });
@@ -134,7 +134,7 @@ export const HermiteCurve2DSegmentCustomEditor = (
   d1Div.style.display = "flex";
   d1Div.style.flexDirection = "row";
   d1Div.appendChild(document.createTextNode("d1:"));
-  const d1 = Vector2CustomEditor(value.d1, (v) => {
+  const [d1] = Vector2CustomEditor(value.d1, (v) => {
     value.d1 = v;
     onChange(value);
   });

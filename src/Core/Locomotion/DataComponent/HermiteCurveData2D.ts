@@ -8,7 +8,7 @@ import {
   HermiteCurve2DSegment,
   HermiteCurve2DSegmentCustomEditor,
 } from "../../../Mathematics/HermiteCurveSegment";
-import { Vector2, Vector2CustomEditor } from "../../../Mathematics/Vector2";
+import { Vector2 } from "../../../Mathematics/Vector2";
 import { IComponent } from "../../ComponentRegistry";
 
 @IComponent.register
@@ -27,8 +27,8 @@ export class HermiteCurveData2D extends Component<HermiteCurveData2D> {
   segments: HermiteCurve2DSegment[] = [];
   resolution: number = 0.01;
 
-  useDefaultEditor = false;
-  onInspector = (componentDiv: HTMLDivElement) => {
+  public useDefaultInspector = false;
+  public onInspector = (componentDiv: HTMLDivElement) => {
     const curveSegmentsDiv = document.createElement("div");
     curveSegmentsDiv.style.display = "flex";
     curveSegmentsDiv.style.flexDirection = "column";

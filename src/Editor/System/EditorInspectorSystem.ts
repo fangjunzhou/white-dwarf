@@ -388,7 +388,7 @@ export class EditorInspectorSystem extends Canvas2DRenderer {
         // Set css class.
         componentDiv.className = "componentListItem";
 
-        const componentTitle = document.createElement("span");
+        const componentTitle = document.createElement("h3");
         componentTitle.innerText = componentObject.type;
         componentDiv.appendChild(componentTitle);
 
