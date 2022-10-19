@@ -7,7 +7,7 @@ import { Vector2, Vector2CustomEditor } from "./Vector2";
  * @param u the parametric value passed in for base matrix.
  * @returns a 4x1 matrix as u*B.
  */
-const hermiteBaseFunc = (u: number): Array<number> => {
+export const hermiteBaseFunc = (u: number): Array<number> => {
   const u0 = 2 * u * u * u - 3 * u * u + 1;
   const u1 = u * u * u - 2 * u * u + u;
   const u2 = -2 * u * u * u + 3 * u * u;
@@ -15,11 +15,20 @@ const hermiteBaseFunc = (u: number): Array<number> => {
   return [u0, u1, u2, u3];
 };
 
+export const hermiteDerivativeBaseFunc = (u: number): Array<number> => {
+  const u0 = 6 * u * u - 6 * u;
+  const u1 = 3 * u * u - 4 * u + 1;
+  const u2 = -6 * u * u + 6 * u;
+  const u3 = 3 * u * u - 2 * u;
+  return [u0, u1, u2, u3];
+};
+
 export const hermiteCurve2DSegmentEvaluate = (
   segment: HermiteCurve2DSegment,
-  u: number
+  u: number,
+  baseFunc: (u: number) => Array<number> = hermiteBaseFunc
 ): Vector2 => {
-  const uB = hermiteBaseFunc(u);
+  const uB = baseFunc(u);
   const p = new Vector2(0, 0);
   p.value[0] =
     uB[0] * segment.p0.value[0] +

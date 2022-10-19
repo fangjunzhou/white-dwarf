@@ -1,5 +1,8 @@
 import { System, SystemQueries } from "ecsy/System";
-import { hermiteCurve2DSegmentEvaluate } from "../../../Mathematics/HermiteCurveSegment";
+import {
+  hermiteCurve2DSegmentEvaluate,
+  hermiteDerivativeBaseFunc,
+} from "../../../Mathematics/HermiteCurveSegment";
 import { HermiteCurveData2D } from "../DataComponent/HermiteCurveData2D";
 import { HermiteCurveMoveData } from "../DataComponent/HermiteCurveMoveData";
 import { TransformData2D } from "../DataComponent/TransformData2D";
@@ -56,6 +59,20 @@ export class HermiteCurveLocomotionSystem extends System {
 
       // Update transform.
       transformData.position = position;
+
+      // Evaluate direction if needed.
+      if (hermiteCurveMoveData.controlRotation) {
+        const direction = hermiteCurve2DSegmentEvaluate(
+          segment,
+          currentSegmentTime,
+          hermiteDerivativeBaseFunc
+        );
+        // Convert direction to angle.
+        const angle = Math.atan2(direction.value[1], direction.value[0]);
+
+        // Update transform.
+        transformData.rotation = angle;
+      }
     });
   }
 }

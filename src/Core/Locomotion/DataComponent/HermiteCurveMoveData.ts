@@ -17,11 +17,15 @@ export class HermiteCurveMoveData extends Component<HermiteCurveMoveData> {
       type: Types.Number,
       default: 1,
     },
+    controlRotation: {
+      type: Types.Boolean,
+      default: false,
+    },
   };
 
   time: number = 0;
 
   loop: boolean = false;
   speed: number = 1;
-  // TODO: Add rotation control flag.
+  controlRotation: boolean = false;
 }

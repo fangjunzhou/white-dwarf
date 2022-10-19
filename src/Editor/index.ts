@@ -197,7 +197,7 @@ const setupSaveLoadWorldButton = () => {
 
 const editorPlay = async () => {
   // Serialize the world.
-  const worldObject = WorldSerializer.serializeWorld(mainWorld);
+  worldData = WorldSerializer.serializeWorld(mainWorld);
 
   // Reset the main world.
   resetWorld();
@@ -210,7 +210,7 @@ const editorPlay = async () => {
   coreSetup();
 
   await systemContext.coreStart({
-    worldObject: worldObject,
+    worldObject: worldData,
   });
 
   // Start white dwarf.
