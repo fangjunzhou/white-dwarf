@@ -397,6 +397,11 @@ export class EditorInspectorSystem extends Canvas2DRenderer {
           component.onInspector(componentDiv);
         }
 
+        // Add a spacer.
+        const spacer = document.createElement("div");
+        spacer.style.height = "10px";
+        componentDiv.appendChild(spacer);
+
         // Default inspector here.
         if (!component.onInspector || component.useDefaultInspector) {
           const componentData = document.createElement("span");

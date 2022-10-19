@@ -32,6 +32,8 @@ export class TransformData2D extends Component<TransformData2D> {
   rotation!: number;
   scale!: Vector2;
 
+  public useDefaultInspector: boolean = false;
+
   public onInspector = (componentDiv: HTMLDivElement) => {
     const transformDiv = document.createElement("div");
 
