@@ -68,10 +68,10 @@ export class ImageRenderData2D extends Component<ImageRenderData2D> {
       this.imageCenter,
       (value) => {
         this.imageCenter = value;
-        this.eventEmitter.emit(COMPONENT_CHANGE_EVENT);
+        this.eventEmitter.emit(COMPONENT_CHANGE_EVENT, this);
       }
     );
-    this.eventEmitter.on(COMPONENT_CHANGE_EVENT, () => {
+    this.eventEmitter.on(COMPONENT_CHANGE_EVENT, (component) => {
       onImgCenterChanged(this.imageCenter);
     });
     imageCenterVector2Div.style.minWidth = "0px";
