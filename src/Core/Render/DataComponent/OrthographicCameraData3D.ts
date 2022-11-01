@@ -1,6 +1,8 @@
 import { Component, ComponentSchema } from "ecsy/Component";
 import { Types } from "ecsy/Types";
+import { IComponent } from "../../ComponentRegistry";
 
+@IComponent.register
 export class OrthographicCameraData3D extends Component<OrthographicCameraData3D> {
   static schema: ComponentSchema = {
     left: {

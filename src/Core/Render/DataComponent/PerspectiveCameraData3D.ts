@@ -73,6 +73,7 @@ export class PerspectiveCameraData3D extends Component<PerspectiveCameraData3D> 
     const aspectInput = document.createElement("input");
     aspectInput.type = "number";
     aspectInput.value = this.aspect.toString();
+    aspectInput.style.minWidth = "0px";
     aspectInput.style.flex = "1";
     aspectInput.addEventListener("change", (event) => {
       this.aspect = parseFloat(aspectInput.value);
@@ -94,6 +95,7 @@ export class PerspectiveCameraData3D extends Component<PerspectiveCameraData3D> 
     const nearInput = document.createElement("input");
     nearInput.type = "number";
     nearInput.value = this.near.toString();
+    nearInput.style.minWidth = "0px";
     nearInput.style.flex = "1";
     nearInput.addEventListener("change", (event) => {
       this.near = parseFloat(nearInput.value);
@@ -115,6 +117,7 @@ export class PerspectiveCameraData3D extends Component<PerspectiveCameraData3D> 
     const farInput = document.createElement("input");
     farInput.type = "number";
     farInput.value = this.far.toString();
+    farInput.style.minWidth = "0px";
     farInput.style.flex = "1";
     farInput.addEventListener("change", (event) => {
       this.far = parseFloat(farInput.value);
