@@ -21,35 +21,10 @@ export class Canvas3DLineFrameRenderer extends Canvas3DRenderer {
       return;
     }
 
+    // Generate world to camera matrix.
+    this.generateWorldToCameraMatrix();
     // Generate camera to screen matrix.
     this.generateCameraToScreenMatrix();
-
-    // Get the canvas size.
-    const canvasSize = vec2.fromValues(
-      this.mainCanvas.width,
-      this.mainCanvas.height
-    );
-    // Get Object to world to screen space matrix.
-    if (this.queries.perspectiveMainCamera.results.length > 0) {
-      // Perspective camera.
-      const camera = this.queries.perspectiveMainCamera.results[0];
-      const cameraTransform = camera.getComponent(
-        TransformData3D
-      ) as TransformData3D;
-      const cameraPerspective = camera.getMutableComponent(
-        PerspectiveCameraData3D
-      ) as PerspectiveCameraData3D;
-
-      // Change the aspect ratio.
-      cameraPerspective.aspect = canvasSize[0] / canvasSize[1];
-
-      this.worldToCamera = this.perspectiveWorldToCamera(
-        cameraTransform,
-        cameraPerspective
-      );
-    } else {
-      // TODO: Orthographic camera.
-    }
 
     // Draw all frame lines.
     this.queries.lineEntities.results.forEach((entity) => {
@@ -80,19 +55,5 @@ export class Canvas3DLineFrameRenderer extends Canvas3DRenderer {
         this.drawLine(startPoint, endPoint, "black", 1);
       });
     });
-  }
-
-  drawLine(
-    startPoint: vec3,
-    endPoint: vec3,
-    color: string,
-    lineWidth: number
-  ): void {
-    this.canvasContext.strokeStyle = color;
-    this.canvasContext.lineWidth = lineWidth;
-    this.canvasContext.beginPath();
-    this.canvasContext.moveTo(startPoint[0], startPoint[1]);
-    this.canvasContext.lineTo(endPoint[0], endPoint[1]);
-    this.canvasContext.stroke();
   }
 }

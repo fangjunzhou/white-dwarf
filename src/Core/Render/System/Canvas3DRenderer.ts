@@ -1,5 +1,5 @@
 import { Attributes, System, SystemQueries } from "ecsy/System";
-import { mat4 } from "gl-matrix";
+import { mat4, vec2, vec3 } from "gl-matrix";
 import { TransformData3D } from "../../Locomotion/DataComponent/TransformData3D";
 import { OrthographicCameraData3D } from "../DataComponent/OrthographicCameraData3D";
 import { PerspectiveCameraData3D } from "../DataComponent/PerspectiveCameraData3D";
@@ -125,5 +125,48 @@ export class Canvas3DRenderer extends System {
     ]);
 
     mat4.scale(this.cameraToScreen, this.cameraToScreen, [100, 100, 1]);
+  }
+
+  generateWorldToCameraMatrix() {
+    // Get the canvas size.
+    const canvasSize = vec2.fromValues(
+      this.mainCanvas.width,
+      this.mainCanvas.height
+    );
+    // Get world to screen space matrix.
+    if (this.queries.perspectiveMainCamera.results.length > 0) {
+      // Perspective camera.
+      const camera = this.queries.perspectiveMainCamera.results[0];
+      const cameraTransform = camera.getComponent(
+        TransformData3D
+      ) as TransformData3D;
+      const cameraPerspective = camera.getMutableComponent(
+        PerspectiveCameraData3D
+      ) as PerspectiveCameraData3D;
+
+      // Change the aspect ratio.
+      cameraPerspective.aspect = canvasSize[0] / canvasSize[1];
+
+      this.worldToCamera = this.perspectiveWorldToCamera(
+        cameraTransform,
+        cameraPerspective
+      );
+    } else {
+      // TODO: Orthographic camera.
+    }
+  }
+
+  drawLine(
+    startPoint: vec3,
+    endPoint: vec3,
+    color: string,
+    lineWidth: number
+  ): void {
+    this.canvasContext.strokeStyle = color;
+    this.canvasContext.lineWidth = lineWidth;
+    this.canvasContext.beginPath();
+    this.canvasContext.moveTo(startPoint[0], startPoint[1]);
+    this.canvasContext.lineTo(endPoint[0], endPoint[1]);
+    this.canvasContext.stroke();
   }
 }
