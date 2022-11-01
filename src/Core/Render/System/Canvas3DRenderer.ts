@@ -18,6 +18,9 @@ export class Canvas3DRenderer extends System {
   mainCanvas!: HTMLCanvasElement;
   canvasContext!: CanvasRenderingContext2D;
 
+  worldToCamera: mat4 = mat4.create();
+  cameraToScreen: mat4 = mat4.create();
+
   init(attributes?: Attributes | undefined): void {
     this.mainCanvas = attributes?.mainCanvas;
     this.canvasContext = this.mainCanvas.getContext(
@@ -83,13 +86,15 @@ export class Canvas3DRenderer extends System {
     // Construct world to camera matrix.
     const worldToCamera = mat4.create();
     mat4.invert(worldToCamera, this.objectToWorld(camTransform));
+    const perspective = mat4.create();
     mat4.perspective(
-      worldToCamera,
+      perspective,
       camData.fov,
       camData.aspect,
       camData.near,
       camData.far
     );
+    mat4.multiply(worldToCamera, perspective, worldToCamera);
     return worldToCamera;
   }
 
@@ -108,5 +113,17 @@ export class Canvas3DRenderer extends System {
       transform.scale.value
     );
     return objectToWorld;
+  }
+
+  generateCameraToScreenMatrix() {
+    this.cameraToScreen = mat4.create();
+
+    mat4.fromTranslation(this.cameraToScreen, [
+      this.mainCanvas.width / 2,
+      this.mainCanvas.height / 2,
+      0,
+    ]);
+
+    mat4.scale(this.cameraToScreen, this.cameraToScreen, [100, 100, 1]);
   }
 }
