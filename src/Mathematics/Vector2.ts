@@ -21,7 +21,7 @@ export class Vector2 {
   }
 
   set(x: number, y: number) {
-    this.value = vec2.fromValues(x, y);
+    vec2.set(this.value, x, y);
   }
 
   copy(v: Vector2): Vector2 {
