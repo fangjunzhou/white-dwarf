@@ -28,9 +28,10 @@ export const updateEntityInspector = (entity: Entity | null) => {
       TransformData2D
     ) as Readonly<TransformData2D>;
   } else if (entity?.hasComponent(TransformData3D)) {
-    // Set 3d view port inspect transform.
+    // TODO: Set 3d view port inspect transform.
   } else {
     EditorViewPort2DSystem.inspectTransform = null;
+    // TODO: Reset 3d view port inspect transform.
   }
 
   displayEntityInspector(entity);
