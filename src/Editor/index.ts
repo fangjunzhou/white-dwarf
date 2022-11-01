@@ -70,16 +70,6 @@ export const editorInit = () => {
   // Editor start.
   systemContext.editorStart();
 
-  // Register Editor System.
-  new EditorSystemRegister(coreRenderContext.mainCanvas).register(mainWorld);
-
-  // Setup editor scene camera.
-  try {
-    mainWorld.registerSystem(EditorCamTagAppendSystem);
-  } catch (error) {
-    console.error(error);
-  }
-
   // Setup play button.
   setupPlayButton();
 
@@ -229,17 +219,6 @@ const editorStop = () => {
 
   // Editor start.
   systemContext.editorStart();
-
-  // Register Editor System.
-  if (coreRenderContext.mainCanvas) {
-    new EditorSystemRegister(coreRenderContext.mainCanvas).register(mainWorld);
-  }
-  // Setup editor scene camera.
-  try {
-    mainWorld.registerSystem(EditorCamTagAppendSystem);
-  } catch (error) {
-    console.error(error);
-  }
 
   // If there's world data, deserialize it.
   if (worldData) {
