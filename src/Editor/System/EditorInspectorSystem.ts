@@ -8,30 +8,45 @@ import { EntitySerializer } from "../../Core/Serialization/EntitySerializer";
 import { editorUIContext } from "../EditorContext";
 import { EditorSelectedTag } from "../TagComponent/EditorSelectedTag";
 import { EditorViewPort2DSystem } from "./EditorViewPort2DSystems";
+import { EditorViewPort3DSystem } from "./EditorViewPort3DSystem";
 
 export const updateEntityInspector = (entity: Entity | null) => {
-  // Removed the EditorSelectedTag from the previous entity.
-  if (EditorViewPort2DSystem.inspectEntity) {
-    EditorViewPort2DSystem.inspectEntity.removeComponent(EditorSelectedTag);
-  }
-
-  EditorViewPort2DSystem.inspectEntity = entity;
-
-  // Add the EditorSelectedTag to the new entity.
-  if (EditorViewPort2DSystem.inspectEntity) {
-    EditorViewPort2DSystem.inspectEntity.addComponent(EditorSelectedTag);
-  }
-
   // Check if the inspectEntity has Transform component.
   if (entity?.hasComponent(TransformData2D)) {
+    // Removed the EditorSelectedTag from the previous entity.
+    if (EditorViewPort2DSystem.inspectEntity) {
+      EditorViewPort2DSystem.inspectEntity.removeComponent(EditorSelectedTag);
+    }
+
+    EditorViewPort2DSystem.inspectEntity = entity;
+
+    // Add the EditorSelectedTag to the new entity.
+    if (EditorViewPort2DSystem.inspectEntity) {
+      EditorViewPort2DSystem.inspectEntity.addComponent(EditorSelectedTag);
+    }
+
     EditorViewPort2DSystem.inspectTransform = entity.getComponent(
       TransformData2D
     ) as Readonly<TransformData2D>;
   } else if (entity?.hasComponent(TransformData3D)) {
-    // TODO: Set 3d view port inspect transform.
+    // Removed the EditorSelectedTag from the previous entity.
+    if (EditorViewPort3DSystem.inspectEntity) {
+      EditorViewPort3DSystem.inspectEntity.removeComponent(EditorSelectedTag);
+    }
+
+    EditorViewPort3DSystem.inspectEntity = entity;
+
+    // Add the EditorSelectedTag to the new entity.
+    if (EditorViewPort3DSystem.inspectEntity) {
+      EditorViewPort3DSystem.inspectEntity.addComponent(EditorSelectedTag);
+    }
+
+    EditorViewPort3DSystem.inspectTransform = entity.getComponent(
+      TransformData3D
+    ) as Readonly<TransformData3D>;
   } else {
     EditorViewPort2DSystem.inspectTransform = null;
-    // TODO: Reset 3d view port inspect transform.
+    EditorViewPort3DSystem.inspectTransform = null;
   }
 
   displayEntityInspector(entity);
