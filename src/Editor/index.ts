@@ -12,7 +12,7 @@ import {
 } from "../Core/Serialization/WorldSerializer";
 import { editorUIContext, editorEventContext } from "./EditorContext";
 import { updateEntityList, addNewEntity } from "./EditorEntityListManager";
-import { EditorSystemRegister } from "./EditorSystemRegister";
+import { EditorSystem2DRegister } from "./EditorSystemRegister";
 import { EditorCamTagAppendSystem } from "./System/EditorCamTagAppendSystem";
 import { EditorInspectorSystem } from "./System/EditorInspectorSystem";
 

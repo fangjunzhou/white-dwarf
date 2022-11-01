@@ -1,10 +1,10 @@
 import { World } from "ecsy/World";
 import { IWorldRegister } from "../Utils/IWorldRegister";
-import { CamDragSystem } from "../Utils/System/CamDragSystem";
-import { EditorHermiteCurveInspector } from "./System/EditorHermiteCurveInspector";
+import { CamDragSystem as CamDrag2DSystem } from "../Utils/System/CamDragSystem";
+import { EditorHermiteCurveInspector as EditorHermiteCurve2DInspector } from "./System/EditorHermiteCurveInspector";
 import { EditorInspectorSystem } from "./System/EditorInspectorSystem";
 
-export class EditorSystemRegister {
+export class EditorSystem2DRegister {
   mainCanvas: HTMLCanvasElement;
 
   constructor(mainCanvas: HTMLCanvasElement) {
@@ -12,7 +12,7 @@ export class EditorSystemRegister {
   }
 
   register: IWorldRegister = (world: World) => {
-    world.registerSystem(CamDragSystem, {
+    world.registerSystem(CamDrag2DSystem, {
       mainCanvas: this.mainCanvas,
     });
 
@@ -20,7 +20,7 @@ export class EditorSystemRegister {
       mainCanvas: this.mainCanvas,
     });
 
-    world.registerSystem(EditorHermiteCurveInspector, {
+    world.registerSystem(EditorHermiteCurve2DInspector, {
       mainCanvas: this.mainCanvas,
     });
   };
