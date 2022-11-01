@@ -3,7 +3,6 @@ import { mainWorld } from ".";
 import { IComponent } from "./ComponentRegistry";
 import { coreRenderContext } from "./Context/RenderContext";
 import { ISystemContext } from "./Context/SystemContext";
-import { RenderSystemRegister } from "./Render/RenderSystemRegister";
 
 export const coreSetup = () => {
   if (!coreRenderContext.mainCanvas) {

@@ -4,7 +4,7 @@ import { Canvas2DImageLoader } from "./System/BuildInRenderers/Canvas2DImageLoad
 import { Canvas2DImageRenderer } from "./System/BuildInRenderers/Canvas2DImageRenderer";
 import { ClearCanvasSystem } from "./System/ClearCanvasSystem";
 
-export class RenderSystemRegister {
+export class RenderSystem2DRegister {
   mainCanvas: HTMLCanvasElement;
 
   constructor(mainCanvas: HTMLCanvasElement) {
