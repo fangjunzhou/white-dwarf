@@ -1,5 +1,6 @@
 import { World } from "ecsy/World";
 import { IWorldRegister } from "../../Utils/IWorldRegister";
+import { Canvas3DRenderer } from "./System/Canvas3DRenderer";
 import { ClearCanvasSystem } from "./System/ClearCanvasSystem";
 
 export class RenderSystem3DRegister {
@@ -10,9 +11,13 @@ export class RenderSystem3DRegister {
   }
 
   register: IWorldRegister = (world: World) => {
-    world.registerSystem(ClearCanvasSystem, {
-      mainCanvas: this.mainCanvas,
-      priority: -100,
-    });
+    world
+      .registerSystem(ClearCanvasSystem, {
+        mainCanvas: this.mainCanvas,
+        priority: -100,
+      })
+      .registerSystem(Canvas3DRenderer, {
+        mainCanvas: this.mainCanvas,
+      });
   };
 }

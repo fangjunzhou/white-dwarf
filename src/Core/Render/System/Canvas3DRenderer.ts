@@ -1,0 +1,112 @@
+import { Attributes, System, SystemQueries } from "ecsy/System";
+import { mat4 } from "gl-matrix";
+import { TransformData3D } from "../../Locomotion/DataComponent/TransformData3D";
+import { OrthographicCameraData3D } from "../DataComponent/OrthographicCameraData3D";
+import { PerspectiveCameraData3D } from "../DataComponent/PerspectiveCameraData3D";
+import { MainCameraTag } from "../TagComponent/MainCameraTag";
+
+export class Canvas3DRenderer extends System {
+  static queries: SystemQueries = {
+    perspectiveMainCamera: {
+      components: [MainCameraTag, PerspectiveCameraData3D, TransformData3D],
+    },
+    orthographicMainCamera: {
+      components: [MainCameraTag, OrthographicCameraData3D, TransformData3D],
+    },
+  };
+
+  mainCanvas!: HTMLCanvasElement;
+  canvasContext!: CanvasRenderingContext2D;
+
+  init(attributes?: Attributes | undefined): void {
+    this.mainCanvas = attributes?.mainCanvas;
+    this.canvasContext = this.mainCanvas.getContext(
+      "2d"
+    ) as CanvasRenderingContext2D;
+  }
+
+  execute(delta: number, time: number): void {
+    // Check if main camera exists.
+    if (
+      this.queries.perspectiveMainCamera.results.length +
+        this.queries.orthographicMainCamera.results.length ===
+      0
+    ) {
+      throw new Error("Main camera not found.");
+    }
+    // Check if there's more than one main camera.
+    else if (
+      this.queries.perspectiveMainCamera.results.length +
+        this.queries.orthographicMainCamera.results.length >
+      1
+    ) {
+      throw new Error("More than one main camera found.");
+    }
+  }
+
+  /**
+   * Construct a transform matrix from world space to model space.
+   * @param camTransform the transform of the camera.
+   * @param camData the camera data.
+   * @returns the world to model matrix.
+   */
+  orthographicWorldToCamera(
+    camTransform: TransformData3D,
+    camData: OrthographicCameraData3D
+  ): mat4 {
+    // Construct world to camera matrix.
+    const worldToCamera = mat4.create();
+    mat4.invert(worldToCamera, this.objectToWorld(camTransform));
+    mat4.ortho(
+      worldToCamera,
+      camData.left,
+      camData.right,
+      camData.bottom,
+      camData.top,
+      camData.near,
+      camData.far
+    );
+    return worldToCamera;
+  }
+
+  /**
+   * Construct a transform matrix from world space to camera space.
+   *
+   * @param camTransform the transform of the camera.
+   * @param camData the camera data.
+   * @returns the world to camera matrix.
+   */
+  perspectiveWorldToCamera(
+    camTransform: TransformData3D,
+    camData: PerspectiveCameraData3D
+  ): mat4 {
+    // Construct world to camera matrix.
+    const worldToCamera = mat4.create();
+    mat4.invert(worldToCamera, this.objectToWorld(camTransform));
+    mat4.perspective(
+      worldToCamera,
+      camData.fov,
+      camData.aspect,
+      camData.near,
+      camData.far
+    );
+    return worldToCamera;
+  }
+
+  /**
+   * Construct a transform matrix from model space to world space.
+   *
+   * @param transform the transform of the model.
+   * @returns the model to world matrix.
+   */
+  objectToWorld(transform: TransformData3D): mat4 {
+    const objectToWorld = mat4.create();
+    mat4.fromRotationTranslationScale(
+      objectToWorld,
+      transform.rotation.value,
+      transform.position.value,
+      transform.scale.value
+    );
+    return objectToWorld;
+  }
+}
