@@ -1,5 +1,5 @@
 import fileDownload from "js-file-download";
-import { mainInit, mainWorld, releaseInit, resetWorld } from "../Core";
+import { mainInit, mainWorld, resetWorld } from "../Core";
 import { coreRenderContext } from "../Core/Context/RenderContext";
 import { coreSetup, systemContext } from "../Core/CoreSetup";
 import {
@@ -12,9 +12,8 @@ import {
 } from "../Core/Serialization/WorldSerializer";
 import { editorUIContext, editorEventContext } from "./EditorContext";
 import { updateEntityList, addNewEntity } from "./EditorEntityListManager";
-import { EditorSystem2DRegister } from "./EditorSystemRegister";
-import { EditorCamTagAppendSystem } from "./System/EditorCamTagAppendSystem";
-import { EditorInspectorSystem } from "./System/EditorInspectorSystem";
+import { updateEntityInspector } from "./System/EditorInspectorSystem";
+import { EditorViewPort2DSystem } from "./System/EditorViewPort2DSystems";
 
 let platState = false;
 let worldData: IWorldObject | null = null;
@@ -60,9 +59,7 @@ export const editorInit = () => {
   // Register main world entity change.
   mainWorld.onEntityChanged.push(updateEntityList);
   // Register entity selected event.
-  editorEventContext.onEntitySelected.push(
-    EditorInspectorSystem.updateEntityInspector
-  );
+  editorEventContext.onEntitySelected.push(updateEntityInspector);
 
   // Core setup.
   coreSetup();

@@ -1,11 +1,6 @@
-import { Component, ComponentSchema } from "ecsy/Component";
 import { Entity } from "ecsy/Entity";
-import { World } from "ecsy/World";
 import { mainWorld } from "../Core";
-import { IComponent } from "../Core/ComponentRegistry";
-import { IEntityObject } from "../Core/Serialization/EntitySerializer";
 import { editorEventContext, editorUIContext } from "./EditorContext";
-import { EditorInspectorSystem } from "./System/EditorInspectorSystem";
 
 export const updateEntityList = (entities: Array<Entity>) => {
   if (!editorUIContext.entityLists) {
