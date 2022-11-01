@@ -8,6 +8,8 @@ import { Vector2 } from "../../Mathematics/Vector2";
 import { Vector3 } from "../../Mathematics/Vector3";
 
 const rotateSensitive = 0.1;
+const moveSensitive = 7;
+const zoomSensitive = 0.5;
 
 export class Cam3DDragSystem extends System {
   static queries: SystemQueries = {
@@ -46,6 +48,32 @@ export class Cam3DDragSystem extends System {
         );
       }
     });
+
+    // Listen to mouse move event.
+    this.mainCanvas.addEventListener("mousemove", (event) => {
+      // Check if the right mouse button is pressed.
+      if (event.buttons === 1) {
+        // Calculate the delta position.
+        vec3.add(
+          this.deltaPos.value,
+          this.deltaPos.value,
+          vec3.fromValues(
+            event.movementX * rotateSensitive * moveSensitive,
+            event.movementY * rotateSensitive * moveSensitive,
+            0
+          )
+        );
+      }
+    });
+
+    // Listen to mouse wheel zoom event.
+    this.mainCanvas.addEventListener("wheel", (event) => {
+      vec3.add(
+        this.deltaPos.value,
+        this.deltaPos.value,
+        vec3.fromValues(0, 0, event.deltaY * zoomSensitive)
+      );
+    });
   }
 
   execute(delta: number, time: number): void {
@@ -78,6 +106,9 @@ export class Cam3DDragSystem extends System {
     // Get the camera right vector from its transform rotation.
     const right = vec3.fromValues(1, 0, 0);
     vec3.transformQuat(right, right, mainCameraTransform.rotation.value);
+    // Get the camera up vector from its transform rotation.
+    const up = vec3.fromValues(0, 1, 0);
+    vec3.transformQuat(up, up, mainCameraTransform.rotation.value);
 
     // Rotate the camera around the y-axis.
     const rotX = quat.create();
@@ -95,7 +126,26 @@ export class Cam3DDragSystem extends System {
       mainCameraTransform.rotation.value
     );
 
+    // Move the camera position.
+    vec3.add(
+      mainCameraTransform.position.value,
+      mainCameraTransform.position.value,
+      vec3.scale(vec3.create(), front, this.deltaPos.value[2] * delta)
+    );
+    vec3.add(
+      mainCameraTransform.position.value,
+      mainCameraTransform.position.value,
+      vec3.scale(vec3.create(), right, this.deltaPos.value[0] * delta)
+    );
+    vec3.add(
+      mainCameraTransform.position.value,
+      mainCameraTransform.position.value,
+      vec3.scale(vec3.create(), up, this.deltaPos.value[1] * delta)
+    );
+
     // Reset the delta rotation.
     vec2.set(this.deltaRot.value, 0, 0);
+    // Reset the delta position.
+    vec3.set(this.deltaPos.value, 0, 0, 0);
   }
 }
