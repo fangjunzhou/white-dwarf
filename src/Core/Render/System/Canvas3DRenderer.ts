@@ -60,8 +60,9 @@ export class Canvas3DRenderer extends System {
     // Construct world to camera matrix.
     const worldToCamera = mat4.create();
     mat4.invert(worldToCamera, this.objectToWorld(camTransform));
+    const orthographic = mat4.create();
     mat4.ortho(
-      worldToCamera,
+      orthographic,
       camData.left,
       camData.right,
       camData.bottom,
@@ -69,6 +70,7 @@ export class Canvas3DRenderer extends System {
       camData.near,
       camData.far
     );
+    mat4.multiply(worldToCamera, orthographic, worldToCamera);
     return worldToCamera;
   }
 
@@ -124,7 +126,11 @@ export class Canvas3DRenderer extends System {
       0,
     ]);
 
-    mat4.scale(this.cameraToScreen, this.cameraToScreen, [100, 100, 1]);
+    mat4.scale(this.cameraToScreen, this.cameraToScreen, [
+      this.mainCanvas.width,
+      this.mainCanvas.height,
+      1,
+    ]);
   }
 
   generateWorldToCameraMatrix() {
