@@ -8,7 +8,7 @@ import { Vector2 } from "../../Mathematics/Vector2";
 /**
  * This system enables right click drag to move the camera around the scene.
  */
-export class CamDragSystem extends System {
+export class Cam2DDragSystem extends System {
   static queries: SystemQueries = {
     mainCamera: {
       components: [MainCameraTag, CameraData2D, TransformData2D],
