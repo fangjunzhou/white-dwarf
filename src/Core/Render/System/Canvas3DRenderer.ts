@@ -106,14 +106,22 @@ export class Canvas3DRenderer extends System {
    * @param transform the transform of the model.
    * @returns the model to world matrix.
    */
-  objectToWorld(transform: TransformData3D): mat4 {
+  objectToWorld(transform: TransformData3D, dropScale: boolean = false): mat4 {
     const objectToWorld = mat4.create();
-    mat4.fromRotationTranslationScale(
-      objectToWorld,
-      transform.rotation.value,
-      transform.position.value,
-      transform.scale.value
-    );
+    if (dropScale) {
+      mat4.fromRotationTranslation(
+        objectToWorld,
+        transform.rotation.value,
+        transform.position.value
+      );
+    } else {
+      mat4.fromRotationTranslationScale(
+        objectToWorld,
+        transform.rotation.value,
+        transform.position.value,
+        transform.scale.value
+      );
+    }
     return objectToWorld;
   }
 
