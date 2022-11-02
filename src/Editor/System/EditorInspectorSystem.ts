@@ -41,9 +41,9 @@ export const updateEntityInspector = (entity: Entity | null) => {
       EditorViewPort3DSystem.inspectEntity.addComponent(EditorSelectedTag);
     }
 
-    EditorViewPort3DSystem.inspectTransform = entity.getComponent(
+    EditorViewPort3DSystem.inspectTransform = entity.getMutableComponent(
       TransformData3D
-    ) as Readonly<TransformData3D>;
+    ) as TransformData3D;
   } else {
     EditorViewPort2DSystem.inspectTransform = null;
     EditorViewPort3DSystem.inspectTransform = null;

@@ -10,7 +10,12 @@ import {
   IWorldObject,
   WorldSerializer,
 } from "../Core/Serialization/WorldSerializer";
-import { editorUIContext, editorEventContext } from "./EditorContext";
+import {
+  editorUIContext,
+  editorEventContext,
+  EditorControl,
+  editorControlContext,
+} from "./EditorContext";
 import { updateEntityList, addNewEntity } from "./EditorEntityListManager";
 import { updateEntityInspector } from "./System/EditorInspectorSystem";
 import { EditorViewPort2DSystem } from "./System/EditorViewPort2DSystems";
@@ -53,6 +58,10 @@ export const editorInit = () => {
     "loadWorldButton"
   ) as HTMLButtonElement;
 
+  editorUIContext.editorModeDropdown = document.getElementById(
+    "editorMode"
+  ) as HTMLSelectElement;
+
   // Disable right click for main canvas.
   coreRenderContext.mainCanvas.oncontextmenu = () => false;
 
@@ -78,6 +87,9 @@ export const editorInit = () => {
 
   // Setup save and load world button.
   setupSaveLoadWorldButton();
+
+  // Setup editor mode dropdown.
+  setupEditorModeDropdown();
 
   // White Dwarf Engine initialization.
   mainInit();
@@ -181,6 +193,25 @@ const setupSaveLoadWorldButton = () => {
     input.click();
   });
 };
+
+function setupEditorModeDropdown() {
+  // Add listener to editor mode dropdown.
+  editorUIContext.editorModeDropdown?.addEventListener("change", (e) => {
+    const value = (e.target as HTMLSelectElement).value;
+    switch (value) {
+      case "view":
+        editorControlContext.controlMode = EditorControl.View;
+        break;
+
+      case "move":
+        editorControlContext.controlMode = EditorControl.Move;
+        break;
+
+      default:
+        break;
+    }
+  });
+}
 
 const editorPlay = async () => {
   // Serialize the world.

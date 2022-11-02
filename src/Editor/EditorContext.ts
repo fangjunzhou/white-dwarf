@@ -1,5 +1,10 @@
 import { Entity } from "ecsy/Entity";
 
+export enum EditorControl {
+  View,
+  Move,
+}
+
 export interface IEditorUIContext {
   entityLists: HTMLCollectionOf<HTMLDivElement> | null;
   entityInspector: HTMLCollectionOf<HTMLDivElement> | null;
@@ -12,10 +17,16 @@ export interface IEditorUIContext {
 
   saveWorldButton: HTMLButtonElement | null;
   loadWorldButton: HTMLButtonElement | null;
+
+  editorModeDropdown: HTMLSelectElement | null;
 }
 
 export interface IEditorEventContext {
   onEntitySelected: Array<(entity: Entity) => void>;
+}
+
+export interface IEditorControlContext {
+  controlMode: EditorControl;
 }
 
 export const editorUIContext: IEditorUIContext = {
@@ -27,8 +38,14 @@ export const editorUIContext: IEditorUIContext = {
   deserializeEntityButton: null,
   saveWorldButton: null,
   loadWorldButton: null,
+
+  editorModeDropdown: null,
 };
 
 export const editorEventContext: IEditorEventContext = {
   onEntitySelected: [],
+};
+
+export const editorControlContext: IEditorControlContext = {
+  controlMode: EditorControl.Move,
 };
