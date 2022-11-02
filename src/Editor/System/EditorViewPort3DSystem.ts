@@ -3,6 +3,7 @@ import { System } from "ecsy/System";
 import { mat4, vec3 } from "gl-matrix";
 import { TransformData3D } from "../../Core/Locomotion/DataComponent/TransformData3D";
 import { Canvas3DRenderer } from "../../Core/Render/System/Canvas3DRenderer";
+import { EditorSceneCamTag } from "../TagComponent/EditorSceneCamTag";
 
 export class EditorViewPort3DSystem extends Canvas3DRenderer {
   static inspectEntity: Entity | null = null;
@@ -22,7 +23,10 @@ export class EditorViewPort3DSystem extends Canvas3DRenderer {
     this.generateCameraToScreenMatrix();
 
     // Draw selected entity.
-    if (EditorViewPort3DSystem.inspectTransform) {
+    if (
+      EditorViewPort3DSystem.inspectTransform &&
+      !EditorViewPort3DSystem.inspectEntity?.hasComponent(EditorSceneCamTag)
+    ) {
       // Generate object to world matrix.
       const objectToWorld = this.objectToWorld(
         EditorViewPort3DSystem.inspectTransform
