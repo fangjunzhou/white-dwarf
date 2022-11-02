@@ -4,6 +4,10 @@ import { TransformData3D } from "../../Core/Locomotion/DataComponent/TransformDa
 import { OrthographicCameraData3D } from "../../Core/Render/DataComponent/OrthographicCameraData3D";
 import { PerspectiveCameraData3D } from "../../Core/Render/DataComponent/PerspectiveCameraData3D";
 import { MainCameraTag } from "../../Core/Render/TagComponent/MainCameraTag";
+import {
+  EditorControl,
+  editorControlContext,
+} from "../../Editor/EditorContext";
 import { Vector2 } from "../../Mathematics/Vector2";
 import { Vector3 } from "../../Mathematics/Vector3";
 
@@ -51,8 +55,12 @@ export class Cam3DDragSystem extends System {
 
     // Listen to mouse move event.
     this.mainCanvas.addEventListener("mousemove", (event) => {
-      // Check if the right mouse button is pressed.
-      if (event.buttons === 1) {
+      // Check if the middle mouse button is pressed.
+      if (
+        event.buttons === 4 ||
+        (editorControlContext.controlMode === EditorControl.View &&
+          event.buttons === 1)
+      ) {
         // Calculate the delta position.
         vec3.add(
           this.deltaPos.value,
