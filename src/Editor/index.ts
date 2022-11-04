@@ -232,7 +232,7 @@ const editorPlay = async () => {
   });
 
   // Start white dwarf.
-  mainInit();
+  // mainInit();
 };
 
 const editorStop = () => {
@@ -254,7 +254,7 @@ const editorStop = () => {
   }
 
   // White Dwarf Engine initialization.
-  mainInit();
+  // mainInit();
 };
 
 window.onload = editorInit;
