@@ -99,14 +99,14 @@ export class EntitySerializer {
     world: World,
     entityData: IEntityObject,
     reserveId: boolean = false
-  ) {
+  ): Entity | null {
     // Check if entity already exists.
     const entity = world.getEntityById(entityData.id);
     if (reserveId && entity && entity.alive) {
       console.warn(
         `Entity with id ${entityData.id} already exists. Skipping deserialization.`
       );
-      return;
+      return null;
     }
 
     // Create new entity.
@@ -133,5 +133,7 @@ export class EntitySerializer {
         console.error("Component not found.");
       }
     }
+
+    return entity;
   }
 }
