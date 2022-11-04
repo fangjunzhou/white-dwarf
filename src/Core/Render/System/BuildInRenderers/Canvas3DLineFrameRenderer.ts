@@ -53,7 +53,7 @@ export class Canvas3DLineFrameRenderer extends Canvas3DRenderer {
 
         // Draw the line.
         if (startPoint[2] > 1 && endPoint[2] > 1) {
-          this.drawLine(startPoint, endPoint, "black", 1);
+          this.drawLine(startPoint, endPoint, renderData.color, 1);
         }
       });
     });

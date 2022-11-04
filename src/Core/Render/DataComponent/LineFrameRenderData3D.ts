@@ -14,16 +14,41 @@ import { IComponent } from "../../ComponentRegistry";
 @IComponent.register
 export class LineFrameRenderData3D extends Component<LineFrameRenderData3D> {
   static schema: ComponentSchema = {
+    color: {
+      type: Types.String,
+      default: "black",
+    },
     segments: {
       type: Types.Array,
       default: [],
     },
   };
 
+  public color: string = "black";
   public segments: LineFrame3DSegment[] = [];
 
   public useDefaultInspector = false;
   public onInspector = (componentDiv: HTMLDivElement) => {
+    const colorDiv = document.createElement("div");
+    colorDiv.style.display = "flex";
+    colorDiv.style.flexDirection = "row";
+
+    const colorLabel = document.createElement("label");
+    colorLabel.appendChild(document.createTextNode("Color: "));
+    colorDiv.appendChild(colorLabel);
+
+    const colorInput = document.createElement("input");
+    colorInput.type = "color";
+    colorInput.value = this.color;
+    colorInput.style.flexGrow = "1";
+    colorInput.onchange = () => {
+      this.color = colorInput.value;
+      this.eventEmitter.emit(COMPONENT_CHANGE_EVENT, this);
+    };
+    colorDiv.appendChild(colorInput);
+
+    componentDiv.appendChild(colorDiv);
+
     const curveSegmentsDiv = document.createElement("div");
     curveSegmentsDiv.style.display = "flex";
     curveSegmentsDiv.style.flexDirection = "column";
