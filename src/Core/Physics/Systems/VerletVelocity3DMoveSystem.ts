@@ -9,14 +9,20 @@ import { VerletVelocityData3D } from "../DataComponents/VerletVelocityData3D";
  */
 export class VerletVelocity3DMoveSystem extends System {
   static queries: SystemQueries = {
+    moveInitTargets: {
+      components: [TransformData3D, VerletVelocityData3D],
+      listen: {
+        added: true,
+      },
+    },
     moveTargets: {
       components: [TransformData3D, VerletVelocityData3D],
     },
   };
 
-  init(attributes?: Attributes | undefined): void {
-    // Init verlet velocity.
-    this.queries.moveTargets.results.forEach((target) => {
+  execute(delta: number, time: number): void {
+    // Init all verlet velocity data.
+    this.queries.moveInitTargets.added?.forEach((target) => {
       // Get transform data.
       let transform = target.getComponent(TransformData3D) as TransformData3D;
 
@@ -28,9 +34,7 @@ export class VerletVelocity3DMoveSystem extends System {
       // Init verlet position record.
       verletVelocity.lastFramePosition = transform.position.clone();
     });
-  }
 
-  execute(delta: number, time: number): void {
     // Move all the objects.
     this.queries.moveTargets.results.forEach((target) => {
       // Get transform data.
