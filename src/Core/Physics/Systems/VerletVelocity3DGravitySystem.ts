@@ -1,12 +1,13 @@
 import { System, SystemQueries } from "ecsy/System";
 import { vec3 } from "gl-matrix";
+import { MassData } from "../DataComponents/MassData";
 import { VerletVelocityData3D } from "../DataComponents/VerletVelocityData3D";
 
 const GRAVITY_ACCELERATION = 9.8;
 export class VerletVelocity3DGravitySystem extends System {
   static queries: SystemQueries = {
     gravityTargets: {
-      components: [VerletVelocityData3D],
+      components: [VerletVelocityData3D, MassData],
     },
   };
 

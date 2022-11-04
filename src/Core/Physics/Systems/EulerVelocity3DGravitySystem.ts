@@ -1,12 +1,13 @@
 import { System, SystemQueries } from "ecsy/System";
 import { vec3 } from "gl-matrix";
 import { EulerVelocityData3D } from "../DataComponents/EulerVelocityData3D";
+import { MassData } from "../DataComponents/MassData";
 
 const GRAVITY_ACCELERATION = 9.8;
 export class EulerVelocityGravitySystem extends System {
   static queries: SystemQueries = {
     gravityTargets: {
-      components: [EulerVelocityData3D],
+      components: [EulerVelocityData3D, MassData],
     },
   };
 
