@@ -13,7 +13,7 @@ export const timeContext: ITimeContext = {
   currentTime: 0,
   deltaTime: 0,
   timeScale: 1,
-  fixedTimeStep: 1 / 60,
+  fixedTimeStep: 1 / 120,
 };
 
 // Frame update.
