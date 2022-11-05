@@ -176,11 +176,13 @@ export class Canvas3DRenderer extends System {
     color: string,
     lineWidth: number
   ): void {
-    this.canvasContext.strokeStyle = color;
-    this.canvasContext.lineWidth = lineWidth;
-    this.canvasContext.beginPath();
-    this.canvasContext.moveTo(startPoint[0], startPoint[1]);
-    this.canvasContext.lineTo(endPoint[0], endPoint[1]);
-    this.canvasContext.stroke();
+    if (startPoint[2] > 1 && endPoint[2] > 1) {
+      this.canvasContext.strokeStyle = color;
+      this.canvasContext.lineWidth = lineWidth;
+      this.canvasContext.beginPath();
+      this.canvasContext.moveTo(startPoint[0], startPoint[1]);
+      this.canvasContext.lineTo(endPoint[0], endPoint[1]);
+      this.canvasContext.stroke();
+    }
   }
 }

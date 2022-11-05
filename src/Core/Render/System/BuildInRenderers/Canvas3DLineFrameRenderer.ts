@@ -52,9 +52,7 @@ export class Canvas3DLineFrameRenderer extends Canvas3DRenderer {
         vec3.transformMat4(endPoint, segment.p1.value, objectToScreen);
 
         // Draw the line.
-        if (startPoint[2] > 1 && endPoint[2] > 1) {
-          this.drawLine(startPoint, endPoint, renderData.color, 1);
-        }
+        this.drawLine(startPoint, endPoint, renderData.color, 1);
       });
     });
   }
