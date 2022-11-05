@@ -161,9 +161,9 @@ export class EditorViewPort3DSystem extends Canvas3DRenderer {
             this.canvasContext.stroke();
 
             this.highlightAxis = "z";
-          } else {
-            this.highlightAxis = null;
           }
+        } else {
+          this.highlightAxis = null;
         }
 
         // Move the object.
