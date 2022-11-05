@@ -3,7 +3,7 @@ import { System, SystemQueries } from "ecsy/System";
 import { TransformData3D } from "../../Locomotion/DataComponent/TransformData3D";
 import { SyncTransform3DData } from "../DataComponents/SyncTransform3DData";
 
-export class PhysicsWorldTransformSyncSystem extends System {
+export class Transform3DSyncSystem extends System {
   static queries: SystemQueries = {
     syncEntities: {
       components: [TransformData3D, SyncTransform3DData],
@@ -26,10 +26,10 @@ export class PhysicsWorldTransformSyncSystem extends System {
       ) as TransformData3D;
 
       // Sync data.
-      syncData.mainWorldTransform.copy(transformData);
-      syncData.mainWorldTransform.eventEmitter.emit(
+      syncData.targetTransform.copy(transformData);
+      syncData.targetTransform.eventEmitter.emit(
         COMPONENT_CHANGE_EVENT,
-        syncData.mainWorldTransform
+        syncData.targetTransform
       );
     });
   }
