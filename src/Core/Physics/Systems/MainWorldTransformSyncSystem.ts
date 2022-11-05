@@ -1,3 +1,4 @@
+import { Entity } from "ecsy/Entity";
 import { Attributes, System, SystemQueries } from "ecsy/System";
 import { World } from "ecsy/World";
 import { TransformData3D } from "../../Locomotion/DataComponent/TransformData3D";
@@ -8,15 +9,27 @@ export class MainWorldTransformSyncSystem extends System {
   static queries: SystemQueries = {
     syncEntities: {
       components: [TransformData3D],
+      listen: {
+        added: true,
+        removed: true,
+      },
     },
   };
 
+  physicsWorld!: World;
+  physicsEntityTable: Map<Entity, Entity | null> = new Map<
+    Entity,
+    Entity | null
+  >();
+
   init(attributes?: Attributes | undefined): void {
     // Get the physics world.
-    const physicsWorld: World = attributes?.physicsWorld as World;
+    this.physicsWorld = attributes?.physicsWorld as World;
+  }
 
+  execute(delta: number, time: number): void {
     // Sync all entities to physics world with TransformData3D.
-    this.queries.syncEntities.results.forEach((entity) => {
+    this.queries.syncEntities.added?.forEach((entity) => {
       // Get original entity mutable transform.
       const originalTransform = entity.getMutableComponent(
         TransformData3D
@@ -26,17 +39,25 @@ export class MainWorldTransformSyncSystem extends System {
       const entityData = EntitySerializer.serializeEntity(entity);
       // Deserialize the entity into physics world.
       const physicsEntity = EntitySerializer.deserializeEntity(
-        physicsWorld,
+        this.physicsWorld,
         entityData
       );
+
+      // Add the entity to the table.
+      this.physicsEntityTable.set(entity, physicsEntity);
 
       physicsEntity?.addComponent(SyncTransform3DData, {
         mainWorldTransform: originalTransform,
       });
     });
-  }
 
-  execute(delta: number, time: number): void {
-    // Do nothing.
+    this.queries.syncEntities.removed?.forEach((entity) => {
+      // Get the physics entity.
+      const physicsEntity = this.physicsEntityTable.get(entity);
+      // Remove physics entity.
+      physicsEntity?.remove();
+      // Update table.
+      this.physicsEntityTable.delete(entity);
+    });
   }
 }
