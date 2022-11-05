@@ -1,5 +1,6 @@
 import { World } from "ecsy/World";
 import { IWorldRegister } from "../../Utils/IWorldRegister";
+import { Canvas3DConstraintRenderer } from "./System/BuildInRenderers/Canvas3DConstraintRenderer";
 import { Canvas3DLineFrameRenderer } from "./System/BuildInRenderers/Canvas3DLineFrameRenderer";
 import { Canvas3DRenderer } from "./System/Canvas3DRenderer";
 import { ClearCanvasSystem } from "./System/ClearCanvasSystem";
@@ -18,6 +19,9 @@ export class RenderSystem3DRegister {
         priority: -100,
       })
       .registerSystem(Canvas3DLineFrameRenderer, {
+        mainCanvas: this.mainCanvas,
+      })
+      .registerSystem(Canvas3DConstraintRenderer, {
         mainCanvas: this.mainCanvas,
       });
   };
