@@ -1,9 +1,7 @@
-import { System, SystemQueries } from "ecsy/System";
+import { Attributes, System, SystemQueries } from "ecsy/System";
 import { vec3 } from "gl-matrix";
 import { TransformData3D } from "../../Locomotion/DataComponent/TransformData3D";
 import { ConstraintData } from "../DataComponents/ConstraintData";
-
-const JAKOBSEN_ITERATIONS = 10;
 
 export class JakobsenConstraintSystem extends System {
   static queries: SystemQueries = {
@@ -12,9 +10,17 @@ export class JakobsenConstraintSystem extends System {
     },
   };
 
+  jakobsenIterations: number = 1;
+
+  init(attributes?: Attributes | undefined): void {
+    if (attributes?.jakobsenIteration) {
+      this.jakobsenIterations = attributes.jakobsenIterations;
+    }
+  }
+
   execute(delta: number, time: number): void {
     // More iterations = more accurate, but slower.
-    for (let i = 0; i < JAKOBSEN_ITERATIONS; i++) {
+    for (let i = 0; i < this.jakobsenIterations; i++) {
       this.queries.constrainedEntities.results.forEach((entity) => {
         // Get mutable transform.
         const transform = entity.getMutableComponent(
