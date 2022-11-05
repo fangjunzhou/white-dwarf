@@ -14,7 +14,7 @@ export class EditorViewPort3DSystem extends Canvas3DRenderer {
 
   mousePosition: vec2 = vec2.create();
   mouseDelta: vec2 = vec2.create();
-  mouseInCanvas: boolean = false;
+  mouseInCanvas: boolean = true;
 
   highlightAxis: string | null = null;
   movingAxis: string | null = null;
