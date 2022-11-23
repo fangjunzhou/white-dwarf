@@ -12,7 +12,6 @@
   "scripts": {
     "build-core": "esbuild --bundle --sourcemap src/Core/index.ts --outfile=dist/Core/index.js",
     "build-editor": "esbuild --bundle --sourcemap src/Editor/index.ts --outfile=dist/Editor/editor.js",
-    "start-editor": "esbuild --bundle --sourcemap src/Editor/index.ts --outfile=dist/Editor/editor.js --servedir=dist/Editor",
     "watch-editor": "esbuild --bundle --sourcemap src/Editor/index.ts --outfile=dist/Editor/editor.js --watch"
   },
   "repository": {
@@ -26,6 +25,7 @@
   },
   "homepage": "https://github.com/Fangjun-Zhou/White-Dwarf#readme",
   "dependencies": {
+    "ecsy": "file:submodules/ecsy",
     "esbuild": "^0.15.10",
     "gl-matrix": "^3.4.3",
     "js-file-download": "^0.4.12"
