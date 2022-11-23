@@ -1,4 +1,4 @@
-import { TagComponent } from "ecsy/TagComponent";
+import { TagComponent } from "ecsy";
 import { IComponent } from "../../ComponentRegistry";
 
 @IComponent.register

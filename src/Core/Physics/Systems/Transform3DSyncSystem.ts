@@ -1,5 +1,5 @@
-import { COMPONENT_CHANGE_EVENT } from "ecsy/Component";
-import { System, SystemQueries } from "ecsy/System";
+import { COMPONENT_CHANGE_EVENT } from "ecsy";
+import { System, SystemQueries } from "ecsy";
 import { TransformData3D } from "../../Locomotion/DataComponent/TransformData3D";
 import { SyncTransform3DData } from "../DataComponents/SyncTransform3DData";
 

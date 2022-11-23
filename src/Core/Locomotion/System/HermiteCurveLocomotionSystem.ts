@@ -1,4 +1,4 @@
-import { System, SystemQueries } from "ecsy/System";
+import { System, SystemQueries } from "ecsy";
 import {
   hermiteCurve2DSegmentEvaluate,
   hermiteDerivativeBaseFunc,

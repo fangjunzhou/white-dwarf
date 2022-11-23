@@ -1,4 +1,4 @@
-import { World } from "ecsy/World";
+import { World } from "ecsy";
 import { IWorldRegister } from "../Utils/IWorldRegister";
 import { Cam3DDragSystem } from "../Utils/System/Cam3DDragSystem";
 import { EditorViewPort3DSystem } from "./System/EditorViewPort3DSystem";

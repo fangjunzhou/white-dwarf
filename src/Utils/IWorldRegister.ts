@@ -1,4 +1,4 @@
-import { World } from "ecsy/World";
+import { World } from "ecsy";
 
 export interface IWorldRegister {
   /**

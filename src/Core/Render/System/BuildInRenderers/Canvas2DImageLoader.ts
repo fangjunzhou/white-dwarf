@@ -1,4 +1,4 @@
-import { System, SystemQueries } from "ecsy/System";
+import { System, SystemQueries } from "ecsy";
 import { ImageRenderData2D } from "../../DataComponent/ImageRenderData2D";
 
 export class Canvas2DImageLoader extends System {

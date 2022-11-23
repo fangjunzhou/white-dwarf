@@ -1,3 +1,3 @@
-[submodule "submodules/ecsy"]
-	path = submodules/ecsy
+[submodule "ecsy"]
+	path = ecsy
 	url = git@github.com:Fangjun-Zhou/ecsy.git

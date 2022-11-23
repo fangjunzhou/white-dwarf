@@ -1,5 +1,5 @@
-import { Entity } from "ecsy/Entity";
-import { SystemQueries } from "ecsy/System";
+import { Entity } from "ecsy";
+import { SystemQueries } from "ecsy";
 import { mat4, vec3 } from "gl-matrix";
 import { TransformData3D } from "../../../Locomotion/DataComponent/TransformData3D";
 import { ConstraintData } from "../../../Physics/DataComponents/ConstraintData";

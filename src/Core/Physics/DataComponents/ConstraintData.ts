@@ -1,6 +1,6 @@
-import { Component, ComponentSchema } from "ecsy/Component";
-import { Entity } from "ecsy/Entity";
-import { Types } from "ecsy/Types";
+import { Component, ComponentSchema } from "ecsy";
+import { Entity } from "ecsy";
+import { Types } from "ecsy";
 import { IComponent } from "../../ComponentRegistry";
 
 export class Constraint {

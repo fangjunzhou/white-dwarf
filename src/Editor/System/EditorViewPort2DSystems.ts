@@ -1,6 +1,5 @@
-import { COMPONENT_CHANGE_EVENT } from "ecsy/Component";
-import { Entity } from "ecsy/Entity";
-import { Attributes, System, SystemQueries } from "ecsy/System";
+import { Entity } from "ecsy";
+import { Attributes, System, SystemQueries } from "ecsy";
 import { mat3, vec2 } from "gl-matrix";
 import fileDownload from "js-file-download";
 import { IComponent } from "../../Core/ComponentRegistry";

@@ -1,5 +1,5 @@
-import { Component, ComponentSchema } from "ecsy/Component";
-import { Types } from "ecsy/Types";
+import { Component, ComponentSchema } from "ecsy";
+import { Types } from "ecsy";
 import { IComponent } from "../../ComponentRegistry";
 import { TransformData3D } from "../../Locomotion/DataComponent/TransformData3D";
 

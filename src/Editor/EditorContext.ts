@@ -1,4 +1,4 @@
-import { Entity } from "ecsy/Entity";
+import { Entity } from "ecsy";
 
 export enum EditorControl {
   View,

@@ -1,4 +1,4 @@
-import { SystemQueries } from "ecsy/System";
+import { SystemQueries } from "ecsy";
 import { mat3, vec2 } from "gl-matrix";
 import { TransformData2D } from "../../../Locomotion/DataComponent/TransformData2D";
 import { ImageRenderData2D } from "../../DataComponent/ImageRenderData2D";

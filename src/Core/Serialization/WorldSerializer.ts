@@ -1,4 +1,4 @@
-import { World } from "ecsy/World";
+import { World } from "ecsy";
 import { EditorSceneCamTag } from "../../Editor/TagComponent/EditorSceneCamTag";
 import { EntitySerializer, IEntityObject } from "./EntitySerializer";
 

@@ -1,4 +1,4 @@
-import { cloneClonable, copyCopyable, createType } from "ecsy/Types";
+import { cloneClonable, copyCopyable, createType } from "ecsy";
 import { Vector2, Vector2CustomEditor } from "./Vector2";
 
 /**

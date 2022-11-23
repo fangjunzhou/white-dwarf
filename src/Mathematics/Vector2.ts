@@ -1,4 +1,4 @@
-import { cloneClonable, copyCopyable, createType } from "ecsy/Types";
+import { cloneClonable, copyCopyable, createType } from "ecsy";
 import { vec2 } from "gl-matrix";
 
 /**
