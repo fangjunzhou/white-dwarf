@@ -1,4 +1,4 @@
-import { Entity } from "ecsy";
+import { Entity } from "ecsy-wd";
 import { mainWorld } from "../Core";
 import { editorEventContext, editorUIContext } from "./EditorContext";
 

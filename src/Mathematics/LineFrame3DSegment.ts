@@ -1,4 +1,4 @@
-import { cloneClonable, copyCopyable, createType } from "ecsy";
+import { cloneClonable, copyCopyable, createType } from "ecsy-wd";
 import { Vector3, Vector3CustomEditor } from "./Vector3";
 
 export class LineFrame3DSegment {

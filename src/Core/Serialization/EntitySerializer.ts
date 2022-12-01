@@ -1,7 +1,7 @@
-import { Component, ComponentSchema } from "ecsy";
-import { Entity } from "ecsy";
-import { Types } from "ecsy";
-import { World } from "ecsy";
+import { Component, ComponentSchema } from "ecsy-wd";
+import { Entity } from "ecsy-wd";
+import { Types } from "ecsy-wd";
+import { World } from "ecsy-wd";
 import { EditorSelectedTag } from "../../Editor/TagComponent/EditorSelectedTag";
 import { IComponent } from "../ComponentRegistry";
 

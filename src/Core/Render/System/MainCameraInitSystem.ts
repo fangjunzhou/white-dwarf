@@ -1,4 +1,4 @@
-import { Attributes, System, SystemQueries } from "ecsy";
+import { Attributes, System, SystemQueries } from "ecsy-wd";
 import { MainCameraInitTag } from "../TagComponent/MainCameraInitTag";
 import { MainCameraTag } from "../TagComponent/MainCameraTag";
 

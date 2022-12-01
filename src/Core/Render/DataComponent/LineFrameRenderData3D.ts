@@ -1,5 +1,5 @@
-import { Component, ComponentSchema, COMPONENT_CHANGE_EVENT } from "ecsy";
-import { Types } from "ecsy";
+import { Component, ComponentSchema, COMPONENT_CHANGE_EVENT } from "ecsy-wd";
+import { Types } from "ecsy-wd";
 import {
   LineFrame3DSegment,
   LineFrame3DSegmentEditor,

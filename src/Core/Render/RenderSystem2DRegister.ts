@@ -1,4 +1,4 @@
-import { World } from "ecsy";
+import { World } from "ecsy-wd";
 import { IWorldRegister } from "../../Utils/IWorldRegister";
 import { Canvas2DImageLoader } from "./System/BuildInRenderers/Canvas2DImageLoader";
 import { Canvas2DImageRenderer } from "./System/BuildInRenderers/Canvas2DImageRenderer";

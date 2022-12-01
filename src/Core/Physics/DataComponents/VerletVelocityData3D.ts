@@ -1,4 +1,4 @@
-import { Component, ComponentSchema } from "ecsy";
+import { Component, ComponentSchema } from "ecsy-wd";
 import { Vector3, Vector3Type } from "../../../Mathematics/Vector3";
 import { IComponent } from "../../ComponentRegistry";
 

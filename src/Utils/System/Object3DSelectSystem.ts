@@ -1,5 +1,5 @@
-import { Entity } from "ecsy";
-import { Attributes, SystemQueries } from "ecsy";
+import { Entity } from "ecsy-wd";
+import { Attributes, SystemQueries } from "ecsy-wd";
 import { mat4, vec2, vec3 } from "gl-matrix";
 import { TransformData3D } from "../../Core/Locomotion/DataComponent/TransformData3D";
 import { Canvas3DRenderer } from "../../Core/Render/System/Canvas3DRenderer";

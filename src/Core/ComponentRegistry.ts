@@ -1,4 +1,4 @@
-import { Component, ComponentConstructor } from "ecsy";
+import { Component, ComponentConstructor } from "ecsy-wd";
 
 export interface IComponent extends Component<IComponent> {}
 

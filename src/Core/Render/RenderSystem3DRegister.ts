@@ -1,4 +1,4 @@
-import { World } from "ecsy";
+import { World } from "ecsy-wd";
 import { IWorldRegister } from "../../Utils/IWorldRegister";
 import { Canvas3DConstraintRenderer } from "./System/BuildInRenderers/Canvas3DConstraintRenderer";
 import { Canvas3DLineFrameRenderer } from "./System/BuildInRenderers/Canvas3DLineFrameRenderer";

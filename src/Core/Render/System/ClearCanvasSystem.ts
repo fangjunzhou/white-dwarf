@@ -1,4 +1,4 @@
-import { Attributes, System } from "ecsy";
+import { Attributes, System } from "ecsy-wd";
 
 export class ClearCanvasSystem extends System {
   mainCanvas!: HTMLCanvasElement;

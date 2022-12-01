@@ -1,4 +1,4 @@
-import { System, SystemQueries } from "ecsy";
+import { System, SystemQueries } from "ecsy-wd";
 import { mat4, vec2, vec3 } from "gl-matrix";
 import { TransformData3D } from "../../../Locomotion/DataComponent/TransformData3D";
 import { LineFrameRenderData3D } from "../../DataComponent/LineFrameRenderData3D";

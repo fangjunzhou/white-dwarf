@@ -1,5 +1,5 @@
-import { Entity } from "ecsy";
-import { Attributes, System, SystemQueries } from "ecsy";
+import { Entity } from "ecsy-wd";
+import { Attributes, System, SystemQueries } from "ecsy-wd";
 import { mat3, vec2 } from "gl-matrix";
 import fileDownload from "js-file-download";
 import { IComponent } from "../../Core/ComponentRegistry";

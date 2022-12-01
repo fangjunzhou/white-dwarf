@@ -1,5 +1,5 @@
-import { Component, ComponentSchema } from "ecsy";
-import { Types } from "ecsy";
+import { Component, ComponentSchema } from "ecsy-wd";
+import { Types } from "ecsy-wd";
 import { IComponent } from "../../ComponentRegistry";
 
 @IComponent.register

@@ -1,4 +1,4 @@
-import { Component, ComponentSchema, COMPONENT_CHANGE_EVENT } from "ecsy";
+import { Component, ComponentSchema, COMPONENT_CHANGE_EVENT } from "ecsy-wd";
 import {
   Quaternion,
   QuaternionCustomEditor,

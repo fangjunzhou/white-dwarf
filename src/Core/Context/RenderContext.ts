@@ -1,4 +1,4 @@
-import { Entity } from "ecsy";
+import { Entity } from "ecsy-wd";
 
 export interface IEditorRenderContext {
   mainCanvas: HTMLCanvasElement | null;

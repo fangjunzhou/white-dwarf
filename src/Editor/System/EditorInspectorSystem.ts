@@ -1,5 +1,5 @@
-import { COMPONENT_CHANGE_EVENT } from "ecsy";
-import { Entity } from "ecsy";
+import { COMPONENT_CHANGE_EVENT } from "ecsy-wd";
+import { Entity } from "ecsy-wd";
 import fileDownload from "js-file-download";
 import { IComponent } from "../../Core/ComponentRegistry";
 import { TransformData2D } from "../../Core/Locomotion/DataComponent/TransformData2D";

@@ -1,4 +1,4 @@
-import { System, SystemQueries } from "ecsy";
+import { System, SystemQueries } from "ecsy-wd";
 import { vec3 } from "gl-matrix";
 import { EulerVelocityData3D } from "../DataComponents/EulerVelocityData3D";
 import { MassData } from "../DataComponents/MassData";

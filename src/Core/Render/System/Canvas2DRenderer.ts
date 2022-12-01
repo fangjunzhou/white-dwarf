@@ -1,4 +1,4 @@
-import { Attributes, System, SystemQueries } from "ecsy";
+import { Attributes, System, SystemQueries } from "ecsy-wd";
 import { mat3, vec2 } from "gl-matrix";
 import { TransformData2D } from "../../Locomotion/DataComponent/TransformData2D";
 import { CameraData2D } from "../DataComponent/CameraData2D";

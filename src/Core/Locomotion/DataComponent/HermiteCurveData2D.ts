@@ -1,5 +1,5 @@
-import { Component, ComponentSchema, COMPONENT_CHANGE_EVENT } from "ecsy";
-import { Types } from "ecsy";
+import { Component, ComponentSchema, COMPONENT_CHANGE_EVENT } from "ecsy-wd";
+import { Types } from "ecsy-wd";
 import {
   HermiteCurve2DSegment,
   HermiteCurve2DSegmentCustomEditor,

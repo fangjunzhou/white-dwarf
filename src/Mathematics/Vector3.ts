@@ -1,4 +1,4 @@
-import { createType, copyCopyable, cloneClonable } from "ecsy";
+import { createType, copyCopyable, cloneClonable } from "ecsy-wd";
 import { vec3 } from "gl-matrix";
 
 export class Vector3 {

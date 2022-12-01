@@ -1,4 +1,4 @@
-import { Attributes, System, SystemQueries } from "ecsy";
+import { Attributes, System, SystemQueries } from "ecsy-wd";
 import { vec3 } from "gl-matrix";
 import { TransformData3D } from "../../Locomotion/DataComponent/TransformData3D";
 import { ConstraintData } from "../DataComponents/ConstraintData";

@@ -1,4 +1,4 @@
-import { System, SystemQueries } from "ecsy";
+import { System, SystemQueries } from "ecsy-wd";
 import { vec2, mat3 } from "gl-matrix";
 import { HermiteCurveData2D } from "../../Core/Locomotion/DataComponent/HermiteCurveData2D";
 import { TransformData2D } from "../../Core/Locomotion/DataComponent/TransformData2D";

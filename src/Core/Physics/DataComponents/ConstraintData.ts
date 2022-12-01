@@ -1,6 +1,6 @@
-import { Component, ComponentSchema } from "ecsy";
-import { Entity } from "ecsy";
-import { Types } from "ecsy";
+import { Component, ComponentSchema } from "ecsy-wd";
+import { Entity } from "ecsy-wd";
+import { Types } from "ecsy-wd";
 import { IComponent } from "../../ComponentRegistry";
 
 export class Constraint {

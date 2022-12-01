@@ -1,4 +1,4 @@
-import { World } from "ecsy";
+import { World } from "ecsy-wd";
 import { ITimeContext } from "./Context/TimeContext";
 import { coreSetup, systemContext } from "./CoreSetup";
 

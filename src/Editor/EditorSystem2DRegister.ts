@@ -1,4 +1,4 @@
-import { World } from "ecsy";
+import { World } from "ecsy-wd";
 import { IWorldRegister } from "../Utils/IWorldRegister";
 import { Cam2DDragSystem } from "../Utils/System/Cam2DDragSystem";
 import { EditorHermiteCurveInspector as EditorHermiteCurve2DInspector } from "./System/EditorHermiteCurveInspector";
