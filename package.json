@@ -1,17 +1,12 @@
 {
   "name": "white-dwarf",
-  "version": "1.0.5",
+  "version": "1.0.10",
   "description": "Data oriented game engine based on ECSY.",
   "files": [
-    "dist"
+    "src"
   ],
-  "module": "dist/Core/index.esm.js",
-  "main": "dist/Core/index.js",
-  "typings": "dist/index.d.ts",
-  "scripts": {
-    "build-core": "node buildCore.js",
-    "build-editor": "node buildEditor.js"
-  },
+  "module": "src/Core/index.ts",
+  "main": "src/Core/index.ts",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/Fangjun-Zhou/White-Dwarf.git"
