@@ -1,6 +1,6 @@
 {
   "name": "white-dwarf",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "Data oriented game engine based on ECSY.",
   "files": [
     "dist"
