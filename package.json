@@ -5,13 +5,12 @@
   "files": [
     "src"
   ],
-  "module": "dist/index.esm.js",
-  "main": "dist/index.js",
+  "module": "src/Core/index.ts",
+  "main": "src/Core/index.ts",
   "typings": "dist/index.d.ts",
   "scripts": {
-    "build-core": "esbuild --bundle --sourcemap src/Core/index.ts --outfile=dist/Core/index.js",
-    "build-editor": "esbuild --bundle --sourcemap src/Editor/index.ts --outfile=dist/Editor/editor.js",
-    "watch-editor": "esbuild --bundle --sourcemap src/Editor/index.ts --outfile=dist/Editor/editor.js --watch"
+    "build-core": "node buildCore.js",
+    "build-editor": "node buildEditor.js"
   },
   "repository": {
     "type": "git",
