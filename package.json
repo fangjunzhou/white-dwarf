@@ -1,12 +1,12 @@
 {
   "name": "white-dwarf",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "description": "Data oriented game engine based on ECSY.",
   "files": [
     "dist"
   ],
-  "module": "src/Core/index.ts",
-  "main": "src/Core/index.ts",
+  "module": "dist/Core/index.esm.js",
+  "main": "dist/Core/index.js",
   "typings": "dist/index.d.ts",
   "scripts": {
     "build-core": "node buildCore.js",
