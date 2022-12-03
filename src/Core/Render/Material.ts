@@ -140,45 +140,4 @@ export class Material {
   use() {
     this.glContext.useProgram(this.shaderProgram);
   }
-
-  copy(m: Material): Material {
-    this.vertexSource = m.vertexSource;
-    this.fragmentSource = m.fragmentSource;
-    this.attributes = m.attributes;
-    this.uniforms = m.uniforms;
-    this.textureSamplers = m.textureSamplers;
-
-    if (!this.glContext) {
-      return this;
-    }
-
-    this.compile(
-      this.glContext,
-      this.vertexSource,
-      this.fragmentSource,
-      this.attributes,
-      this.uniforms,
-      this.textureSamplers
-    );
-
-    return this;
-  }
-
-  clone(): Material {
-    return new Material(
-      this.glContext,
-      this.vertexSource,
-      this.fragmentSource,
-      this.attributes,
-      this.uniforms,
-      this.textureSamplers
-    );
-  }
 }
-
-export const MaterialType = createType({
-  name: "Material",
-  default: new Material(null as any, default_vert, default_frag),
-  copy: copyCopyable<Material>,
-  clone: cloneClonable<Material>,
-});
