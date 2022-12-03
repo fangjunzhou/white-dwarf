@@ -26,6 +26,7 @@
   "peerDependencies": {},
   "devDependencies": {
     "ecsy-wd": "file:ecsy",
+    "esbuild-plugin-glsl": "^1.1.0",
     "npm-dts": "^1.3.12",
     "typescript": "^4.8.4"
   }
