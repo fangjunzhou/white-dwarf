@@ -72,7 +72,7 @@ export class Material {
     if (
       !glContext.getShaderParameter(this.vertexShader, glContext.COMPILE_STATUS)
     ) {
-      throw new Error("Failed to compile vertex shader");
+      throw new Error(glContext.getShaderInfoLog(this.vertexShader) as string);
     }
 
     // Compile fragment shader.
@@ -90,7 +90,9 @@ export class Material {
         glContext.COMPILE_STATUS
       )
     ) {
-      throw new Error("Failed to compile fragment shader");
+      throw new Error(
+        glContext.getShaderInfoLog(this.fragmentShader) as string
+      );
     }
 
     // Create shader program.
