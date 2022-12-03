@@ -2,6 +2,19 @@ import { cloneClonable, copyCopyable, createType } from "ecsy-wd";
 import default_vert from "./Shader/DefaultShader/default_vert.glsl";
 import default_frag from "./Shader/DefaultShader/default_frag.glsl";
 
+interface BasicShaderAttribute {
+  vPosition?: number;
+  vNormal?: number;
+  vColor?: number;
+  vTexCoord?: number;
+}
+
+interface BasicShaderUniform {
+  uMV?: WebGLUniformLocation;
+  uMVn?: WebGLUniformLocation;
+  uMVP?: WebGLUniformLocation;
+}
+
 export class Material {
   glContext: WebGLRenderingContext;
 
@@ -17,9 +30,9 @@ export class Material {
   shaderProgram: WebGLProgram | null = null;
 
   // Attributes.
-  attributeLocations: { [key: string]: number } = {};
+  attributeLocations: BasicShaderAttribute = {};
   // Uniforms.
-  uniformLocations: { [key: string]: WebGLUniformLocation } = {};
+  uniformLocations: BasicShaderUniform = {};
   // Texture samplers.
   samplerLocations: { [key: string]: WebGLUniformLocation } = {};
 
@@ -111,19 +124,25 @@ export class Material {
 
     // Get attribute locations.
     for (const attribute of attributes) {
-      this.attributeLocations[attribute] = glContext.getAttribLocation(
+      const location = glContext.getAttribLocation(
         this.shaderProgram,
         attribute
       );
-      glContext.enableVertexAttribArray(this.attributeLocations[attribute]);
+
+      this.attributeLocations[
+        attribute as keyof typeof this.attributeLocations
+      ] = location;
+
+      glContext.enableVertexAttribArray(location);
     }
 
     // Get uniform locations.
     for (const uniform of uniforms) {
-      this.uniformLocations[uniform] = glContext.getUniformLocation(
-        this.shaderProgram,
-        uniform
-      ) as WebGLUniformLocation;
+      this.uniformLocations[uniform as keyof typeof this.uniformLocations] =
+        glContext.getUniformLocation(
+          this.shaderProgram,
+          uniform
+        ) as WebGLUniformLocation;
     }
 
     // Get texture sampler locations.
@@ -137,7 +156,7 @@ export class Material {
     }
   }
 
-  use() {
-    this.glContext.useProgram(this.shaderProgram);
+  use(glContext: WebGLRenderingContext) {
+    glContext.useProgram(this.shaderProgram);
   }
 }

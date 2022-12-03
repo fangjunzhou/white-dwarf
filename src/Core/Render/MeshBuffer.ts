@@ -5,6 +5,14 @@ interface BufferInfo {
   numItems: number;
 }
 
+interface BufferInfos {
+  vertexPositions: BufferInfo | null;
+  vertexNormals: BufferInfo | null;
+  vertexColors: BufferInfo | null;
+  vertexTexCoords: BufferInfo | null;
+  triangleIndices: BufferInfo | null;
+}
+
 export class MeshBuffer {
   vertexPositionsBuffer!: WebGLBuffer;
   vertexNormalsBuffer!: WebGLBuffer;
@@ -12,7 +20,13 @@ export class MeshBuffer {
   vertexTexCoordsBuffer!: WebGLBuffer;
   triangleIndicesBuffer!: WebGLBuffer;
 
-  bufferInfos: { [key: string]: BufferInfo } = {};
+  bufferInfos: BufferInfos = {
+    vertexPositions: null,
+    vertexNormals: null,
+    vertexColors: null,
+    vertexTexCoords: null,
+    triangleIndices: null,
+  };
 
   constructor(glContext: WebGLRenderingContext, mesh: Mesh) {
     // Vertex position buffer.
