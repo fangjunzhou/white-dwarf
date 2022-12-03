@@ -3,7 +3,7 @@ import { IWorldRegister } from "../../Utils/IWorldRegister";
 import { Canvas3DConstraintRenderer } from "./System/BuildInRenderers/Canvas3DConstraintRenderer";
 import { Canvas3DLineFrameRenderer } from "./System/BuildInRenderers/Canvas3DLineFrameRenderer";
 import { Canvas3DRenderer } from "./System/Canvas3DRenderer";
-import { ClearCanvasSystem } from "./System/ClearCanvasSystem";
+import { ClearCanvas2DSystem } from "./System/ClearCanvas2DSystem";
 
 export class RenderSystem3DRegister {
   mainCanvas: HTMLCanvasElement;
@@ -14,7 +14,7 @@ export class RenderSystem3DRegister {
 
   register: IWorldRegister = (world: World) => {
     world
-      .registerSystem(ClearCanvasSystem, {
+      .registerSystem(ClearCanvas2DSystem, {
         mainCanvas: this.mainCanvas,
         priority: -100,
       })

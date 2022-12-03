@@ -1,6 +1,6 @@
 import { Attributes, System } from "ecsy-wd";
 
-export class ClearCanvasSystem extends System {
+export class ClearCanvas2DSystem extends System {
   mainCanvas!: HTMLCanvasElement;
   canvasContext!: CanvasRenderingContext2D;
 

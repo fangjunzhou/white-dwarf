@@ -2,7 +2,7 @@ import { World } from "ecsy-wd";
 import { IWorldRegister } from "../../Utils/IWorldRegister";
 import { Canvas2DImageLoader } from "./System/BuildInRenderers/Canvas2DImageLoader";
 import { Canvas2DImageRenderer } from "./System/BuildInRenderers/Canvas2DImageRenderer";
-import { ClearCanvasSystem } from "./System/ClearCanvasSystem";
+import { ClearCanvas2DSystem } from "./System/ClearCanvas2DSystem";
 
 export class RenderSystem2DRegister {
   mainCanvas: HTMLCanvasElement;
@@ -12,7 +12,7 @@ export class RenderSystem2DRegister {
   }
 
   register: IWorldRegister = (world: World) => {
-    world.registerSystem(ClearCanvasSystem, {
+    world.registerSystem(ClearCanvas2DSystem, {
       mainCanvas: this.mainCanvas,
       priority: -100,
     });
