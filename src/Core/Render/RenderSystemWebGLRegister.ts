@@ -12,6 +12,9 @@ export class RenderSystemWebGLRegister {
   }
 
   register: IWorldRegister = (world: World) => {
+    // Mesh initialization.
+
+    // Render pipeline.
     world.registerSystem(ClearCanvasWebGLSystem, {
       mainCanvas: this.mainCanvas,
       priority: -100,
