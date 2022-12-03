@@ -16,13 +16,13 @@ uniform mat4 uMVP;
 // Camera space position.
 varying vec3 fPosition;
 // Vertex color.
-varying vec3 fColor;
+varying vec4 fColor;
 // Model space normal.
-varying vec2 fNormal;
+varying vec3 fNormal;
 // Texture coordinates.
 varying vec2 fTexCoord;
 
-void main(){
+void main(void){
     // Camera space position.
     fPosition = (uMV * vec4(vPosition, 1.0)).xyz;
     fColor = vColor;
