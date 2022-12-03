@@ -38,6 +38,10 @@ export class Material {
     this.uniforms = uniforms;
     this.textureSamplers = textureSamplers;
 
+    if (!this.glContext) {
+      return;
+    }
+
     this.compile(
       glContext,
       vertexShaderSource,
@@ -142,6 +146,10 @@ export class Material {
     this.uniforms = m.uniforms;
     this.textureSamplers = m.textureSamplers;
 
+    if (!this.glContext) {
+      return this;
+    }
+
     this.compile(
       this.glContext,
       this.vertexSource,
@@ -168,7 +176,7 @@ export class Material {
 
 export const MaterialType = createType({
   name: "Material",
-  default: new Material(null as any, default_vert, default_frag, [], [], []),
+  default: new Material(null as any, default_vert, default_frag),
   copy: copyCopyable<Material>,
   clone: cloneClonable<Material>,
 });
