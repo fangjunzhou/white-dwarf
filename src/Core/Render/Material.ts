@@ -11,8 +11,11 @@ interface BasicShaderAttribute {
 
 interface BasicShaderUniform {
   uMV?: WebGLUniformLocation;
+  uP?: WebGLUniformLocation;
   uMVn?: WebGLUniformLocation;
   uMVP?: WebGLUniformLocation;
+
+  uDirLight?: WebGLUniformLocation;
 }
 
 export class Material {
@@ -20,8 +23,8 @@ export class Material {
 
   vertexSource: string;
   fragmentSource: string;
-  attributes: string[] = [];
-  uniforms: string[] = [];
+  attributes: string[] = ["vPosition", "vNormal", "vColor", "vTexCoord"];
+  uniforms: string[] = ["uMV", "uP", "uMVn", "uMVP", "uDirLight"];
   textureSamplers: string[] = [];
 
   vertexShader: WebGLShader | null = null;
@@ -40,16 +43,22 @@ export class Material {
     glContext: WebGLRenderingContext,
     vertexShaderSource: string,
     fragmentShaderSource: string,
-    attributes: string[] = ["vPosition", "vNormal", "vColor", "vTexCoord"],
-    uniforms: string[] = ["uMV", "uP", "uMVn", "uMVP"],
+    attributes: string[] = [],
+    uniforms: string[] = [],
     textureSamplers: string[] = []
   ) {
     this.glContext = glContext;
     this.vertexSource = vertexShaderSource;
     this.fragmentSource = fragmentShaderSource;
-    this.attributes = attributes;
-    this.uniforms = uniforms;
-    this.textureSamplers = textureSamplers;
+    if (attributes.length) {
+      this.attributes = attributes;
+    }
+    if (uniforms.length) {
+      this.uniforms = uniforms;
+    }
+    if (textureSamplers.length) {
+      this.textureSamplers = textureSamplers;
+    }
 
     if (!this.glContext) {
       return;
@@ -59,9 +68,9 @@ export class Material {
       glContext,
       vertexShaderSource,
       fragmentShaderSource,
-      attributes,
-      uniforms,
-      textureSamplers
+      this.attributes,
+      this.uniforms,
+      this.textureSamplers
     );
   }
 
@@ -69,9 +78,9 @@ export class Material {
     glContext: WebGLRenderingContext,
     vertexShaderSource: string,
     fragmentShaderSource: string,
-    attributes: string[] = ["vPosition", "vNormal", "vColor", "vTexCoord"],
-    uniforms: string[] = ["uMV", "uMVn", "uMVP"],
-    textureSamplers: string[] = []
+    attributes: string[],
+    uniforms: string[],
+    textureSamplers: string[]
   ) {
     // Compile vertex shader.
     this.vertexShader = glContext.createShader(
@@ -160,3 +169,39 @@ export class Material {
     glContext.useProgram(this.shaderProgram);
   }
 }
+
+export class MaterialDescriptor {
+  vertexSource!: string;
+  fragmentSource!: string;
+  attributes: string[] = ["vPosition", "vNormal", "vColor", "vTexCoord"];
+  uniforms: string[] = ["uMV", "uP", "uMVn", "uMVP", "uDirLight"];
+  textureSamplers: string[] = [];
+
+  constructor(
+    vertexSource: string = default_vert,
+    fragmentSource: string = default_frag
+  ) {
+    this.vertexSource = vertexSource;
+    this.fragmentSource = fragmentSource;
+  }
+
+  copy(m: MaterialDescriptor): MaterialDescriptor {
+    this.vertexSource = m.vertexSource;
+    this.fragmentSource = m.fragmentSource;
+    this.attributes = m.attributes;
+    this.uniforms = m.uniforms;
+    this.textureSamplers = m.textureSamplers;
+    return this;
+  }
+
+  clone(): MaterialDescriptor {
+    return new MaterialDescriptor().copy(this);
+  }
+}
+
+export const MaterialDescriptorType = createType({
+  name: "MaterialDescriptor",
+  default: new MaterialDescriptor(),
+  copy: copyCopyable<MaterialDescriptor>,
+  clone: cloneClonable<MaterialDescriptor>,
+});
