@@ -18,6 +18,10 @@ export class CanvasWebGLRenderer extends System {
   mainCanvas!: HTMLCanvasElement;
   canvasContext!: WebGLRenderingContext;
 
+  cameraTransform!: TransformData3D;
+  cameraPerspective: PerspectiveCameraData3D | null = null;
+  cameraOrthographic: OrthographicCameraData3D | null = null;
+
   init(attributes?: Attributes | undefined): void {
     this.mainCanvas = attributes?.mainCanvas;
     this.canvasContext = this.mainCanvas.getContext(
@@ -41,6 +45,31 @@ export class CanvasWebGLRenderer extends System {
       1
     ) {
       throw new Error("More than one main camera found.");
+    }
+
+    // Get the canvas size.
+    const canvasSize = vec2.fromValues(
+      this.mainCanvas.width,
+      this.mainCanvas.height
+    );
+
+    // Set webgl render buffer size.
+    this.canvasContext.viewport(0, 0, canvasSize[0], canvasSize[1]);
+
+    if (this.queries.perspectiveMainCamera.results.length > 0) {
+      // Perspective camera.
+      const camera = this.queries.perspectiveMainCamera.results[0];
+      this.cameraTransform = camera.getComponent(
+        TransformData3D
+      ) as TransformData3D;
+      this.cameraPerspective = camera.getMutableComponent(
+        PerspectiveCameraData3D
+      ) as PerspectiveCameraData3D;
+
+      // Change the aspect ratio.
+      this.cameraPerspective.aspect = canvasSize[0] / canvasSize[1];
+    } else {
+      // TODO: Orthographic camera.
     }
   }
 
@@ -76,7 +105,14 @@ export class CanvasWebGLRenderer extends System {
   getViewMatrix(camTransform: TransformData3D): mat4 {
     // Construct world to camera matrix.
     const worldToCamera = mat4.create();
-    mat4.invert(worldToCamera, this.getModelMatrix(camTransform));
+    const cameraToWorld = mat4.create();
+    mat4.fromRotationTranslationScale(
+      cameraToWorld,
+      camTransform.rotation.value,
+      camTransform.position.value,
+      vec3.fromValues(-1, 1, -1)
+    );
+    mat4.invert(worldToCamera, cameraToWorld);
     return worldToCamera;
   }
 
@@ -114,5 +150,22 @@ export class CanvasWebGLRenderer extends System {
       camData.far
     );
     return perspective;
+  }
+
+  getNDCToViewportMatrix(): mat4 {
+    const ndcToViewport = mat4.create();
+    mat4.fromTranslation(ndcToViewport, [
+      this.mainCanvas.width / 2,
+      this.mainCanvas.height / 2,
+      0,
+    ]);
+
+    mat4.scale(ndcToViewport, ndcToViewport, [
+      this.mainCanvas.width,
+      this.mainCanvas.height,
+      1,
+    ]);
+
+    return ndcToViewport;
   }
 }
