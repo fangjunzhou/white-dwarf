@@ -103,10 +103,16 @@ export class Cam3DDragSystem extends System {
     }
 
     // Get the main camera transform.
-    const mainCameraTransform =
-      this.queries.perspectiveMainCamera.results[0].getMutableComponent(
-        TransformData3D
-      ) as TransformData3D;
+    let mainCameraEntity;
+    if (this.queries.perspectiveMainCamera.results.length === 1) {
+      mainCameraEntity = this.queries.perspectiveMainCamera.results[0];
+    } else {
+      mainCameraEntity = this.queries.orthographicMainCamera.results[0];
+    }
+
+    const mainCameraTransform = mainCameraEntity.getMutableComponent(
+      TransformData3D
+    ) as TransformData3D;
 
     // Get the camera front vector front its transform rotation.
     const front = vec3.fromValues(0, 0, -1);
