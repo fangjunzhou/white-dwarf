@@ -21,15 +21,18 @@ export class WebGLOpaqueRenderer extends CanvasWebGLRenderer {
       return;
     }
 
-    // View matrux.
+    // View matrix.
     const tView = this.getViewMatrix(this.cameraTransform);
     // Projection matrix.
     let tProjection: mat4;
     if (this.cameraPerspective) {
       tProjection = this.getPerspectiveProjectionMatrix(this.cameraPerspective);
+    } else if (this.cameraOrthographic) {
+      tProjection = this.getOrthographicProjectionMatrix(
+        this.cameraOrthographic
+      );
     } else {
-      // TODO: Orthographic camera.
-      throw new Error("Orthographic camera not supported yet.");
+      throw new Error("No camera found.");
     }
 
     // Render all objects.
@@ -66,6 +69,11 @@ export class WebGLOpaqueRenderer extends CanvasWebGLRenderer {
         material.uniformLocations.uMV as WebGLUniformLocation,
         false,
         tMV
+      );
+      this.canvasContext.uniformMatrix4fv(
+        material.uniformLocations.uP as WebGLUniformLocation,
+        false,
+        tProjection
       );
       this.canvasContext.uniformMatrix3fv(
         material.uniformLocations.uMVn as WebGLUniformLocation,

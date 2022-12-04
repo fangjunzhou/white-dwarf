@@ -69,7 +69,23 @@ export class CanvasWebGLRenderer extends System {
       // Change the aspect ratio.
       this.cameraPerspective.aspect = canvasSize[0] / canvasSize[1];
     } else {
-      // TODO: Orthographic camera.
+      // Orthographic camera.
+      const camera = this.queries.orthographicMainCamera.results[0];
+      this.cameraTransform = camera.getComponent(
+        TransformData3D
+      ) as TransformData3D;
+      this.cameraOrthographic = camera.getMutableComponent(
+        OrthographicCameraData3D
+      ) as OrthographicCameraData3D;
+
+      // Change the view port size.
+      // TODO: Change the zoom factor using scroll wheel.
+      this.cameraOrthographic.left =
+        (-canvasSize[0] * 10) / (2 * canvasSize[1]);
+      this.cameraOrthographic.right =
+        (canvasSize[0] * 10) / (2 * canvasSize[1]);
+      this.cameraOrthographic.bottom = -10 / 2;
+      this.cameraOrthographic.top = 10 / 2;
     }
   }
 
