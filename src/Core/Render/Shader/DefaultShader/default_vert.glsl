@@ -10,7 +10,7 @@ attribute vec2 vTexCoord;
 // Uniforms.
 uniform mat4 uMV;
 uniform mat4 uP;
-uniform mat4 uMVn;
+uniform mat3 uMVn;
 uniform mat4 uMVP;
 
 // Camera space position.
