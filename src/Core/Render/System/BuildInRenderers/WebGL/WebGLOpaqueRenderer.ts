@@ -42,6 +42,15 @@ export class WebGLOpaqueRenderer extends CanvasWebGLRenderer {
         MeshRenderData3D
       ) as MeshRenderData3D;
 
+      // Get material and buffer.
+      const material = meshRenderData.material;
+      const meshBuffer = meshRenderData.meshBuffer;
+
+      // If the material is not ready, skip this object.
+      if (!material || !meshBuffer) {
+        return;
+      }
+
       // Model matrix.
       const tModel = this.getModelMatrix(transform);
 
@@ -56,10 +65,6 @@ export class WebGLOpaqueRenderer extends CanvasWebGLRenderer {
       // MVP matrix.
       const tMVP = mat4.create();
       mat4.multiply(tMVP, tProjection, tMV);
-
-      // Get material and buffer.
-      const material = meshRenderData.material;
-      const meshBuffer = meshRenderData.meshBuffer;
 
       // Enable the shader program.
       material.use(this.canvasContext);
