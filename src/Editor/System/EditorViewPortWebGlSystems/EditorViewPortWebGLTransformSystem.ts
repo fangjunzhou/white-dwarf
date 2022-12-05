@@ -3,6 +3,8 @@ import { TransformData3D } from "../../../Core/Locomotion/DataComponent/Transfor
 import { EditorViewPortWebGLSystem } from "./EditorViewPortWebGLSystem";
 import point_vert from "../../../Core/Render/Shader/EditorShader/point_vert.glsl";
 import point_frag from "../../../Core/Render/Shader/EditorShader/point_frag.glsl";
+import line_vert from "../../../Core/Render/Shader/EditorShader/line_vert.glsl";
+import line_frag from "../../../Core/Render/Shader/EditorShader/line_frag.glsl";
 import { mat3, mat4 } from "gl-matrix";
 
 export class EditorViewPortWebGLTransformSystem extends EditorViewPortWebGLSystem {
@@ -18,6 +20,18 @@ export class EditorViewPortWebGLTransformSystem extends EditorViewPortWebGLSyste
     uMVP: null,
   };
   pointShader: WebGLProgram | null = null;
+
+  axisAttributes: { [key: string]: number } = {
+    vPosition: -1,
+    vColor: -1,
+  };
+  axisUniforms: { [key: string]: WebGLUniformLocation | null } = {
+    uMV: null,
+    uP: null,
+    uMVn: null,
+    uMVP: null,
+  };
+  axisShader: WebGLProgram | null = null;
 
   // WebGL buffers.
   vertexPositionBufferItemSize = 3;
@@ -59,7 +73,47 @@ export class EditorViewPortWebGLTransformSystem extends EditorViewPortWebGLSyste
       this.glContext.STATIC_DRAW
     );
 
-    const axixVertices = new Float32Array([]);
+    const axixVertices = new Float32Array(
+      [
+        [0, 0, 0],
+        [1, 0, 0],
+        [0, 0, 0],
+        [0, 1, 0],
+        [0, 0, 0],
+        [0, 0, 1],
+      ].flat()
+    );
+    this.axisVertexPositionBuffer = this.glContext.createBuffer();
+    this.glContext.bindBuffer(
+      this.glContext.ARRAY_BUFFER,
+      this.axisVertexPositionBuffer
+    );
+    this.glContext.bufferData(
+      this.glContext.ARRAY_BUFFER,
+      axixVertices,
+      this.glContext.STATIC_DRAW
+    );
+
+    const axisColors = new Float32Array(
+      [
+        [1, 0, 0, 1],
+        [1, 0, 0, 1],
+        [0, 1, 0, 1],
+        [0, 1, 0, 1],
+        [0, 0, 1, 1],
+        [0, 0, 1, 1],
+      ].flat()
+    );
+    this.axisVertexColorBuffer = this.glContext.createBuffer();
+    this.glContext.bindBuffer(
+      this.glContext.ARRAY_BUFFER,
+      this.axisVertexColorBuffer
+    );
+    this.glContext.bufferData(
+      this.glContext.ARRAY_BUFFER,
+      axisColors,
+      this.glContext.STATIC_DRAW
+    );
 
     // Compile and link the shader program.
     this.pointShader = this.compileShader(
@@ -67,6 +121,13 @@ export class EditorViewPortWebGLTransformSystem extends EditorViewPortWebGLSyste
       point_frag,
       this.pointAttributes,
       this.pointUniforms
+    );
+
+    this.axisShader = this.compileShader(
+      line_vert,
+      line_frag,
+      this.axisAttributes,
+      this.axisUniforms
     );
   }
 
@@ -77,7 +138,7 @@ export class EditorViewPortWebGLTransformSystem extends EditorViewPortWebGLSyste
     tProjection: mat4
   ): void {
     // Model matrix.
-    const tModel = this.getModelMatrix(transform);
+    const tModel = this.getModelMatrix(transform, true);
     // MV matrix.
     const tMV = mat4.create();
     mat4.multiply(tMV, tView, tModel);
@@ -90,6 +151,8 @@ export class EditorViewPortWebGLTransformSystem extends EditorViewPortWebGLSyste
 
     // Draw the transform point gizmo.
     this.drawPoint(tMV, tProjection, tMVn, tMVP);
+    // Draw the transform axis gizmo.
+    this.drawAxis(tMV, tProjection, tMVn, tMVP);
   }
 
   /**
@@ -106,7 +169,7 @@ export class EditorViewPortWebGLTransformSystem extends EditorViewPortWebGLSyste
     this.glContext.useProgram(this.pointShader);
 
     // Set the shader uniforms.
-    this.setUniforms(tMV, tProjection, tMVn, tMVP);
+    this.setUniforms(this.pointUniforms, tMV, tProjection, tMVn, tMVP);
 
     // Set the shader attributes.
     this.glContext.bindBuffer(
@@ -141,30 +204,83 @@ export class EditorViewPortWebGLTransformSystem extends EditorViewPortWebGLSyste
   }
 
   /**
+   * Draw the axis lines.
+   * @param tMV
+   * @param tProjection
+   * @param tMVn
+   * @param tMVP
+   */
+  private drawAxis(tMV: mat4, tProjection: mat4, tMVn: mat3, tMVP: mat4) {
+    this.glContext.disable(this.glContext.DEPTH_TEST);
+
+    this.glContext.useProgram(this.axisShader);
+
+    // Set the shader uniforms.
+    this.setUniforms(this.axisUniforms, tMV, tProjection, tMVn, tMVP);
+
+    // Set the shader attributes.
+    this.glContext.bindBuffer(
+      this.glContext.ARRAY_BUFFER,
+      this.axisVertexPositionBuffer
+    );
+    this.glContext.vertexAttribPointer(
+      this.axisAttributes.vPosition as number,
+      this.vertexPositionBufferItemSize,
+      this.glContext.FLOAT,
+      false,
+      0,
+      0
+    );
+
+    this.glContext.bindBuffer(
+      this.glContext.ARRAY_BUFFER,
+      this.axisVertexColorBuffer
+    );
+    this.glContext.vertexAttribPointer(
+      this.axisAttributes.vColor as number,
+      this.vertexColorBufferItemSize,
+      this.glContext.FLOAT,
+      false,
+      0,
+      0
+    );
+
+    this.glContext.drawArrays(this.glContext.LINES, 0, 6);
+
+    this.glContext.enable(this.glContext.DEPTH_TEST);
+  }
+
+  /**
    * Set the uniforms for glContext.
    * @param tMV
    * @param tProjection
    * @param tMVn
    * @param tMVP
    */
-  private setUniforms(tMV: mat4, tProjection: mat4, tMVn: mat3, tMVP: mat4) {
+  private setUniforms(
+    uniforms: { [key: string]: WebGLUniformLocation | null },
+    tMV: mat4,
+    tProjection: mat4,
+    tMVn: mat3,
+    tMVP: mat4
+  ) {
     this.glContext.uniformMatrix4fv(
-      this.pointUniforms.uMV as WebGLUniformLocation,
+      uniforms.uMV as WebGLUniformLocation,
       false,
       tMV
     );
     this.glContext.uniformMatrix4fv(
-      this.pointUniforms.uP as WebGLUniformLocation,
+      uniforms.uP as WebGLUniformLocation,
       false,
       tProjection
     );
     this.glContext.uniformMatrix3fv(
-      this.pointUniforms.uMVn as WebGLUniformLocation,
+      uniforms.uMVn as WebGLUniformLocation,
       false,
       tMVn
     );
     this.glContext.uniformMatrix4fv(
-      this.pointUniforms.uMVP as WebGLUniformLocation,
+      uniforms.uMVP as WebGLUniformLocation,
       false,
       tMVP
     );
