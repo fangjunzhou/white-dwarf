@@ -82,7 +82,9 @@ export class EditorViewPortWebGLSystem extends CanvasWebGLRenderer {
     ) {
       this.drawInspectEntity(
         EditorViewPortWebGLSystem.inspectEntity as Entity,
-        EditorViewPortWebGLSystem.inspectTransform as TransformData3D
+        EditorViewPortWebGLSystem.inspectTransform as TransformData3D,
+        tView,
+        tProjection
       );
     }
   }
@@ -101,5 +103,10 @@ export class EditorViewPortWebGLSystem extends CanvasWebGLRenderer {
   /**
    * Draw the inspect entity.
    */
-  drawInspectEntity(entity: Entity, transform: TransformData3D): void {}
+  drawInspectEntity(
+    entity: Entity,
+    transform: TransformData3D,
+    tView: mat4,
+    tProjection: mat4
+  ): void {}
 }
