@@ -1,7 +1,9 @@
 import { Entity, Attributes } from "ecsy-wd";
-import { vec2 } from "gl-matrix";
-import { TransformData3D } from "../../Core/Locomotion/DataComponent/TransformData3D";
-import { CanvasWebGLRenderer } from "../../Core/Render/System/CanvasWebGLRenderer";
+import { mat4, vec2 } from "gl-matrix";
+import { TransformData3D } from "../../../Core/Locomotion/DataComponent/TransformData3D";
+import { CanvasWebGLRenderer } from "../../../Core/Render/System/CanvasWebGLRenderer";
+import { EditorControl, editorControlContext } from "../../EditorContext";
+import { EditorSceneCamTag } from "../../TagComponent/EditorSceneCamTag";
 
 export class EditorViewPortWebGLSystem extends CanvasWebGLRenderer {
   static inspectEntity: Entity | null = null;
@@ -57,6 +59,32 @@ export class EditorViewPortWebGLSystem extends CanvasWebGLRenderer {
       console.warn(error);
       return;
     }
+
+    // View matrix.
+    const tView = this.getViewMatrix(this.cameraTransform);
+    // Projection matrix.
+    let tProjection: mat4;
+    if (this.cameraPerspective) {
+      tProjection = this.getPerspectiveProjectionMatrix(this.cameraPerspective);
+    } else if (this.cameraOrthographic) {
+      tProjection = this.getOrthographicProjectionMatrix(
+        this.cameraOrthographic
+      );
+    } else {
+      throw new Error("No camera found.");
+    }
+
+    // Draw selected entity.
+    if (
+      editorControlContext.controlMode == EditorControl.Move &&
+      EditorViewPortWebGLSystem.inspectTransform &&
+      !EditorViewPortWebGLSystem.inspectEntity?.hasComponent(EditorSceneCamTag)
+    ) {
+      this.drawInspectEntity(
+        EditorViewPortWebGLSystem.inspectEntity as Entity,
+        EditorViewPortWebGLSystem.inspectTransform as TransformData3D
+      );
+    }
   }
 
   /**
@@ -69,4 +97,9 @@ export class EditorViewPortWebGLSystem extends CanvasWebGLRenderer {
     const rect = this.mainCanvas.getBoundingClientRect();
     return vec2.fromValues(event.clientX - rect.left, event.clientY - rect.top);
   }
+
+  /**
+   * Draw the inspect entity.
+   */
+  drawInspectEntity(entity: Entity, transform: TransformData3D): void {}
 }
