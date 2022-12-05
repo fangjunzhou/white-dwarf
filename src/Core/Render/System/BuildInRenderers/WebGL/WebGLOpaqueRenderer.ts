@@ -67,88 +67,88 @@ export class WebGLOpaqueRenderer extends CanvasWebGLRenderer {
       mat4.multiply(tMVP, tProjection, tMV);
 
       // Enable the shader program.
-      material.use(this.canvasContext);
+      material.use(this.glContext);
 
       // Set the shader uniforms.
-      this.canvasContext.uniformMatrix4fv(
+      this.glContext.uniformMatrix4fv(
         material.uniformLocations.uMV as WebGLUniformLocation,
         false,
         tMV
       );
-      this.canvasContext.uniformMatrix4fv(
+      this.glContext.uniformMatrix4fv(
         material.uniformLocations.uP as WebGLUniformLocation,
         false,
         tProjection
       );
-      this.canvasContext.uniformMatrix3fv(
+      this.glContext.uniformMatrix3fv(
         material.uniformLocations.uMVn as WebGLUniformLocation,
         false,
         tMVn
       );
-      this.canvasContext.uniformMatrix4fv(
+      this.glContext.uniformMatrix4fv(
         material.uniformLocations.uMVP as WebGLUniformLocation,
         false,
         tMVP
       );
 
       // Set the shader attributes.
-      this.canvasContext.bindBuffer(
-        this.canvasContext.ARRAY_BUFFER,
+      this.glContext.bindBuffer(
+        this.glContext.ARRAY_BUFFER,
         meshBuffer.vertexPositionsBuffer
       );
-      this.canvasContext.vertexAttribPointer(
+      this.glContext.vertexAttribPointer(
         material.attributeLocations.vPosition as number,
         meshBuffer.bufferInfos.vertexPositions!.itemSize,
-        this.canvasContext.FLOAT,
+        this.glContext.FLOAT,
         false,
         0,
         0
       );
 
-      this.canvasContext.bindBuffer(
-        this.canvasContext.ARRAY_BUFFER,
+      this.glContext.bindBuffer(
+        this.glContext.ARRAY_BUFFER,
         meshBuffer.vertexNormalsBuffer
       );
-      this.canvasContext.vertexAttribPointer(
+      this.glContext.vertexAttribPointer(
         material.attributeLocations.vNormal as number,
         meshBuffer.bufferInfos.vertexNormals!.itemSize,
-        this.canvasContext.FLOAT,
+        this.glContext.FLOAT,
         false,
         0,
         0
       );
 
-      this.canvasContext.bindBuffer(
-        this.canvasContext.ARRAY_BUFFER,
+      this.glContext.bindBuffer(
+        this.glContext.ARRAY_BUFFER,
         meshBuffer.vertexColorsBuffer
       );
-      this.canvasContext.vertexAttribPointer(
+      this.glContext.vertexAttribPointer(
         material.attributeLocations.vColor as number,
         meshBuffer.bufferInfos.vertexColors!.itemSize,
-        this.canvasContext.FLOAT,
+        this.glContext.FLOAT,
         false,
         0,
         0
       );
 
-      this.canvasContext.bindBuffer(
-        this.canvasContext.ARRAY_BUFFER,
+      this.glContext.bindBuffer(
+        this.glContext.ARRAY_BUFFER,
         meshBuffer.vertexTexCoordsBuffer
       );
-      this.canvasContext.vertexAttribPointer(
+      this.glContext.vertexAttribPointer(
         material.attributeLocations.vTexCoord as number,
         meshBuffer.bufferInfos.vertexTexCoords!.itemSize,
-        this.canvasContext.FLOAT,
+        this.glContext.FLOAT,
         false,
         0,
         0
       );
 
       // Draw the object.
-      this.canvasContext.drawElements(
-        this.canvasContext.TRIANGLES,
+      this.glContext.drawElements(
+        this.glContext.TRIANGLES,
         meshBuffer.bufferInfos.triangleIndices!.numItems,
-        this.canvasContext.UNSIGNED_BYTE,
+        this.glContext.UNSIGNED_BYTE,
         0
       );
     });

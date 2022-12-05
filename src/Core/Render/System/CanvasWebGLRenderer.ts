@@ -16,7 +16,7 @@ export class CanvasWebGLRenderer extends System {
   };
 
   mainCanvas!: HTMLCanvasElement;
-  canvasContext!: WebGLRenderingContext;
+  glContext!: WebGLRenderingContext;
 
   cameraTransform!: TransformData3D;
   cameraPerspective: PerspectiveCameraData3D | null = null;
@@ -24,7 +24,7 @@ export class CanvasWebGLRenderer extends System {
 
   init(attributes?: Attributes | undefined): void {
     this.mainCanvas = attributes?.mainCanvas;
-    this.canvasContext = this.mainCanvas.getContext(
+    this.glContext = this.mainCanvas.getContext(
       "webgl"
     ) as WebGLRenderingContext;
   }
@@ -54,7 +54,7 @@ export class CanvasWebGLRenderer extends System {
     );
 
     // Set webgl render buffer size.
-    this.canvasContext.viewport(0, 0, canvasSize[0], canvasSize[1]);
+    this.glContext.viewport(0, 0, canvasSize[0], canvasSize[1]);
 
     if (this.queries.perspectiveMainCamera.results.length > 0) {
       // Perspective camera.
