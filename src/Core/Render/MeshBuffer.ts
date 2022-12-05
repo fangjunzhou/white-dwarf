@@ -64,8 +64,8 @@ export class MeshBuffer {
       glContext.STATIC_DRAW
     );
     this.bufferInfos.vertexColors = {
-      itemSize: 3,
-      numItems: mesh.vertexColors.length / 3,
+      itemSize: 4,
+      numItems: mesh.vertexColors.length / 4,
     };
 
     // Vertex texture coordinate buffer.
