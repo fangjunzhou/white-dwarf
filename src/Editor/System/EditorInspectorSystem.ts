@@ -9,6 +9,7 @@ import { editorUIContext } from "../EditorContext";
 import { EditorSelectedTag } from "../TagComponent/EditorSelectedTag";
 import { EditorViewPort2DSystem } from "./EditorViewPort2DSystems";
 import { EditorViewPort3DSystem } from "./EditorViewPort3DSystem";
+import { EditorViewPortWebGLSystem } from "./EditorViewPortWebGlSystems/EditorViewPortWebGLSystem";
 
 export const updateEntityInspector = (entity: Entity | null) => {
   // Check if the inspectEntity has Transform component.
@@ -35,18 +36,23 @@ export const updateEntityInspector = (entity: Entity | null) => {
     }
 
     EditorViewPort3DSystem.inspectEntity = entity;
+    EditorViewPortWebGLSystem.inspectEntity = entity;
 
     // Add the EditorSelectedTag to the new entity.
     if (EditorViewPort3DSystem.inspectEntity) {
       EditorViewPort3DSystem.inspectEntity.addComponent(EditorSelectedTag);
     }
 
-    EditorViewPort3DSystem.inspectTransform = entity.getMutableComponent(
+    const inspectTransform = entity.getMutableComponent(
       TransformData3D
     ) as TransformData3D;
+
+    EditorViewPort3DSystem.inspectTransform = inspectTransform;
+    EditorViewPortWebGLSystem.inspectTransform = inspectTransform;
   } else {
     EditorViewPort2DSystem.inspectTransform = null;
     EditorViewPort3DSystem.inspectTransform = null;
+    EditorViewPortWebGLSystem.inspectTransform = null;
   }
 
   displayEntityInspector(entity);
