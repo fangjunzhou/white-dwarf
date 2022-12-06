@@ -6,7 +6,7 @@ export class Mesh {
   vertexNormals!: Float32Array;
   vertexColors!: Float32Array;
   vertexTexCoords!: Float32Array;
-  triangleIndices!: Uint8Array;
+  triangleIndices!: Uint16Array;
 
   vertexPositionBuffer: Array<number> = [];
   vertexNormalBuffer: Array<number> = [];
@@ -19,7 +19,7 @@ export class Mesh {
     this.vertexNormals = new Float32Array(this.vertexNormalBuffer);
     this.vertexColors = new Float32Array(this.vertexColorBuffer);
     this.vertexTexCoords = new Float32Array(this.vertexTexCoordsBuffer);
-    this.triangleIndices = new Uint8Array(this.triangleIndexBuffer);
+    this.triangleIndices = new Uint16Array(this.triangleIndexBuffer);
 
     this.clearBuffers();
   }
@@ -57,7 +57,7 @@ export class Mesh {
     this.vertexNormals = new Float32Array(m.vertexNormals);
     this.vertexColors = new Float32Array(m.vertexColors);
     this.vertexTexCoords = new Float32Array(m.vertexTexCoords);
-    this.triangleIndices = new Uint8Array(m.triangleIndices);
+    this.triangleIndices = new Uint16Array(m.triangleIndices);
     return this;
   }
 

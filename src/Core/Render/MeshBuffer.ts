@@ -89,7 +89,7 @@ export class MeshBuffer {
     );
     glContext.bufferData(
       glContext.ELEMENT_ARRAY_BUFFER,
-      new Uint8Array(mesh.triangleIndices),
+      new Uint16Array(mesh.triangleIndices),
       glContext.STATIC_DRAW
     );
     this.bufferInfos.triangleIndices = {

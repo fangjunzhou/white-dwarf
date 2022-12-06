@@ -119,7 +119,7 @@ export class CubeMesh extends Mesh {
     ].flat()
   );
 
-  triangleIndices = new Uint8Array(
+  triangleIndices = new Uint16Array(
     [
       [0, 1, 2],
       [0, 2, 3], // front
