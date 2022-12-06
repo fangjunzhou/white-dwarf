@@ -22,12 +22,12 @@ varying vec3 fNormal;
 // Texture coordinates.
 varying vec2 fTexCoord;
 
-void main(){
+void main() {
     // Camera space position.
     fPosition = (uMV * vec4(vPosition, 1.0)).xyz;
     fColor = vColor;
     // Model space normal.
-    fNormal = vNormal;
+    fNormal = normalize(uMVn * vNormal);
     fTexCoord = vTexCoord;
 
     // NDC vertex position.

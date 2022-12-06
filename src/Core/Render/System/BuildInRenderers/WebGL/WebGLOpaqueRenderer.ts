@@ -71,14 +71,24 @@ export class WebGLOpaqueRenderer extends CanvasWebGLRenderer {
 
       // Set the shader uniforms.
       this.glContext.uniformMatrix4fv(
-        material.uniformLocations.uMV as WebGLUniformLocation,
+        material.uniformLocations.uM as WebGLUniformLocation,
         false,
-        tMV
+        tModel
+      );
+      this.glContext.uniformMatrix4fv(
+        material.uniformLocations.uV as WebGLUniformLocation,
+        false,
+        tView
       );
       this.glContext.uniformMatrix4fv(
         material.uniformLocations.uP as WebGLUniformLocation,
         false,
         tProjection
+      );
+      this.glContext.uniformMatrix4fv(
+        material.uniformLocations.uMV as WebGLUniformLocation,
+        false,
+        tMV
       );
       this.glContext.uniformMatrix3fv(
         material.uniformLocations.uMVn as WebGLUniformLocation,
@@ -89,6 +99,11 @@ export class WebGLOpaqueRenderer extends CanvasWebGLRenderer {
         material.uniformLocations.uMVP as WebGLUniformLocation,
         false,
         tMVP
+      );
+      // TODO: Set the directional light uniforms from light entity.
+      this.glContext.uniform3fv(
+        material.uniformLocations.uDirLight as WebGLUniformLocation,
+        [1.0, 0.5, 0.3]
       );
 
       // Set the shader attributes.
