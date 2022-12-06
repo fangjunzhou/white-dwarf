@@ -8,11 +8,11 @@ export class Mesh {
   vertexTexCoords!: Float32Array;
   triangleIndices!: Uint8Array;
 
-  vertexPositionBuffer!: Array<number>;
-  vertexNormalBuffer!: Array<number>;
-  vertexColorBuffer!: Array<number>;
-  vertexTexCoordsBuffer!: Array<number>;
-  triangleIndexBuffer!: Array<number>;
+  vertexPositionBuffer: Array<number> = [];
+  vertexNormalBuffer: Array<number> = [];
+  vertexColorBuffer: Array<number> = [];
+  vertexTexCoordsBuffer: Array<number> = [];
+  triangleIndexBuffer: Array<number> = [];
 
   public compileBufferToArrays() {
     this.vertexPositions = new Float32Array(this.vertexPositionBuffer);

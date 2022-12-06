@@ -10,7 +10,6 @@ export class CubeMeshGeneratorSystem extends System {
       components: [CubeMeshGeneratorData, MeshRenderData3D],
       listen: {
         added: true,
-        changed: true,
       },
     },
   };

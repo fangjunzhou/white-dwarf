@@ -5,6 +5,7 @@ import { Canvas3DLineFrameRenderer } from "./System/BuildInRenderers/Canvas3DLin
 import { WebGLOpaqueRenderer } from "./System/BuildInRenderers/WebGL/WebGLOpaqueRenderer";
 import { ClearCanvasWebGLSystem } from "./System/ClearCanvasWebGLSystem";
 import { CubeMeshGeneratorSystem } from "./System/MeshGeneratorSystems/CubeMeshGeneratorSystem";
+import { IcosphereMeshGeneratorSystem } from "./System/MeshGeneratorSystems/IcosphereMeshGeneratorSystem";
 import { WebGLMeshCompiler } from "./System/WebGLMeshCompiler";
 
 export class WebGLRenderPipelineRegister {
@@ -20,6 +21,9 @@ export class WebGLRenderPipelineRegister {
     // Mesh generation & compilation.
     world
       .registerSystem(CubeMeshGeneratorSystem, {
+        mainCanvas: this.mainCanvas,
+      })
+      .registerSystem(IcosphereMeshGeneratorSystem, {
         mainCanvas: this.mainCanvas,
       })
       .registerSystem(WebGLMeshCompiler, {
