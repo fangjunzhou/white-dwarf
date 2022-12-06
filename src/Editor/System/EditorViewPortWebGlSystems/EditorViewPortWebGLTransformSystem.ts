@@ -41,6 +41,8 @@ export class EditorViewPortWebGLTransformSystem extends EditorViewPortWebGLSyste
   pointVertexColorBuffer: WebGLBuffer | null = null;
   axisVertexPositionBuffer: WebGLBuffer | null = null;
   axisVertexColorBuffer: WebGLBuffer | null = null;
+  axisTipVertexPositionBuffer: WebGLBuffer | null = null;
+  axisTipVertexColorBuffer: WebGLBuffer | null = null;
 
   // Settings.
   pointColor = [1.0, 1.0, 1.0, 1.0];
@@ -73,7 +75,7 @@ export class EditorViewPortWebGLTransformSystem extends EditorViewPortWebGLSyste
       this.glContext.STATIC_DRAW
     );
 
-    const axixVertices = new Float32Array(
+    const axisVertices = new Float32Array(
       [
         [0, 0, 0],
         [1, 0, 0],
@@ -90,7 +92,7 @@ export class EditorViewPortWebGLTransformSystem extends EditorViewPortWebGLSyste
     );
     this.glContext.bufferData(
       this.glContext.ARRAY_BUFFER,
-      axixVertices,
+      axisVertices,
       this.glContext.STATIC_DRAW
     );
 
@@ -98,10 +100,10 @@ export class EditorViewPortWebGLTransformSystem extends EditorViewPortWebGLSyste
       [
         [1, 0, 0, 1],
         [1, 0, 0, 1],
-        [0, 1, 0, 1],
-        [0, 1, 0, 1],
         [0, 0, 1, 1],
         [0, 0, 1, 1],
+        [0, 1, 0, 1],
+        [0, 1, 0, 1],
       ].flat()
     );
     this.axisVertexColorBuffer = this.glContext.createBuffer();
@@ -112,6 +114,42 @@ export class EditorViewPortWebGLTransformSystem extends EditorViewPortWebGLSyste
     this.glContext.bufferData(
       this.glContext.ARRAY_BUFFER,
       axisColors,
+      this.glContext.STATIC_DRAW
+    );
+
+    const axisTipVertices = new Float32Array(
+      [
+        [1, 0, 0],
+        [0, 1, 0],
+        [0, 0, 1],
+      ].flat()
+    );
+    this.axisTipVertexPositionBuffer = this.glContext.createBuffer();
+    this.glContext.bindBuffer(
+      this.glContext.ARRAY_BUFFER,
+      this.axisTipVertexPositionBuffer
+    );
+    this.glContext.bufferData(
+      this.glContext.ARRAY_BUFFER,
+      axisTipVertices,
+      this.glContext.STATIC_DRAW
+    );
+
+    const axisTipColors = new Float32Array(
+      [
+        [1, 0, 0, 1],
+        [0, 0, 1, 1],
+        [0, 1, 0, 1],
+      ].flat()
+    );
+    this.axisTipVertexColorBuffer = this.glContext.createBuffer();
+    this.glContext.bindBuffer(
+      this.glContext.ARRAY_BUFFER,
+      this.axisTipVertexColorBuffer
+    );
+    this.glContext.bufferData(
+      this.glContext.ARRAY_BUFFER,
+      axisTipColors,
       this.glContext.STATIC_DRAW
     );
 
@@ -246,6 +284,41 @@ export class EditorViewPortWebGLTransformSystem extends EditorViewPortWebGLSyste
     );
 
     this.glContext.drawArrays(this.glContext.LINES, 0, 6);
+
+    // Draw the axis tips.
+    this.glContext.useProgram(this.pointShader);
+
+    // Set the shader uniforms.
+    this.setUniforms(this.pointUniforms, tMV, tProjection, tMVn, tMVP);
+
+    // Set the shader attributes.
+    this.glContext.bindBuffer(
+      this.glContext.ARRAY_BUFFER,
+      this.axisTipVertexPositionBuffer
+    );
+    this.glContext.vertexAttribPointer(
+      this.pointAttributes.vPosition as number,
+      this.vertexPositionBufferItemSize,
+      this.glContext.FLOAT,
+      false,
+      0,
+      0
+    );
+
+    this.glContext.bindBuffer(
+      this.glContext.ARRAY_BUFFER,
+      this.axisTipVertexColorBuffer
+    );
+    this.glContext.vertexAttribPointer(
+      this.pointAttributes.vColor as number,
+      this.vertexColorBufferItemSize,
+      this.glContext.FLOAT,
+      false,
+      0,
+      0
+    );
+
+    this.glContext.drawArrays(this.glContext.POINTS, 0, 3);
 
     this.glContext.enable(this.glContext.DEPTH_TEST);
   }
