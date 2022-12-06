@@ -5,12 +5,15 @@ import point_vert from "../../../Core/Render/Shader/EditorShader/point_vert.glsl
 import point_frag from "../../../Core/Render/Shader/EditorShader/point_frag.glsl";
 import line_vert from "../../../Core/Render/Shader/EditorShader/line_vert.glsl";
 import line_frag from "../../../Core/Render/Shader/EditorShader/line_frag.glsl";
-import { mat3, mat4 } from "gl-matrix";
+import { mat3, mat4, vec2, vec3 } from "gl-matrix";
+
+const moveControlThreshold = 10;
 
 export class EditorViewPortWebGLTransformSystem extends EditorViewPortWebGLSystem {
   // WebGL shaders.
   pointAttributes: { [key: string]: number } = {
     vPosition: -1,
+    vSize: -1,
     vColor: -1,
   };
   pointUniforms: { [key: string]: WebGLUniformLocation | null } = {
@@ -35,13 +38,16 @@ export class EditorViewPortWebGLTransformSystem extends EditorViewPortWebGLSyste
 
   // WebGL buffers.
   vertexPositionBufferItemSize = 3;
+  vertexSizeBufferItemSize = 1;
   vertexColorBufferItemSize = 4;
 
   pointVertexPositionBuffer: WebGLBuffer | null = null;
+  pointVertexSizeBuffer: WebGLBuffer | null = null;
   pointVertexColorBuffer: WebGLBuffer | null = null;
   axisVertexPositionBuffer: WebGLBuffer | null = null;
   axisVertexColorBuffer: WebGLBuffer | null = null;
   axisTipVertexPositionBuffer: WebGLBuffer | null = null;
+  axisTipVertexSizeBuffer: WebGLBuffer | null = null;
   axisTipVertexColorBuffer: WebGLBuffer | null = null;
 
   // Settings.
@@ -60,6 +66,18 @@ export class EditorViewPortWebGLTransformSystem extends EditorViewPortWebGLSyste
     this.glContext.bufferData(
       this.glContext.ARRAY_BUFFER,
       pointVertices,
+      this.glContext.STATIC_DRAW
+    );
+
+    const pointSizes = new Float32Array([10]);
+    this.pointVertexSizeBuffer = this.glContext.createBuffer();
+    this.glContext.bindBuffer(
+      this.glContext.ARRAY_BUFFER,
+      this.pointVertexSizeBuffer
+    );
+    this.glContext.bufferData(
+      this.glContext.ARRAY_BUFFER,
+      pointSizes,
       this.glContext.STATIC_DRAW
     );
 
@@ -135,6 +153,18 @@ export class EditorViewPortWebGLTransformSystem extends EditorViewPortWebGLSyste
       this.glContext.STATIC_DRAW
     );
 
+    const axisTipSizes = new Float32Array([10, 10, 10]);
+    this.axisTipVertexSizeBuffer = this.glContext.createBuffer();
+    this.glContext.bindBuffer(
+      this.glContext.ARRAY_BUFFER,
+      this.axisTipVertexSizeBuffer
+    );
+    this.glContext.bufferData(
+      this.glContext.ARRAY_BUFFER,
+      axisTipSizes,
+      this.glContext.STATIC_DRAW
+    );
+
     const axisTipColors = new Float32Array(
       [
         [1, 0, 0, 1],
@@ -191,6 +221,108 @@ export class EditorViewPortWebGLTransformSystem extends EditorViewPortWebGLSyste
     this.drawPoint(tMV, tProjection, tMVn, tMVP);
     // Draw the transform axis gizmo.
     this.drawAxis(tMV, tProjection, tMVn, tMVP);
+
+    // Get the NDC to viewport matrix.
+    const tNDCtoViewport = this.getNDCToViewportMatrix();
+
+    // Generate the transformation matrix from model space to Viewport space.
+    const tModelToViewport = mat4.create();
+    mat4.multiply(tModelToViewport, tNDCtoViewport, tMVP);
+
+    // Get the position of the entity in viewport space.
+    const startPoint = vec3.transformMat4(
+      vec3.create(),
+      [0, 0, 0],
+      tModelToViewport
+    );
+    // Get the end points for the axis gizmo.
+    const endPointX = vec3.transformMat4(
+      vec3.create(),
+      [1, 0, 0],
+      tModelToViewport
+    );
+    const endPointY = vec3.transformMat4(
+      vec3.create(),
+      [0, 1, 0],
+      tModelToViewport
+    );
+    const endPointZ = vec3.transformMat4(
+      vec3.create(),
+      [0, 0, 1],
+      tModelToViewport
+    );
+
+    // If the mouse is in the canvas, get the closest axis.
+    if (this.mouseInCanvas) {
+      // Get the closest axis.
+      const xDistance = vec2.distance(
+        this.mousePosition,
+        vec2.fromValues(endPointX[0], endPointX[1])
+      );
+      const yDistance = vec2.distance(
+        this.mousePosition,
+        vec2.fromValues(endPointY[0], endPointY[1])
+      );
+      const zDistance = vec2.distance(
+        this.mousePosition,
+        vec2.fromValues(endPointZ[0], endPointZ[1])
+      );
+
+      const minDistance = Math.min(xDistance, yDistance, zDistance);
+
+      let axisTipSizes: Float32Array = new Float32Array([10, 10, 10]);
+      if (minDistance < moveControlThreshold) {
+        if (minDistance == xDistance) {
+          // Highlight the axis.
+          axisTipSizes = new Float32Array([20, 10, 10]);
+
+          this.highlightAxis = "x";
+        } else if (minDistance == yDistance) {
+          // Highlight the axis.
+          axisTipSizes = new Float32Array([10, 20, 10]);
+
+          this.highlightAxis = "y";
+        } else if (minDistance == zDistance) {
+          // Highlight the axis.
+          axisTipSizes = new Float32Array([10, 10, 20]);
+
+          this.highlightAxis = "z";
+        }
+      } else {
+        // Reset the axis size.
+        this.highlightAxis = null;
+      }
+
+      // Move the object.
+      if (this.movingAxis) {
+        switch (this.movingAxis) {
+          case "x":
+            this.moveAxis(endPointX, startPoint, 0);
+            break;
+
+          case "y":
+            this.moveAxis(endPointY, startPoint, 1);
+            break;
+
+          case "z":
+            this.moveAxis(endPointZ, startPoint, 2);
+            break;
+
+          default:
+            break;
+        }
+      }
+
+      this.glContext.bindBuffer(
+        this.glContext.ARRAY_BUFFER,
+        this.axisTipVertexSizeBuffer
+      );
+      this.glContext.bufferData(
+        this.glContext.ARRAY_BUFFER,
+        axisTipSizes,
+        this.glContext.STATIC_DRAW
+      );
+    }
   }
 
   /**
@@ -217,6 +349,18 @@ export class EditorViewPortWebGLTransformSystem extends EditorViewPortWebGLSyste
     this.glContext.vertexAttribPointer(
       this.pointAttributes.vPosition as number,
       this.vertexPositionBufferItemSize,
+      this.glContext.FLOAT,
+      false,
+      0,
+      0
+    );
+    this.glContext.bindBuffer(
+      this.glContext.ARRAY_BUFFER,
+      this.pointVertexSizeBuffer
+    );
+    this.glContext.vertexAttribPointer(
+      this.pointAttributes.vSize as number,
+      this.vertexSizeBufferItemSize,
       this.glContext.FLOAT,
       false,
       0,
@@ -304,7 +448,18 @@ export class EditorViewPortWebGLTransformSystem extends EditorViewPortWebGLSyste
       0,
       0
     );
-
+    this.glContext.bindBuffer(
+      this.glContext.ARRAY_BUFFER,
+      this.axisTipVertexSizeBuffer
+    );
+    this.glContext.vertexAttribPointer(
+      this.pointAttributes.vSize as number,
+      this.vertexSizeBufferItemSize,
+      this.glContext.FLOAT,
+      false,
+      0,
+      0
+    );
     this.glContext.bindBuffer(
       this.glContext.ARRAY_BUFFER,
       this.axisTipVertexColorBuffer
@@ -445,5 +600,36 @@ export class EditorViewPortWebGLTransformSystem extends EditorViewPortWebGLSyste
     }
 
     return shaderProgram;
+  }
+
+  /**
+   * Move the object along the axis.
+   * @param axisEndPoint the end point of the axis.
+   * @param startPoint the start point of the axis.
+   */
+  private moveAxis(axisEndPoint: vec3, startPoint: vec3, axisIndex: number) {
+    const axisDir = vec2.create();
+    vec2.sub(
+      axisDir,
+      vec2.fromValues(axisEndPoint[0], axisEndPoint[1]),
+      vec2.fromValues(startPoint[0], startPoint[1])
+    );
+    // Get the mouse move magnitude on the axis.
+    let axisMove = vec2.dot(
+      axisDir,
+      vec2.fromValues(this.mouseDelta[0], this.mouseDelta[1])
+    );
+    axisMove = axisMove / Math.pow(vec2.length(axisDir), 2);
+
+    // Move the object.
+    if (EditorViewPortWebGLSystem.inspectTransform) {
+      EditorViewPortWebGLSystem.inspectTransform.position.value[axisIndex] +=
+        axisMove;
+
+      // Update the transform.
+      EditorViewPortWebGLSystem.inspectEntity?.getMutableComponent(
+        TransformData3D
+      );
+    }
   }
 }
