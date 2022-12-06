@@ -1,5 +1,7 @@
 // Model space vertex position.
 attribute vec3 vPosition;
+// Point size.
+attribute float vSize;
 // Vertex color.
 attribute vec4 vColor;
 
@@ -22,5 +24,5 @@ void main(){
 
     // NDC vertex position.
     gl_Position = uMVP * vec4(vPosition, 1.0);
-    gl_PointSize = 10.0;
+    gl_PointSize = vSize;
 }
