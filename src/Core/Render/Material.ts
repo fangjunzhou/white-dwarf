@@ -10,8 +10,10 @@ interface BasicShaderAttribute {
 }
 
 interface BasicShaderUniform {
-  uMV?: WebGLUniformLocation;
+  uM?: WebGLUniformLocation;
+  uV?: WebGLUniformLocation;
   uP?: WebGLUniformLocation;
+  uMV?: WebGLUniformLocation;
   uMVn?: WebGLUniformLocation;
   uMVP?: WebGLUniformLocation;
 
@@ -23,8 +25,8 @@ export class Material {
 
   vertexSource: string;
   fragmentSource: string;
-  attributes: string[] = ["vPosition", "vNormal", "vColor", "vTexCoord"];
-  uniforms: string[] = ["uMV", "uP", "uMVn", "uMVP", "uDirLight"];
+  attributes: string[] = [];
+  uniforms: string[] = [];
   textureSamplers: string[] = [];
 
   vertexShader: WebGLShader | null = null;
@@ -174,7 +176,7 @@ export class MaterialDescriptor {
   vertexSource!: string;
   fragmentSource!: string;
   attributes: string[] = ["vPosition", "vNormal", "vColor", "vTexCoord"];
-  uniforms: string[] = ["uMV", "uP", "uMVn", "uMVP", "uDirLight"];
+  uniforms: string[] = ["uM", "uV", "uP", "uMV", "uMVn", "uMVP", "uDirLight"];
   textureSamplers: string[] = [];
 
   constructor(
