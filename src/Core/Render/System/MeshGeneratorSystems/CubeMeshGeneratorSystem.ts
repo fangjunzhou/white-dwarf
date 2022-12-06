@@ -2,6 +2,7 @@ import { Attributes, Entity, System, SystemQueries } from "ecsy-wd";
 import { CubeMesh } from "../../../../Utils/DefaultMeshes/CubeMesh";
 import { CubeMeshGeneratorData } from "../../DataComponent/MeshGenerator/CubeMeshGeneratorData";
 import { MeshRenderData3D } from "../../DataComponent/MeshRenderData3D";
+import { Mesh } from "../../Mesh";
 
 export class CubeMeshGeneratorSystem extends System {
   static queries: SystemQueries = {
@@ -46,10 +47,111 @@ export class CubeMeshGeneratorSystem extends System {
       return;
     }
 
-    meshRenderData.mesh = new CubeMesh(
-      meshGeneratorData.size.value[0],
-      meshGeneratorData.size.value[1],
-      meshGeneratorData.size.value[2]
-    );
+    meshRenderData.mesh = new Mesh();
+
+    meshRenderData.mesh.clearBuffers();
+
+    const x = meshGeneratorData.size.value[0];
+    const y = meshGeneratorData.size.value[1];
+    const z = meshGeneratorData.size.value[2];
+
+    // Front face.
+    meshRenderData.mesh.addVertexPosition([-x, -y, z]);
+    meshRenderData.mesh.addVertexPosition([x, -y, z]);
+    meshRenderData.mesh.addVertexPosition([x, y, z]);
+    meshRenderData.mesh.addVertexPosition([-x, y, z]);
+    meshRenderData.mesh.addVertexNormal([0, 0, 1]);
+    meshRenderData.mesh.addVertexNormal([0, 0, 1]);
+    meshRenderData.mesh.addVertexNormal([0, 0, 1]);
+    meshRenderData.mesh.addVertexNormal([0, 0, 1]);
+    meshRenderData.mesh.addVertexTexCoords([0, 0]);
+    meshRenderData.mesh.addVertexTexCoords([1, 0]);
+    meshRenderData.mesh.addVertexTexCoords([1, 1]);
+    meshRenderData.mesh.addVertexTexCoords([0, 1]);
+    meshRenderData.mesh.registerTriangle(0, 1, 2);
+    meshRenderData.mesh.registerTriangle(0, 2, 3);
+
+    // Back face.
+    meshRenderData.mesh.addVertexPosition([-x, -y, -z]);
+    meshRenderData.mesh.addVertexPosition([-x, y, -z]);
+    meshRenderData.mesh.addVertexPosition([x, y, -z]);
+    meshRenderData.mesh.addVertexPosition([x, -y, -z]);
+    meshRenderData.mesh.addVertexNormal([0, 0, -1]);
+    meshRenderData.mesh.addVertexNormal([0, 0, -1]);
+    meshRenderData.mesh.addVertexNormal([0, 0, -1]);
+    meshRenderData.mesh.addVertexNormal([0, 0, -1]);
+    meshRenderData.mesh.addVertexTexCoords([0, 0]);
+    meshRenderData.mesh.addVertexTexCoords([0, 1]);
+    meshRenderData.mesh.addVertexTexCoords([1, 1]);
+    meshRenderData.mesh.addVertexTexCoords([1, 0]);
+    meshRenderData.mesh.registerTriangle(4, 5, 6);
+    meshRenderData.mesh.registerTriangle(4, 6, 7);
+
+    // Top face.
+    meshRenderData.mesh.addVertexPosition([-x, y, -z]);
+    meshRenderData.mesh.addVertexPosition([-x, y, z]);
+    meshRenderData.mesh.addVertexPosition([x, y, z]);
+    meshRenderData.mesh.addVertexPosition([x, y, -z]);
+    meshRenderData.mesh.addVertexNormal([0, 1, 0]);
+    meshRenderData.mesh.addVertexNormal([0, 1, 0]);
+    meshRenderData.mesh.addVertexNormal([0, 1, 0]);
+    meshRenderData.mesh.addVertexNormal([0, 1, 0]);
+    meshRenderData.mesh.addVertexTexCoords([0, 0]);
+    meshRenderData.mesh.addVertexTexCoords([0, 1]);
+    meshRenderData.mesh.addVertexTexCoords([1, 1]);
+    meshRenderData.mesh.addVertexTexCoords([1, 0]);
+    meshRenderData.mesh.registerTriangle(8, 9, 10);
+    meshRenderData.mesh.registerTriangle(8, 10, 11);
+
+    // Bottom face.
+    meshRenderData.mesh.addVertexPosition([-x, -y, -z]);
+    meshRenderData.mesh.addVertexPosition([x, -y, -z]);
+    meshRenderData.mesh.addVertexPosition([x, -y, z]);
+    meshRenderData.mesh.addVertexPosition([-x, -y, z]);
+    meshRenderData.mesh.addVertexNormal([0, -1, 0]);
+    meshRenderData.mesh.addVertexNormal([0, -1, 0]);
+    meshRenderData.mesh.addVertexNormal([0, -1, 0]);
+    meshRenderData.mesh.addVertexNormal([0, -1, 0]);
+    meshRenderData.mesh.addVertexTexCoords([0, 0]);
+    meshRenderData.mesh.addVertexTexCoords([1, 0]);
+    meshRenderData.mesh.addVertexTexCoords([1, 1]);
+    meshRenderData.mesh.addVertexTexCoords([0, 1]);
+    meshRenderData.mesh.registerTriangle(12, 13, 14);
+    meshRenderData.mesh.registerTriangle(12, 14, 15);
+
+    // Right face.
+    meshRenderData.mesh.addVertexPosition([x, -y, -z]);
+    meshRenderData.mesh.addVertexPosition([x, y, -z]);
+    meshRenderData.mesh.addVertexPosition([x, y, z]);
+    meshRenderData.mesh.addVertexPosition([x, -y, z]);
+    meshRenderData.mesh.addVertexNormal([1, 0, 0]);
+    meshRenderData.mesh.addVertexNormal([1, 0, 0]);
+    meshRenderData.mesh.addVertexNormal([1, 0, 0]);
+    meshRenderData.mesh.addVertexNormal([1, 0, 0]);
+    meshRenderData.mesh.addVertexTexCoords([0, 0]);
+    meshRenderData.mesh.addVertexTexCoords([0, 1]);
+    meshRenderData.mesh.addVertexTexCoords([1, 1]);
+    meshRenderData.mesh.addVertexTexCoords([1, 0]);
+    meshRenderData.mesh.registerTriangle(16, 17, 18);
+    meshRenderData.mesh.registerTriangle(16, 18, 19);
+
+    // Left face.
+    meshRenderData.mesh.addVertexPosition([-x, -y, -z]);
+    meshRenderData.mesh.addVertexPosition([-x, -y, z]);
+    meshRenderData.mesh.addVertexPosition([-x, y, z]);
+    meshRenderData.mesh.addVertexPosition([-x, y, -z]);
+    meshRenderData.mesh.addVertexNormal([-1, 0, 0]);
+    meshRenderData.mesh.addVertexNormal([-1, 0, 0]);
+    meshRenderData.mesh.addVertexNormal([-1, 0, 0]);
+    meshRenderData.mesh.addVertexNormal([-1, 0, 0]);
+    meshRenderData.mesh.addVertexTexCoords([0, 0]);
+    meshRenderData.mesh.addVertexTexCoords([1, 0]);
+    meshRenderData.mesh.addVertexTexCoords([1, 1]);
+    meshRenderData.mesh.addVertexTexCoords([0, 1]);
+    meshRenderData.mesh.registerTriangle(20, 21, 22);
+    meshRenderData.mesh.registerTriangle(20, 22, 23);
+
+    // Compile the mesh.
+    meshRenderData.mesh.compileBufferToArrays();
   }
 }

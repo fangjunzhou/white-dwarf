@@ -103,7 +103,7 @@ export class WebGLOpaqueRenderer extends CanvasWebGLRenderer {
       // TODO: Set the directional light uniforms from light entity.
       this.glContext.uniform3fv(
         material.uniformLocations.uDirLight as WebGLUniformLocation,
-        [1.0, 0.5, 0.3]
+        [1.0, 0.5, -1.3]
       );
 
       // Set the shader attributes.
