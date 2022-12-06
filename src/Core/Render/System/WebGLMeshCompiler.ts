@@ -58,6 +58,10 @@ export class WebGLMeshCompiler extends System {
       MeshRenderData3D
     ) as MeshRenderData3D;
 
+    if (!meshRenderData.mesh) {
+      return;
+    }
+
     // Compile material.
     try {
       meshRenderData.material = new Material(
