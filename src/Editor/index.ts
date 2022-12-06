@@ -70,11 +70,22 @@ export const editorInit = () => {
   // Register entity selected event.
   editorEventContext.onEntitySelected.push(updateEntityInspector);
 
+  // Check if worldData is available in local storage.
+  const worldDataString = window.localStorage.getItem("worldData");
+  if (worldDataString) {
+    worldData = JSON.parse(worldDataString);
+  }
+
   // Core setup.
   coreSetup();
 
   // Editor start.
   systemContext.editorStart();
+
+  // If there's world data, deserialize it.
+  if (worldData) {
+    WorldSerializer.deserializeWorld(mainWorld, worldData);
+  }
 
   // Setup play button.
   setupPlayButton();
@@ -97,6 +108,7 @@ export const editorInit = () => {
   // Resize .
   onResize();
 };
+
 const onResize = () => {
   // Resize mainCanvas.
   if (coreRenderContext.mainCanvas) {
@@ -182,6 +194,8 @@ const setupSaveLoadWorldButton = () => {
           const data = e.target?.result;
           if (data) {
             worldData = JSON.parse(data as string) as IWorldObject;
+            // Save the world data to localstorage.
+            window.localStorage.setItem("worldData", JSON.stringify(worldData));
 
             // Clear the world.
             editorStop();
