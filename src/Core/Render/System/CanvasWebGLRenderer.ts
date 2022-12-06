@@ -177,8 +177,8 @@ export class CanvasWebGLRenderer extends System {
     ]);
 
     mat4.scale(ndcToViewport, ndcToViewport, [
-      this.mainCanvas.width,
-      this.mainCanvas.height,
+      this.mainCanvas.width / 2,
+      -this.mainCanvas.height / 2,
       1,
     ]);
 
