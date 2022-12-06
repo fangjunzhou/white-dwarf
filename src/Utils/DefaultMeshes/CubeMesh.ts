@@ -135,4 +135,36 @@ export class CubeMesh extends Mesh {
       [20, 22, 23], // back
     ].flat()
   );
+  constructor(x: number = 1, y: number = 1, z: number = 1) {
+    super();
+
+    this.vertexPositions = new Float32Array(
+      [
+        [x, y, z],
+        [-x, y, z],
+        [-x, -y, z],
+        [x, -y, z],
+        [x, y, z],
+        [x, -y, z],
+        [x, -y, -z],
+        [x, y, -z],
+        [x, y, z],
+        [x, y, -z],
+        [-x, y, -z],
+        [-x, y, z],
+        [-x, y, z],
+        [-x, y, -z],
+        [-x, -y, -z],
+        [-x, -y, z],
+        [-x, -y, -z],
+        [x, -y, -z],
+        [x, -y, z],
+        [-x, -y, z],
+        [x, -y, -z],
+        [-x, -y, -z],
+        [-x, y, -z],
+        [x, y, -z],
+      ].flat()
+    );
+  }
 }
