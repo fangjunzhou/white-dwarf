@@ -163,7 +163,7 @@ export class WebGLOpaqueRenderer extends CanvasWebGLRenderer {
       this.glContext.drawElements(
         this.glContext.TRIANGLES,
         meshBuffer.bufferInfos.triangleIndices!.numItems,
-        this.glContext.UNSIGNED_BYTE,
+        this.glContext.UNSIGNED_SHORT,
         0
       );
     });
