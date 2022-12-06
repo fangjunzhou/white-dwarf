@@ -4,6 +4,7 @@ import { Canvas3DConstraintRenderer } from "./System/BuildInRenderers/Canvas3DCo
 import { Canvas3DLineFrameRenderer } from "./System/BuildInRenderers/Canvas3DLineFrameRenderer";
 import { WebGLOpaqueRenderer } from "./System/BuildInRenderers/WebGL/WebGLOpaqueRenderer";
 import { ClearCanvasWebGLSystem } from "./System/ClearCanvasWebGLSystem";
+import { CubeMeshGeneratorSystem } from "./System/MeshGeneratorSystems/CubeMeshGeneratorSystem";
 import { WebGLMeshCompiler } from "./System/WebGLMeshCompiler";
 
 export class WebGLRenderPipelineRegister {
@@ -16,10 +17,14 @@ export class WebGLRenderPipelineRegister {
   register: IWorldRegister = (world: World) => {
     // Mesh initialization.
 
-    // Mesh & Material compilation.
-    world.registerSystem(WebGLMeshCompiler, {
-      mainCanvas: this.mainCanvas,
-    });
+    // Mesh generation & compilation.
+    world
+      .registerSystem(CubeMeshGeneratorSystem, {
+        mainCanvas: this.mainCanvas,
+      })
+      .registerSystem(WebGLMeshCompiler, {
+        mainCanvas: this.mainCanvas,
+      });
 
     // Render pipeline.
     world
