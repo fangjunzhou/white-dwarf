@@ -12,7 +12,7 @@ import { MeshBuffer } from "../MeshBuffer";
 export class MeshRenderData3D extends Component<MeshRenderData3D> {
   static schema: ComponentSchema = {
     mesh: {
-      type: MeshType,
+      type: Types.Ref,
     },
     meshBuffer: {
       type: Types.Ref,

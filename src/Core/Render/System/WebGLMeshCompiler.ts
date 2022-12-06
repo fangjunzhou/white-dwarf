@@ -25,6 +25,7 @@ export class WebGLMeshCompiler extends System {
       "webgl"
     ) as WebGLRenderingContext;
   }
+
   execute(delta: number, time: number): void {
     // Compile all mesh.
     this.queries.meshEntities.added?.forEach((entity) => {
@@ -41,6 +42,10 @@ export class WebGLMeshCompiler extends System {
     const meshRenderData = entity.getMutableComponent(
       MeshRenderData3D
     ) as MeshRenderData3D;
+
+    if (!meshRenderData.mesh) {
+      return;
+    }
 
     meshRenderData.meshBuffer = new MeshBuffer(
       this.canvasContext,
