@@ -87,6 +87,9 @@ export class EditorViewPortWebGLSystem extends CanvasWebGLRenderer {
         tProjection
       );
     }
+
+    // Reset mouse delta.
+    vec2.set(this.mouseDelta, 0, 0);
   }
 
   /**
