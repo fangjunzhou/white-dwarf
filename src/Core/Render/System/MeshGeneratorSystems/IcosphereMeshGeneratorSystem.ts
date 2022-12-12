@@ -1,5 +1,5 @@
 import { Attributes, Entity, System, SystemQueries } from "ecsy-wd";
-import { vec3 } from "gl-matrix";
+import { vec2, vec3 } from "gl-matrix";
 import { IcosphereMeshGeneratorData } from "../../DataComponent/MeshGenerator/IcosphereMeshGeneratorData";
 import { MeshRenderData3D } from "../../DataComponent/MeshRenderData3D";
 import { Mesh } from "../../Mesh";
@@ -7,7 +7,7 @@ import { Mesh } from "../../Mesh";
 export class IcosphereMeshGeneratorSystem extends System {
   static queries: SystemQueries = {
     meshEntities: {
-      components: [IcosphereMeshGeneratorData, MeshRenderData3D],
+      components: [IcosphereMeshGeneratorData],
       listen: {
         added: true,
         changed: true,
@@ -86,6 +86,11 @@ export class IcosphereMeshGeneratorSystem extends System {
       meshRenderData.mesh.addVertexPosition(v2);
       meshRenderData.mesh.addVertexPosition(v3);
 
+      // Push vertex colors.
+      for (let j = 0; j < 3; j++) {
+        meshRenderData.mesh.addVertexColor([1, 1, 1, 1]);
+      }
+
       // Push normals.
       if (generatorData.flatNormal) {
         meshRenderData.mesh.addVertexNormal(normal);
@@ -97,6 +102,11 @@ export class IcosphereMeshGeneratorSystem extends System {
         meshRenderData.mesh.addVertexNormal(vec3.normalize(vec3.create(), v3));
       }
 
+      // Push vertex coordinates.
+      meshRenderData.mesh.addVertexTexCoords(this.calculateUV(v1));
+      meshRenderData.mesh.addVertexTexCoords(this.calculateUV(v2));
+      meshRenderData.mesh.addVertexTexCoords(this.calculateUV(v3));
+
       // Push indices.
       meshRenderData.mesh.registerTriangle(index, index + 1, index + 2);
       index += 3;
@@ -104,6 +114,20 @@ export class IcosphereMeshGeneratorSystem extends System {
 
     // Compile mesh.
     meshRenderData.mesh.compileBufferToArrays();
+  }
+
+  /**
+   * Calulate the latitude and longitude of a vertex.
+   */
+  private calculateUV(v1: vec3): vec2 {
+    // Calculate the longitude and latitude.
+    const longitude = Math.atan2(v1[0], v1[2]);
+    const latitude = Math.asin(v1[1]);
+    // Normalize latitude and longitude to [0, 1].
+    const u = (longitude + Math.PI) / (2 * Math.PI);
+    const v = (latitude + Math.PI / 2) / Math.PI;
+
+    return vec2.fromValues(u, v);
   }
 
   /**
