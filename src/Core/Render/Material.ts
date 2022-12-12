@@ -41,6 +41,9 @@ export class Material {
   // Texture samplers.
   samplerLocations: { [key: string]: WebGLUniformLocation } = {};
 
+  // Texture buffers.
+  textureBuffers: { [key: string]: WebGLTexture } = {};
+
   constructor(
     glContext: WebGLRenderingContext,
     vertexShaderSource: string,
@@ -165,10 +168,62 @@ export class Material {
       ) as WebGLUniformLocation;
       glContext.uniform1i(this.samplerLocations[element], i);
     }
+
+    // Create texture buffers.
+    for (let i = 0; i < textureSamplers.length; i++) {
+      const element = textureSamplers[i];
+      this.textureBuffers[element] = glContext.createTexture() as WebGLTexture;
+      this.glContext.activeTexture(this.glContext.TEXTURE0 + i);
+      this.glContext.bindTexture(
+        this.glContext.TEXTURE_2D,
+        this.textureBuffers[element]
+      );
+      this.glContext.texImage2D(
+        this.glContext.TEXTURE_2D,
+        0,
+        this.glContext.RGBA,
+        1,
+        1,
+        0,
+        this.glContext.RGBA,
+        this.glContext.UNSIGNED_BYTE,
+        null
+      );
+    }
   }
 
   use(glContext: WebGLRenderingContext) {
     glContext.useProgram(this.shaderProgram);
+  }
+
+  loadTexture(texture: string, src: string) {
+    // Create a texture image.
+    const image = new Image();
+    image.src = src;
+    image.onload = () => {
+      this.glContext.bindTexture(
+        this.glContext.TEXTURE_2D,
+        this.textureBuffers[texture]
+      );
+      this.glContext.texImage2D(
+        this.glContext.TEXTURE_2D,
+        0,
+        this.glContext.RGBA,
+        this.glContext.RGBA,
+        this.glContext.UNSIGNED_BYTE,
+        image
+      );
+
+      // Use mipmap for texture.
+      this.glContext.generateMipmap(this.glContext.TEXTURE_2D);
+
+      // Set interpolation parameters for texture.
+      this.glContext.texParameteri(
+        this.glContext.TEXTURE_2D,
+        this.glContext.TEXTURE_MIN_FILTER,
+        this.glContext.LINEAR_MIPMAP_LINEAR
+      );
+    };
   }
 }
 
@@ -177,14 +232,16 @@ export class MaterialDescriptor {
   fragmentSource!: string;
   attributes: string[] = ["vPosition", "vNormal", "vColor", "vTexCoord"];
   uniforms: string[] = ["uM", "uV", "uP", "uMV", "uMVn", "uMVP", "uDirLight"];
-  textureSamplers: string[] = [];
+  textureSamplers: { [key: string]: string } = {};
 
   constructor(
+    textureSamplers: { [key: string]: string } = {},
     vertexSource: string = default_vert,
     fragmentSource: string = default_frag
   ) {
     this.vertexSource = vertexSource;
     this.fragmentSource = fragmentSource;
+    this.textureSamplers = textureSamplers;
   }
 
   copy(m: MaterialDescriptor): MaterialDescriptor {

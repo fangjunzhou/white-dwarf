@@ -70,7 +70,7 @@ export class WebGLMeshCompiler extends System {
         meshRenderData.materialDesc.fragmentSource,
         meshRenderData.materialDesc.attributes,
         meshRenderData.materialDesc.uniforms,
-        meshRenderData.materialDesc.textureSamplers
+        Object.keys(meshRenderData.materialDesc.textureSamplers)
       );
     } catch (e) {
       meshRenderData.material = new Material(
@@ -79,9 +79,16 @@ export class WebGLMeshCompiler extends System {
         error_frag,
         meshRenderData.materialDesc.attributes,
         meshRenderData.materialDesc.uniforms,
-        meshRenderData.materialDesc.textureSamplers
+        Object.keys(meshRenderData.materialDesc.textureSamplers)
       );
       console.error(e);
+    }
+
+    // Load textures.
+    for (const [name, src] of Object.entries(
+      meshRenderData.materialDesc.textureSamplers
+    )) {
+      meshRenderData.material.loadTexture(name, src);
     }
   }
 }

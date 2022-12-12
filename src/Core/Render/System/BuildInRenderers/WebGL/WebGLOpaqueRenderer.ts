@@ -159,6 +159,13 @@ export class WebGLOpaqueRenderer extends CanvasWebGLRenderer {
         0
       );
 
+      // Bind textures.
+      for (let i = 0; i < material.textureBuffers.length; i++) {
+        const texture = material.textureBuffers[i];
+        this.glContext.activeTexture(this.glContext.TEXTURE0 + i);
+        this.glContext.bindTexture(this.glContext.TEXTURE_2D, texture);
+      }
+
       // Draw the object.
       this.glContext.drawElements(
         this.glContext.TRIANGLES,
