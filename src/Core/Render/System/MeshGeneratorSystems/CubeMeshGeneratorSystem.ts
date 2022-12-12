@@ -150,6 +150,11 @@ export class CubeMeshGeneratorSystem extends System {
     meshRenderData.mesh.registerTriangle(20, 21, 22);
     meshRenderData.mesh.registerTriangle(20, 22, 23);
 
+    // Add 24 white vertex colors.
+    for (var i = 0; i < 24; i++) {
+      meshRenderData.mesh.addVertexColor([1, 1, 1, 1]);
+    }
+
     // Compile the mesh.
     meshRenderData.mesh.compileBufferToArrays();
   }
