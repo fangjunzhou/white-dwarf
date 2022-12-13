@@ -28,6 +28,8 @@ export const editorInit = () => {
 
   // Editor initialization.
 
+  // TODO: Change the UI setup process.
+
   coreRenderContext.mainCanvas = document.getElementById(
     "mainCanvas"
   ) as HTMLCanvasElement;
@@ -101,6 +103,9 @@ export const editorInit = () => {
 
   // Setup editor mode dropdown.
   setupEditorModeDropdown();
+
+  // Setup editor mode keybinds.
+  setupEditorModeKeybinds();
 
   // White Dwarf Engine initialization.
   mainInit();
@@ -208,24 +213,75 @@ const setupSaveLoadWorldButton = () => {
   });
 };
 
-function setupEditorModeDropdown() {
+const setupEditorModeDropdown = () => {
   // Add listener to editor mode dropdown.
   editorUIContext.editorModeDropdown?.addEventListener("change", (e) => {
     const value = (e.target as HTMLSelectElement).value;
     switch (value) {
       case "view":
-        editorControlContext.controlMode = EditorControl.View;
+        editorControlContext.setControlMode(EditorControl.View);
         break;
 
       case "move":
-        editorControlContext.controlMode = EditorControl.Move;
+        editorControlContext.setControlMode(EditorControl.Move);
+        break;
+
+      case "rotate":
+        editorControlContext.setControlMode(EditorControl.Rotate);
         break;
 
       default:
         break;
     }
   });
-}
+
+  // Add listener to editor mode dropdown.
+  editorControlContext.ee.on(
+    "controlModeChanged",
+    (controlMode: EditorControl) => {
+      if (!editorUIContext.editorModeDropdown) {
+        return;
+      }
+      switch (controlMode) {
+        case EditorControl.View:
+          editorUIContext.editorModeDropdown.value = "view";
+          break;
+
+        case EditorControl.Move:
+          editorUIContext.editorModeDropdown.value = "move";
+          break;
+
+        case EditorControl.Rotate:
+          editorUIContext.editorModeDropdown.value = "rotate";
+          break;
+
+        default:
+          break;
+      }
+    }
+  );
+};
+
+const setupEditorModeKeybinds = () => {
+  document.addEventListener("keydown", (e) => {
+    switch (e.code) {
+      case "KeyQ":
+        editorControlContext.setControlMode(EditorControl.View);
+        break;
+
+      case "KeyW":
+        editorControlContext.setControlMode(EditorControl.Move);
+        break;
+
+      case "KeyE":
+        editorControlContext.setControlMode(EditorControl.Rotate);
+        break;
+
+      default:
+        break;
+    }
+  });
+};
 
 const editorPlay = async () => {
   // Serialize the world.

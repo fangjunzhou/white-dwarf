@@ -1,8 +1,10 @@
 import { Entity } from "ecsy-wd";
+import EventEmitter from "events";
 
 export enum EditorControl {
   View,
   Move,
+  Rotate,
 }
 
 export interface IEditorUIContext {
@@ -26,7 +28,10 @@ export interface IEditorEventContext {
 }
 
 export interface IEditorControlContext {
+  ee: EventEmitter;
   controlMode: EditorControl;
+
+  setControlMode(mode: EditorControl): void;
 }
 
 export const editorUIContext: IEditorUIContext = {
@@ -47,5 +52,11 @@ export const editorEventContext: IEditorEventContext = {
 };
 
 export const editorControlContext: IEditorControlContext = {
+  ee: new EventEmitter(),
   controlMode: EditorControl.Move,
+
+  setControlMode: function (mode: EditorControl): void {
+    this.controlMode = mode;
+    this.ee.emit("controlModeChanged", mode);
+  },
 };
