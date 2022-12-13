@@ -1,8 +1,9 @@
 import { SystemQueries } from "ecsy-wd";
-import { mat3, mat4, vec2 } from "gl-matrix";
+import { mat3, mat4, quat, vec2, vec3 } from "gl-matrix";
 import { TransformData3D } from "../../../../Locomotion/DataComponent/TransformData3D";
 import { MeshRenderData3D } from "../../../DataComponent/MeshRenderData3D";
 import { PerspectiveCameraData3D } from "../../../DataComponent/PerspectiveCameraData3D";
+import { DirectionalLightTag } from "../../../TagComponent/DirectionalLightTag";
 import { CanvasWebGLRenderer } from "../../CanvasWebGLRenderer";
 
 export class WebGLOpaqueRenderer extends CanvasWebGLRenderer {
@@ -10,6 +11,9 @@ export class WebGLOpaqueRenderer extends CanvasWebGLRenderer {
     ...this.queries,
     meshEntities: {
       components: [TransformData3D, MeshRenderData3D],
+    },
+    directionalLights: {
+      components: [TransformData3D, DirectionalLightTag],
     },
   };
 
@@ -33,6 +37,20 @@ export class WebGLOpaqueRenderer extends CanvasWebGLRenderer {
       );
     } else {
       throw new Error("No camera found.");
+    }
+
+    // Get the directional light.
+    let lightDir = vec3.fromValues(0, 1, 0);
+    if (this.queries.directionalLights.results.length > 0) {
+      const lightTransform =
+        this.queries.directionalLights.results[0].getComponent(
+          TransformData3D
+        ) as TransformData3D;
+      vec3.transformQuat(
+        lightDir,
+        vec3.fromValues(0, 0, -1),
+        lightTransform.rotation.value
+      );
     }
 
     // Render all objects.
@@ -103,7 +121,7 @@ export class WebGLOpaqueRenderer extends CanvasWebGLRenderer {
       // TODO: Set the directional light uniforms from light entity.
       this.glContext.uniform3fv(
         material.uniformLocations.uDirLight as WebGLUniformLocation,
-        [1.0, 0.5, -1.3]
+        lightDir
       );
 
       // Set the shader attributes.
