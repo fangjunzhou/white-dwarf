@@ -143,10 +143,13 @@ export class IcosphereMeshGeneratorSystem extends System {
   /**
    * Calulate the latitude and longitude of a vertex.
    */
-  private calculateUV(v1: vec3): vec2 {
+  private calculateUV(pos: vec3): vec2 {
+    // Normalize the vertex.
+    vec3.normalize(pos, pos);
+
     // Calculate the longitude and latitude.
-    const longitude = Math.atan2(v1[0], v1[2]);
-    const latitude = -Math.asin(v1[1]);
+    const longitude = Math.atan2(pos[0], pos[2]);
+    const latitude = -Math.asin(pos[1]);
     // Normalize latitude and longitude to [0, 1].
     const u = (longitude + Math.PI) / (2 * Math.PI);
     const v = (latitude + Math.PI / 2) / Math.PI;
