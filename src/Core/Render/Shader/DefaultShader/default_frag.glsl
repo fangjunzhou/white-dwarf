@@ -6,6 +6,7 @@ uniform mat4 uV;
 // Uniform light data.
 uniform vec3 uDirLight;
 
+// Textures.
 uniform sampler2D tex1;
 
 // Camera space position.
@@ -19,22 +20,12 @@ varying vec2 fTexCoord;
 
 // Ambient light.
 const vec4 ambientColor = vec4(1, 0, 0, 1);
-const float ambientIntensity = 0.1;
+const float ambientIntensity = 0.05;
 // Specular settings.
 const float specularExp = 128.0;
 // Sun light.
-const vec4 dirLightColor = vec4(1, 1, 0.5, 1);
+const vec4 dirLightColor = vec4(1);
 const float dirLightIntensity = 1.0;
-// Point light.
-const vec4 pointLightColor = vec4(0, 1, 0, 1);
-const float pointLightIntensity = 1.0;
-const float pointLightDistance = 2.0;
-const float pointLightRotateSpeed = 15.0;
-// Fresnel effect.
-const bool useFresnelEffect = true;
-const vec4 fresnelColor = vec4(1, 1, 0, 1);
-const float fresnelExp = 5.0;
-const float fresnelThreshold = 0.3;
 
 vec2 getDiffuseSpecular(vec3 l, vec3 h, vec3 n, float i) {
   // Diffuse light.
@@ -52,28 +43,28 @@ void main() {
   // Base color.
   vec4 baseColor = texture2D(tex1, fTexCoord);
 
-    // Constants.
+  // Constants.
   vec3 n = normalize(fNormal);
   vec3 e = normalize(-fPosition);
 
-    // Ambient light.
+  // Ambient light.
   vec4 ambientLight = ambientColor * ambientIntensity;
 
-    // Sun light.
-  vec3 dirLight = (uV * vec4(uDirLight, 0)).xyz;
-  vec3 sl = normalize(dirLight);
+  // Sun light.
+  vec3 lightDir = (uV * vec4(uDirLight, 0)).xyz;
+  vec3 sl = normalize(lightDir);
   vec3 sh = normalize(e + sl);
 
   vec2 sds = getDiffuseSpecular(sl, sh, n, dirLightIntensity);
 
-  vec4 sunLight = dirLightColor * sds.x;
-  sunLight = sunLight + dirLightColor * sds.y;
+  vec4 dirLigqht = dirLightColor * sds.x;
+  dirLight = dirLight + dirLightColor * sds.y;
 
   vec4 color = vec4(0, 0, 0, 1);
     // Apply ambient light.
   color = color + baseColor * ambientLight;
     // Apply sun light.
-  color = color + baseColor * sunLight;
+  color = color + baseColor * dirLight;
 
   gl_FragColor = color;
 }
