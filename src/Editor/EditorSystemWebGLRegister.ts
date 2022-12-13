@@ -2,6 +2,7 @@ import { World } from "ecsy-wd";
 import { IWorldRegister } from "../Utils/IWorldRegister";
 import { Cam3DDragSystem } from "../Utils/System/Cam3DDragSystem";
 import { EditorViewPort3DSystem } from "./System/EditorViewPort3DSystem";
+import { EditorViewPortWebGLRotateSystem } from "./System/EditorViewPortWebGlSystems/EditorViewPortWebGLRotateSystem";
 import { EditorViewPortWebGLTransformSystem } from "./System/EditorViewPortWebGlSystems/EditorViewPortWebGLTransformSystem";
 
 export class EditorSystemWebGLRegister {
@@ -16,8 +17,12 @@ export class EditorSystemWebGLRegister {
       mainCanvas: this.mainCanvas,
     });
 
-    world.registerSystem(EditorViewPortWebGLTransformSystem, {
-      mainCanvas: this.mainCanvas,
-    });
+    world
+      .registerSystem(EditorViewPortWebGLTransformSystem, {
+        mainCanvas: this.mainCanvas,
+      })
+      .registerSystem(EditorViewPortWebGLRotateSystem, {
+        mainCanvas: this.mainCanvas,
+      });
   };
 }
