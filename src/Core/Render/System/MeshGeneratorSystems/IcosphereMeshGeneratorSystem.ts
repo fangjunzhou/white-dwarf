@@ -103,9 +103,33 @@ export class IcosphereMeshGeneratorSystem extends System {
       }
 
       // Push vertex coordinates.
-      meshRenderData.mesh.addVertexTexCoords(this.calculateUV(v1));
-      meshRenderData.mesh.addVertexTexCoords(this.calculateUV(v2));
-      meshRenderData.mesh.addVertexTexCoords(this.calculateUV(v3));
+
+      let texCoord1 = this.calculateUV(v1);
+      let texCoord2 = this.calculateUV(v2);
+      let texCoord3 = this.calculateUV(v3);
+      // Check if one of the x coordinates distance is greater than 0.5.
+      if (texCoord1[0] - texCoord2[0] > 0.5) {
+        texCoord1[0] -= 1;
+      }
+      if (texCoord2[0] - texCoord1[0] > 0.5) {
+        texCoord2[0] -= 1;
+      }
+      if (texCoord1[0] - texCoord3[0] > 0.5) {
+        texCoord1[0] -= 1;
+      }
+      if (texCoord3[0] - texCoord1[0] > 0.5) {
+        texCoord3[0] -= 1;
+      }
+      if (texCoord2[0] - texCoord3[0] > 0.5) {
+        texCoord2[0] -= 1;
+      }
+      if (texCoord3[0] - texCoord2[0] > 0.5) {
+        texCoord3[0] -= 1;
+      }
+
+      meshRenderData.mesh.addVertexTexCoords(texCoord1);
+      meshRenderData.mesh.addVertexTexCoords(texCoord2);
+      meshRenderData.mesh.addVertexTexCoords(texCoord3);
 
       // Push indices.
       meshRenderData.mesh.registerTriangle(index, index + 1, index + 2);
@@ -122,7 +146,7 @@ export class IcosphereMeshGeneratorSystem extends System {
   private calculateUV(v1: vec3): vec2 {
     // Calculate the longitude and latitude.
     const longitude = Math.atan2(v1[0], v1[2]);
-    const latitude = Math.asin(v1[1]);
+    const latitude = -Math.asin(v1[1]);
     // Normalize latitude and longitude to [0, 1].
     const u = (longitude + Math.PI) / (2 * Math.PI);
     const v = (latitude + Math.PI / 2) / Math.PI;
