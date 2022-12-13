@@ -223,6 +223,18 @@ export class Material {
         this.glContext.TEXTURE_MIN_FILTER,
         this.glContext.LINEAR_MIPMAP_LINEAR
       );
+
+      // Set the texture wrapping parameters.
+      this.glContext.texParameteri(
+        this.glContext.TEXTURE_2D,
+        this.glContext.TEXTURE_WRAP_S,
+        this.glContext.REPEAT
+      );
+      this.glContext.texParameteri(
+        this.glContext.TEXTURE_2D,
+        this.glContext.TEXTURE_WRAP_T,
+        this.glContext.REPEAT
+      );
     };
   }
 }
