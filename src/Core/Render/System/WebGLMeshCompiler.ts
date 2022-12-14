@@ -53,7 +53,7 @@ export class WebGLMeshCompiler extends System {
     );
   }
 
-  private compileMaterial(entity: Entity) {
+  private async compileMaterial(entity: Entity) {
     const meshRenderData = entity.getMutableComponent(
       MeshRenderData3D
     ) as MeshRenderData3D;
@@ -62,12 +62,33 @@ export class WebGLMeshCompiler extends System {
       return;
     }
 
+    let vert: string;
+    let frag: string;
+    if (meshRenderData.materialDesc.fetchShader) {
+      const [v, f] = await Promise.all([
+        fetch(meshRenderData.materialDesc.vertexSource),
+        fetch(meshRenderData.materialDesc.fragmentSource),
+      ]);
+
+      if (!v.ok || !f.ok) {
+        console.log("Error fetching shader.");
+        vert = default_vert;
+        frag = error_frag;
+      } else {
+        vert = await v.text();
+        frag = await f.text();
+      }
+    } else {
+      vert = meshRenderData.materialDesc.vertexSource;
+      frag = meshRenderData.materialDesc.fragmentSource;
+    }
+
     // Compile material.
     try {
       meshRenderData.material = new Material(
         this.canvasContext,
-        meshRenderData.materialDesc.vertexSource,
-        meshRenderData.materialDesc.fragmentSource,
+        vert,
+        frag,
         meshRenderData.materialDesc.attributes,
         meshRenderData.materialDesc.uniforms,
         Object.keys(meshRenderData.materialDesc.textureSamplers)
