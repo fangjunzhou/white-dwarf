@@ -136,6 +136,8 @@ export class Material {
       throw new Error("Failed to link shader program");
     }
 
+    glContext.useProgram(this.shaderProgram);
+
     // Get attribute locations.
     for (const attribute of attributes) {
       const location = glContext.getAttribLocation(
@@ -240,6 +242,7 @@ export class Material {
 }
 
 export class MaterialDescriptor {
+  fetchShader: boolean = false;
   vertexSource!: string;
   fragmentSource!: string;
   attributes: string[] = ["vPosition", "vNormal", "vColor", "vTexCoord"];
@@ -248,8 +251,8 @@ export class MaterialDescriptor {
 
   constructor(
     textureSamplers: { [key: string]: string } = {},
-    vertexSource: string = default_vert,
-    fragmentSource: string = default_frag
+    vertexSource: string = "",
+    fragmentSource: string = ""
   ) {
     this.vertexSource = vertexSource;
     this.fragmentSource = fragmentSource;
@@ -257,6 +260,7 @@ export class MaterialDescriptor {
   }
 
   copy(m: MaterialDescriptor): MaterialDescriptor {
+    this.fetchShader = m.fetchShader;
     this.vertexSource = m.vertexSource;
     this.fragmentSource = m.fragmentSource;
     this.attributes = m.attributes;
