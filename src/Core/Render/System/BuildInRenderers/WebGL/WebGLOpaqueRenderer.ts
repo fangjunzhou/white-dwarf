@@ -87,6 +87,12 @@ export class WebGLOpaqueRenderer extends CanvasWebGLRenderer {
       // Enable the shader program.
       material.use(this.glContext);
 
+      // Bind element array buffer.
+      this.glContext.bindBuffer(
+        this.glContext.ELEMENT_ARRAY_BUFFER,
+        meshBuffer.triangleIndicesBuffer
+      );
+
       // Set the shader uniforms.
       this.glContext.uniformMatrix4fv(
         material.uniformLocations.uM as WebGLUniformLocation,
